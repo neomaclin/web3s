@@ -1,0 +1,9 @@
+**/.bloop
+**/.bsp
+**/.idea
+**/.vscode
+**/.metals
+**/target/
+**/**/*.class
+**/**/*.json
+**/**/*.bin
