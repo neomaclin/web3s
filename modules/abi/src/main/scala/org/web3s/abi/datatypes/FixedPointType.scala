@@ -1,6 +1,6 @@
 package org.web3s.abi.datatypes
 
-import org.web3s.abi.datatypes.AbiType.MAX_BIT_LENGTH
+import org.web3s.abi.datatypes.SolidityType.MAX_BIT_LENGTH
 
 object FixedPointType:
   val DEFAULT_BIT_LENGTH: Int = MAX_BIT_LENGTH >> 1
@@ -30,6 +30,6 @@ abstract class FixedPointType(val typePrefix: String,
     isValidBitSize(mBitSize, nBitSize) && FixedPointType.isValidBitCount(mBitSize, nBitSize, value)
 
   private def isValidBitSize(mBitSize: Int, nBitSize: Int) =
-    mBitSize % 8 == 0 && nBitSize % 8 == 0 && bitSize > 0 && bitSize <= AbiType.MAX_BIT_LENGTH
+    mBitSize % 8 == 0 && nBitSize % 8 == 0 && bitSize > 0 && bitSize <= SolidityType.MAX_BIT_LENGTH
     
 end FixedPointType

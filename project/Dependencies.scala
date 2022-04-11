@@ -4,9 +4,10 @@ object Dependencies {
   object versions {
     val scala2 = "2.13.8"
     val scala3 = "3.1.0"
-    val akka = "2.6.18"
+    val akka = "2.6.19"
     val akkaHttp = "10.2.9"
     val cats = "2.7.0"
+    val kitten = "3.0.0-M3"
     val distage = "1.0.10"
     val tapir = "0.19.3"
     val circe = "0.14.1"
@@ -22,8 +23,13 @@ object Dependencies {
     val alpakka = "3.0.4"
     val jwt = "9.0.4"
     val log4j = "2.17.1"
+    val fs2 = "3.2.7"
   }
 
+  val fs2 = Seq(
+    "co.fs2" %% "fs2-core" % versions.fs2,
+    "co.fs2" %% "fs2-io" % versions.fs2,
+  )
   val akka = Seq(
     "com.typesafe.akka" %% "akka-actor-typed" % versions.akka,
   )
@@ -63,8 +69,12 @@ object Dependencies {
   val cats = Seq(
     "org.typelevel" %% "cats-core",
     "org.typelevel" %% "cats-kernel",
+
   ).map(_ % versions.cats)
 
+  val kitten = Seq(
+    "org.typelevel" %% "kittens" % versions.kitten
+  )
   val distage = Seq(
     "io.7mind.izumi" %% "distage-core" % versions.distage,
   )
@@ -97,7 +107,7 @@ object Dependencies {
   )
 
   val phoneDependencies = Seq(
-    "com.googlecode.libphonenumber" % "libphonenumber" % "8.12.44",
+    "com.googlecode.libphonenumber" % "libphonenumber" % "8.12.45",
   )
 
   val scalaTest = Seq(
@@ -122,14 +132,7 @@ object Dependencies {
     "eu.timepit" %% "refined" % versions.refined,
     "eu.timepit" %% "refined-cats" % versions.refined, // optional
   )
-
-//  val jwt = Seq(
-//    "com.github.jwt-scala" %% "jwt-circe" % versions.jwt excludeAll ExclusionRule(
-//      organization = "org.bouncycastle",
-//      ),
-//    "org.bouncycastle" % "bcprov-jdk15on" % "1.70",
-//    "org.bouncycastle" % "bcpkix-jdk15on" % "1.70"
-//  )
+  
 
   val bouncycastle = Seq(
     "org.bouncycastle" % "bcprov-jdk15on" % "1.70",
@@ -150,7 +153,7 @@ object Dependencies {
   )
 
   val flyway = Seq(
-    "org.flywaydb" % "flyway-core" % "8.5.0"
+    "org.flywaydb" % "flyway-core" % "8.5.4"
   )
 
   val logger = Seq(

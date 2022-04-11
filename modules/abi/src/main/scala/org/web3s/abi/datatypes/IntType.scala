@@ -1,6 +1,6 @@
 package org.web3s.abi.datatypes
 
-import org.web3s.abi.datatypes.AbiType.MAX_BIT_LENGTH
+import org.web3s.abi.datatypes.SolidityType.MAX_BIT_LENGTH
 
 
 /** Common integer properties. */

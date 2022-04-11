@@ -6,7 +6,7 @@ object Bool {
   val DEFAULT = new Bool(false)
 }
 
-class Bool(override val value: Boolean) extends AbiType[Boolean]:
+class Bool(override val value: Boolean) extends SolidityType[Boolean]:
   
   override def getTypeAsString: String = Bool.TYPE_NAME
 

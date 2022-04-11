@@ -28,7 +28,7 @@ object Bytes:
   val TYPE_NAME = "bytes"
 end Bytes
 
-final class Bytes(val byteSize: Int,
+class Bytes(val byteSize: Int,
                   override val value: Array[Byte]) extends BytesType(value, Bytes.TYPE_NAME + value.length):
   require(isValid(byteSize), "Input byte array must be in range 0 < M <= 32 and length must match type")
 

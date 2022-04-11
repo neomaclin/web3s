@@ -1,8 +1,8 @@
 package org.web3s.abi.datatypes
 
-import org.web3s.abi.datatypes.AbiType.MAX_BYTE_LENGTH
+import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 
-abstract class BytesType(val value: Array[Byte], val `type`: String) extends AbiType[Array[Byte]] :
+abstract class BytesType(val value: Array[Byte], val `type`: String) extends SolidityType[Array[Byte]] :
 
   override def bytes32PaddedLength: Int =
     if (value.length <= 32) MAX_BYTE_LENGTH

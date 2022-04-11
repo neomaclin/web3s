@@ -46,17 +46,15 @@ final case class Bip32ECKeyPair(privateKey: Option[BigInt],
                                 publicKey: BigInt,
                                 childNumber: Int,
                                 chainCode: Array[Byte],
-                                parent: Option[Bip32ECKeyPair]) {
+                                parent: Option[Bip32ECKeyPair]) :
+  
+  private def hasPrivateKey = privateKey.nonEmpty || parentHasPrivate
+
   private def parentHasPrivate: Boolean = parent.nonEmpty && parent.exists(_.hasPrivateKey)
-  // this.parentFingerprint = if (parent != null) parent.getFingerprint else 0
-  //  final private var parentHasPrivate = false
-  //  final private var depth = 0
-  //  final private var chainCode = null
-  //  private var parentFingerprint = 0
-  //  private var publicKeyPoint = null
 
   private def deriveChildKey(childNumber: Int): Bip32ECKeyPair =
-    if (!hasPrivateKey) {
+    
+    if (!hasPrivateKey) 
       val parentPublicKey = publicKeyPoint.getEncoded(true)
       val data = ByteBuffer.allocate(37)
       data.put(parentPublicKey)
@@ -67,7 +65,7 @@ final case class Bip32ECKeyPair(privateKey: Option[BigInt],
       val ilInt = BigInt(1, il)
       val ki = Sign.publicPointFromPrivate(ilInt).add(publicKeyPoint)
       Bip32ECKeyPair(None, Sign.publicFromPoint(ki.getEncoded(true)), childNumber, chainCodeLocal, Some(this))
-    } else {
+    else
       val data = ByteBuffer.allocate(37)
       if (Bip32ECKeyPair.isHardened(childNumber))
         data.put(privateKeyBytes33)
@@ -81,22 +79,18 @@ final case class Bip32ECKeyPair(privateKey: Option[BigInt],
       val ilInt = BigInt(1, il)
       val privateKey1 = privateKey.map(i => (i + ilInt) % Sign.CURVE.getN)
       Bip32ECKeyPair(privateKey1, Sign.publicKeyFromPrivate(privateKey1.getOrElse(BigInt(0))), childNumber, chainCodeLocal, Some(this))
-    }
+    
   end deriveChildKey
 
+  private def identifier = sha256hash160(publicKeyPoint.getEncoded(true))
 
   private def fingerprint: Int =
     val id = identifier
     id(3) & 0xFF | (id(2) & 0xFF) << 8 | (id(1) & 0xFF) << 16 | (id(0) & 0xFF) << 24
   end fingerprint
-
-
-  def depth: Int = parent.fold(0)(_.depth + 1)
-
+  
   def parentFingerprint: Option[Int] = parent.map(_.fingerprint)
-
-  private def identifier = sha256hash160(publicKeyPoint.getEncoded(true))
-
+  
   def publicKeyPoint: ECPoint = Sign.publicPointFromPrivate(privateKey.getOrElse(BigInt(0)))
 
   def privateKeyBytes33: Array[Byte] =
@@ -106,7 +100,7 @@ final case class Bip32ECKeyPair(privateKey: Option[BigInt],
     Array.copy(priv, 0, bytes33, numBytes - priv.length, priv.length)
     bytes33
   end privateKeyBytes33
+  
+  def depth: Int = parent.fold(0)(_.depth + 1)
 
-  private def hasPrivateKey = privateKey.nonEmpty || parentHasPrivate
-
-}
+end Bip32ECKeyPair

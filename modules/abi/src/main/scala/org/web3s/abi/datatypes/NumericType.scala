@@ -1,7 +1,7 @@
 package org.web3s.abi.datatypes
 
 
-abstract class NumericType(val `type`: String, override val value: BigInt) extends AbiType[BigInt] :
+abstract class NumericType(val `type`: String, override val value: BigInt) extends SolidityType[BigInt] :
   def getTypeAsString: String = `type`
 
   def bitSize: Int

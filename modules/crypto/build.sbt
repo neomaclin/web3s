@@ -1,6 +1,6 @@
 
 import Dependencies._
 
-name := "utils"
+name := "crypto"
 
-libraryDependencies ++= bouncycastle ++ scalaTest
+libraryDependencies ++= bouncycastle ++ scalaTest ++ circe ++ refined

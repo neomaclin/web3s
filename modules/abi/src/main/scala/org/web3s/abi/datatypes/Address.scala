@@ -34,9 +34,9 @@ object Address {
   val DEFAULT = new Address(BigInt(0))
 }
 
-class Address(_value: Uint) extends AbiType[String] :
+class Address(_value: SolidityUInt) extends SolidityType[String] :
 
-  def this(bitSize: Int, value: BigInt) = this(new Uint(bitSize, value))
+  def this(bitSize: Int, value: BigInt) = this(new SolidityUInt(bitSize, value))
 
   def this(value: BigInt) = this(Address.DEFAULT_LENGTH, value)
 
