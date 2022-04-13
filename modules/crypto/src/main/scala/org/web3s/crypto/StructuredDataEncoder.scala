@@ -34,7 +34,7 @@ end StructuredDataEncoder
 
 
 class StructuredDataEncoder(jsonMessageInString: String): // Parse String Message into object and validate
-  
+
   import io.circe.parser.decode
 
   val messageObject: StructuredData.EIP712Message = decode[StructuredData.EIP712Message](jsonMessageInString).toTry.get
@@ -65,59 +65,38 @@ class StructuredDataEncoder(jsonMessageInString: String): // Parse String Messag
     else BigInt(0)
   end convertToBigInt
 
-  
-  def getArrayDimensionsFromDeclaration(declaration: String): List[Int] =  // Get the dimensions which were declared in Schema.
-     declaration match
-       case StructuredDataEncoder.arrayTypeRegex(_, StructuredDataEncoder.arrayDimensionRegex(entries*)) =>
-         entries.map(entry => Try(entry.toInt).getOrElse(-1)).toList
-       case _ => Nil
-     end match
+
+  def getArrayDimensionsFromDeclaration(declaration: String): List[Int] = // Get the dimensions which were declared in Schema.
+    declaration match
+      case StructuredDataEncoder.arrayTypeRegex(_, StructuredDataEncoder.arrayDimensionRegex(entries*)) =>
+        entries.map(entry => Try(entry.toInt).getOrElse(-1)).toList
+      case _ => Nil
+    end match
   end getArrayDimensionsFromDeclaration
 
-  def getDepthsAndDimensions[T:Typeable](data: T, depth: Int): String = {
-     data match
-       case data: List[_] =>
-         val list = data.map(getDepthsAndDimensions(_, depth + 1))
-         s"${list.mkString("[", ",", "]")}"
-       case _ => ""
-    }
-  ////
-  ////  @throws[RuntimeException]
-//    def getArrayDimensionsFromData[T](data: T) = {
-//      val depthsAndDimensions = getDepthsAndDimensions(data, 0)
-//      // groupedByDepth has key as depth and value as List(pair(Depth, Dimension))
-//      val groupedByDepth = depthsAndDimensions.stream.collect(Collectors.groupingBy(Pair.getFirst))
-//      // depthDimensionsMap is aimed to have key as depth and value as List(Dimension)
-//      val depthDimensionsMap = new util.HashMap[Integer, util.List[Integer]]
-//      import scala.collection.JavaConversions._
-//      for (entry <- groupedByDepth.entrySet) {
-//        val pureDimensions = new util.ArrayList[Integer]
-//        import scala.collection.JavaConversions._
-//        for (depthDimensionPair <- entry.getValue) {
-//          pureDimensions.add(depthDimensionPair.getSecond.asInstanceOf[Integer])
-//        }
-//        depthDimensionsMap.put(entry.getKey.asInstanceOf[Integer], pureDimensions)
-//      }
-//      val dimensions = new util.ArrayList[Integer]
-//      import scala.collection.JavaConversions._
-//      for (entry <- depthDimensionsMap.entrySet) {
-//        val setOfDimensionsInParticularDepth = new util.TreeSet[Integer](entry.getValue)
-//        if (setOfDimensionsInParticularDepth.size != 1) throw new RuntimeException(String.format("Depth %d of array data has more than one dimensions", entry.getKey))
-//        dimensions.add(setOfDimensionsInParticularDepth.stream.findFirst.get)
-//      }
-//      dimensions
-//    }
-  ////
-  ////  def flattenMultidimensionalArray(data: Any): util.List[AnyRef] = {
-  ////    if (!data.isInstanceOf[util.List[_]]) return new util.ArrayList[AnyRef]() {}
-  ////    val flattenedArray = new util.ArrayList[AnyRef]
-  ////    import scala.collection.JavaConversions._
-  ////    for (arrayItem <- data.asInstanceOf[util.List[_]]) {
-  ////      flattenedArray.addAll(flattenMultidimensionalArray(arrayItem))
-  ////    }
-  ////    flattenedArray
-  ////  }
-  ////
+  def getDepthsAndDimensions[T: Typeable](data: T, depth: Int): List[(Int, Int)] =
+    data match
+      case data: List[_] => depth -> data.size :: data.map(getDepthsAndDimensions(_, depth + 1)).reduce(_ ++ _)
+      case _ => Nil
+    end match
+  end getDepthsAndDimensions
+
+  def getArrayDimensionsFromData[T: Typeable](data: T): List[Int] =
+    getDepthsAndDimensions(data, 0)
+      .groupBy(_._1)
+      .view
+      .mapValues(_.map(_._2))
+      .toList
+      .flatMap(_._2.distinct.headOption)
+  end getArrayDimensionsFromData
+
+  def flattenMultidimensionalArray[T: Typeable](data: T): List[Any] =
+    data match
+      case data: List[_] => data.map(flattenMultidimensionalArray).reduce(_ ++ _)
+      case a  => List(a)
+    end match
+  end flattenMultidimensionalArray
+
   ////  private def convertToEncodedItem(baseType: String, data: Any) = {
   ////    var hashBytes = null
   ////    try if (baseType.toLowerCase.startsWith("uint") || baseType.toLowerCase.startsWith("int")) {

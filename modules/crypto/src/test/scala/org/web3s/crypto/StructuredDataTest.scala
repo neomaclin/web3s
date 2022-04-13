@@ -26,23 +26,23 @@ class StructuredDataTest extends AnyFunSuite :
   test("GetDependencies") {
     val dataEncoder = new StructuredDataEncoder(jsonMessageString)
     val deps = dataEncoder.getDependencies(dataEncoder.messageObject.primaryType)
-    val depsExpected = Set("Mail","Person")
+    val depsExpected = Set("Mail", "Person")
     assert(deps equals depsExpected)
   }
   //
-  test("EncodeType")  {
+  test("EncodeType") {
     val dataEncoder = new StructuredDataEncoder(jsonMessageString)
     val expectedTypeEncoding = "Mail(Person from,Person to,string contents)" + "Person(string name,address wallet)"
     val encoding = dataEncoder.encodeType(dataEncoder.messageObject.primaryType)
     assert(encoding == expectedTypeEncoding)
   }
 
-  test("TypeHash")  {
+  test("TypeHash") {
     val dataEncoder = new StructuredDataEncoder(jsonMessageString)
     val expectedTypeHashHex = "0xa0cedeb2dc280ba39b857546d74f5549c" + "3a1d7bdc2dd96bf881f76108e23dac2"
     assert(Numeric.toHexString(dataEncoder.typeHash(dataEncoder.messageObject.primaryType)) == expectedTypeHashHex)
   }
-  //
+
   //def testEncodeData() = {
   //  val dataEncoder = new StructuredDataEncoder(StructuredDataTest.jsonMessageString)
   //  val encodedData = dataEncoder.encodeData(dataEncoder.jsonMessageObject.getPrimaryType, dataEncoder.jsonMessageObject.getMessage.asInstanceOf[util.HashMap[String, AnyRef]])
@@ -145,58 +145,55 @@ class StructuredDataTest extends AnyFunSuite :
   //  assertEquals("0xb3ffe0073b0c3aecb00b19a636e4b3820cfc9692189f874312c906f70edf10bd", Numeric.toHexString(dataEncoder.hashStructuredData))
   //}
   //
-  //@Test
-  //@throws[RuntimeException]
-  //@throws[IOException]
+
   test("GetArrayDimensionsFromData") {
     val dataEncoder = new StructuredDataEncoder(jsonMessageString)
+
     // [[1, 2, 3], [4, 5, 6]]
     val testArrayData1 = List(List(1, 2, 3), List(4, 5, 6))
+    val expectedDimensions1 = List(2, 3)
+    assert(dataEncoder.getArrayDimensionsFromData(testArrayData1) sameElements expectedDimensions1)
 
+    // [[1, 2, 3]]
+    val testArrayData2 = List(List(1, 2, 3))
+    val expectedDimensions2 = List(1, 3)
+    assert(dataEncoder.getArrayDimensionsFromData(testArrayData2) sameElements expectedDimensions2)
 
-    dataEncoder.getDepthsAndDimensions(testArrayData1,0)
-//
-    //assert(, expectedDimensions1)
-//    // [[1, 2, 3]]
-//    val testArrayData2 = new util.ArrayList[AnyRef]
-//    testArrayData2.add(new util.ArrayList[String](util.Arrays.asList("1", "2", "3")))
-//    val expectedDimensions2 = new util.ArrayList[Integer]() {}
-//    assertEquals(dataEncoder.getArrayDimensionsFromData(testArrayData2), expectedDimensions2)
-//    // [1, 2, 3]
-//    val testArrayData3 = new util.ArrayList[AnyRef]() {}
-//    val expectedDimensions3 = new util.ArrayList[Integer]() {}
-//    assertEquals(dataEncoder.getArrayDimensionsFromData(testArrayData3), expectedDimensions3)
-//    // [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]]
-//    val testArrayData4 = new util.ArrayList[AnyRef]
-//    testArrayData4.add(new util.ArrayList[AnyRef]() {})
-//    testArrayData4.add(new util.ArrayList[AnyRef]() {})
-//    val expectedDimensions4 = new util.ArrayList[Integer]() {}
-//    assertEquals(dataEncoder.getArrayDimensionsFromData(testArrayData4), expectedDimensions4)
+    // [1, 2, 3]
+    val testArrayData3 = List(1, 2, 3)
+    val expectedDimensions3 = List(3)
+    assert(dataEncoder.getArrayDimensionsFromData(testArrayData3) sameElements expectedDimensions3)
+
+    // [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]]
+    val testArrayData4 = List(List(List(1, 2), List(3,4), List(5,6)), List(List(7,8), List(9,10), List(11,12)))
+    val expectedDimensions4 = List(2,3,2)
+    assert(dataEncoder.getArrayDimensionsFromData(testArrayData4) sameElements expectedDimensions4)
+
   }
-  //
-  //@Test
-  //@throws[IOException]
-  //@throws[RuntimeException]
-  //def testFlattenMultidimensionalArray() = {
-  //  val dataEncoder = new StructuredDataEncoder(StructuredDataTest.jsonMessageString)
-  //  val testArrayData1 = new util.ArrayList[AnyRef]
-  //  testArrayData1.add(new util.ArrayList[Integer](util.Arrays.asList(1, 2, 3)))
-  //  testArrayData1.add(new util.ArrayList[Integer](util.Arrays.asList(4, 5, 6)))
-  //  val expectedFlatArray1 = new util.ArrayList[Integer]() {}
-  //  assertEquals(dataEncoder.flattenMultidimensionalArray(testArrayData1), expectedFlatArray1)
-  //  val testArrayData2 = new util.ArrayList[AnyRef]
-  //  testArrayData2.add(new util.ArrayList[Integer](util.Arrays.asList(1, 2, 3)))
-  //  val expectedFlatArray2 = new util.ArrayList[Integer]() {}
-  //  assertEquals(dataEncoder.flattenMultidimensionalArray(testArrayData2), expectedFlatArray2)
-  //  val testArrayData3 = new util.ArrayList[AnyRef]() {}
-  //  val expectedFlatArray3 = new util.ArrayList[Integer]() {}
-  //  assertEquals(dataEncoder.flattenMultidimensionalArray(testArrayData3), expectedFlatArray3)
-  //  val testArrayData4 = new util.ArrayList[AnyRef]
-  //  testArrayData4.add(new util.ArrayList[AnyRef]() {})
-  //  testArrayData4.add(new util.ArrayList[AnyRef]() {})
-  //  val expectedFlatArray4 = new util.ArrayList[Integer]() {}
-  //  assertEquals(dataEncoder.flattenMultidimensionalArray(testArrayData4), expectedFlatArray4)
-  //}
+
+   test("FlattenMultidimensionalArray")  {
+     val dataEncoder = new StructuredDataEncoder(jsonMessageString)
+
+     // [[1, 2, 3], [4, 5, 6]]
+     val testArrayData1 = List(List(1, 2, 3), List(4, 5, 6))
+     val testArrayData1Flatten = testArrayData1.flatten
+     assert(dataEncoder.flattenMultidimensionalArray(testArrayData1) sameElements testArrayData1Flatten)
+
+     // [[1, 2, 3]]
+     val testArrayData2 = List(List(1, 2, 3))
+     val testArrayData2Flatten = testArrayData2.flatten
+     assert(dataEncoder.flattenMultidimensionalArray(testArrayData2) sameElements testArrayData2Flatten)
+
+     // [1, 2, 3]
+     val testArrayData3 = List(1, 2, 3)
+     val testArrayData3Flatten = testArrayData3
+     assert(dataEncoder.flattenMultidimensionalArray(testArrayData3) sameElements testArrayData3Flatten)
+
+     // [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]]
+     val testArrayData4 = List(List(List(1, 2), List(3,4), List(5,6)), List(List(7,8), List(9,10), List(11,12)))
+     val testArrayData4Flatten = testArrayData4.flatten.flatten
+     assert(dataEncoder.flattenMultidimensionalArray(testArrayData4) sameElements testArrayData4Flatten)
+  }
   //
   //@Test
   //@throws[RuntimeException]
