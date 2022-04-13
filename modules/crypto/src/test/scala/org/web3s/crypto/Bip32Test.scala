@@ -9,8 +9,7 @@ import java.nio.ByteBuffer
 import org.web3s.crypto.Base58
 
 class Bip32Test extends AnyFunSuite :
-
-
+  
   test("deriveKeyPairVector1") {
     // Chain m
 //    testGenerated(

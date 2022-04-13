@@ -50,10 +50,10 @@ class Address(_value: SolidityUInt) extends SolidityType[String] :
   
   override def toString: String = Numeric.toHexStringWithPrefixZeroPadded(_value.value, _value.bitSize >> 2)
 
-  override def equals(o: Any): Boolean = o match 
+  override def equals(o: Any): Boolean = o match
     case other: Address => other.value == value
     case _ => false
-  
+
   override def hashCode: Int = if (value != null) value.hashCode else 0
   
 end Address

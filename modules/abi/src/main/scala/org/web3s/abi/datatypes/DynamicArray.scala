@@ -1,9 +1,8 @@
 package org.web3s.abi.datatypes
 
-import scala.quoted.{Quotes, Type}
+import izumi.reflect.Tag
 
-
-class DynamicArray[T <: SolidityType[_] : Type](val values: List[T])(using Quotes) extends SolidityArray[T](values) :
+class DynamicArray[T <: SolidityType[_] : Tag](val values: List[T]) extends SolidityArray[T](values) :
 
   override def bytes32PaddedLength: Int = super.bytes32PaddedLength + SolidityType.MAX_BYTE_LENGTH
 

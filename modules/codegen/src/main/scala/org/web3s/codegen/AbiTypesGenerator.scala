@@ -84,10 +84,10 @@ object AbiTypesGenerator extends Generator with IOApp :
         s"""package org.web3s.abi.datatypes.generated
            |
            |import org.web3s.abi.datatypes.{StaticArray, SolidityType}
-           |import scala.quoted.{Quotes, Type}
+           |import izumi.reflect.Tag
            |
-           |final class StaticArray$size[T <: SolidityType[_] : Type](values: List[T])(using Quotes) extends StaticArray($size, values) :
-           |  def this(values: T*)(using Quotes) = this(List(values*))
+           |final class StaticArray$size[T <: SolidityType[_] : Tag](values: List[T]) extends StaticArray($size, values) :
+           |  def this(values: T*) = this(List(values*))
            |end StaticArray$size
            |
            |""".stripMargin, s"""StaticArray$size.scala""")

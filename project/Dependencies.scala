@@ -3,7 +3,7 @@ import sbt.{ExclusionRule, _}
 object Dependencies {
   object versions {
     val scala2 = "2.13.8"
-    val scala3 = "3.1.0"
+    val scala3 = "3.1.2"
     val akka = "2.6.19"
     val akkaHttp = "10.2.9"
     val cats = "2.7.0"
@@ -22,7 +22,7 @@ object Dependencies {
     val refined = "0.9.28"
     val alpakka = "3.0.4"
     val jwt = "9.0.4"
-    val log4j = "2.17.1"
+    val log4j = "2.17.2"
     val fs2 = "3.2.7"
   }
 
@@ -72,9 +72,10 @@ object Dependencies {
 
   ).map(_ % versions.cats)
 
-  val kitten = Seq(
-    "org.typelevel" %% "kittens" % versions.kitten
+  val reflection = Seq(
+    "dev.zio" %% "izumi-reflect" % "2.1.0",
   )
+
   val distage = Seq(
     "io.7mind.izumi" %% "distage-core" % versions.distage,
   )
@@ -107,7 +108,7 @@ object Dependencies {
   )
 
   val phoneDependencies = Seq(
-    "com.googlecode.libphonenumber" % "libphonenumber" % "8.12.45",
+    "com.googlecode.libphonenumber" % "libphonenumber" % "8.12.46",
   )
 
   val scalaTest = Seq(

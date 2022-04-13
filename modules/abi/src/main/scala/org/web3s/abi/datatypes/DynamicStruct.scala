@@ -1,11 +1,10 @@
 package org.web3s.abi.datatypes
 
-import scala.quoted.{Quotes, Type}
+import izumi.reflect.Tag
 
+class DynamicStruct[T <: SolidityType[_] : Tag](override val value: List[T]) extends DynamicArray[T](value) with StructType {
 
-class DynamicStruct[T <: SolidityType[_] : Type](override val value: List[T])(using Quotes) extends DynamicArray[T](value) with StructType {
-
-  def this(value: T*)(using Quotes) = this(List(value*))
+  def this(value: T*) = this(List(value*))
 
   override def bytes32PaddedLength: Int = super.bytes32PaddedLength + 32
 
