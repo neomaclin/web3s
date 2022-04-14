@@ -5,5 +5,4 @@
 **/.metals
 **/target/
 **/**/*.class
-**/**/*.json
 **/**/*.bin
