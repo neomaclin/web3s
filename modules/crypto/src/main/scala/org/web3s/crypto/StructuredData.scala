@@ -28,7 +28,7 @@ object StructuredData:
 
   final case class EIP712Message(types: Map[String, List[StructuredData.Entry]],
                                  primaryType: String,
-                                 message: io.circe.Json,
+                                 message: Map[String, Json],
                                  domain: StructuredData.EIP712Domain)
 
 
