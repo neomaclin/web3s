@@ -8,9 +8,10 @@ lazy val abi = (project in file("modules/abi")).dependsOn(utils)
 lazy val rlp = (project in file("modules/rlp")).dependsOn(utils)
 lazy val crypto = (project in file("modules/crypto")).dependsOn(utils,rlp,abi)
 lazy val codegen = (project in file("modules/codegen")).dependsOn(utils,rlp,abi)
+lazy val core = (project in file("modules/core")).dependsOn(crypto,abi)
 lazy val root = (project in file("."))
-  .dependsOn(crypto)
-  .aggregate(utils,abi,rlp,crypto,codegen)
+  .dependsOn(core)
+  .aggregate(utils,abi,rlp,crypto,codegen,core)
   .settings(
     name := "web3s"
   )
