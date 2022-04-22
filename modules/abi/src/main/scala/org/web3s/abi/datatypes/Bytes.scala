@@ -1,35 +1,39 @@
-/*
- * Copyright 2019 Web3 Labs Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- *//*
- * Copyright 2019 Web3 Labs Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- */
+
 package org.web3s.abi.datatypes
 
-/** Statically allocated sequence of bytes. */
+import izumi.reflect.Tag
+import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
+import org.web3s.utils.Numeric
+
 object Bytes:
   val TYPE_NAME = "bytes"
+
+  def encode(bytesType: BytesType): String =
+    val value = bytesType.value
+    val length = value.length
+    val mod = length % MAX_BYTE_LENGTH
+    val dest = if mod != 0 then
+      val temp = new Array[Byte](length + (MAX_BYTE_LENGTH - mod))
+      Array.copy(value, 0, temp, 0, length)
+      temp
+    else value
+    Numeric.toHexStringNoPrefix(dest)
+  end encode
+
+  private val bytesR = "Bytes(\\d+)".r
+
+  def decode[T <: BytesType : Tag](input: String, offset: Int): T =
+    val bytesR(lengthStr) = Tag[T].tag.toString
+    val length = lengthStr.toInt
+    val hexStringLength = length << 1
+    val value = Numeric.hexStringToByteArray(input.substring(offset, offset + hexStringLength))
+    new Bytes(length, value).asInstanceOf[T]
+  end decode
+
 end Bytes
 
 class Bytes(val byteSize: Int,
-                  override val value: Array[Byte]) extends BytesType(value, Bytes.TYPE_NAME + value.length):
+            override val value: Array[Byte]) extends BytesType(value, Bytes.TYPE_NAME + value.length) :
   require(isValid(byteSize), "Input byte array must be in range 0 < M <= 32 and length must match type")
 
   private def isValid(byteSize: Int) =

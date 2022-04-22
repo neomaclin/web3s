@@ -1,12 +1,18 @@
 
 package org.web3s.abi.datatypes
 
+import org.web3s.abi.datatypes
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 
 /** UTF-8 encoded string type. */
 object Utf8String:
   val TYPE_NAME = "string"
   val DEFAULT = new Utf8String("")
+  
+  def encode(value: Utf8String):String = DynamicBytes.encode(new datatypes.DynamicBytes(value.value.getBytes))
+  
+ // def decode(input: String, offset: Int): Utf8String = new Utf8String(new String(DynamicBytes.decode(input, offset).value))
+  
 end Utf8String
 
 

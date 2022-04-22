@@ -1,38 +1,31 @@
-/*
- * Copyright 2019 Web3 Labs Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- *//*
- * Copyright 2019 Web3 Labs Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package org.web3s.abi.datatypes
 
+
+import org.web3s.abi.datatypes.*
+import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 import org.web3s.utils.Numeric
 
 /**
  * Address type, which by default is equivalent to uint160 which follows the Ethereum specification.
  */
-object Address {
+object Address:
+  
   val TYPE_NAME = "address"
   val DEFAULT_LENGTH = 160
   val DEFAULT = new Address(BigInt(0))
-}
+
+  def decode(rawInput: String, offset: Int): Bool =
+    val input = rawInput.substring(offset, offset + Bool.MAX_BYTE_LENGTH_FOR_HEX_STRING)
+    val numericValue = Numeric.toBigInt(input)
+    new Bool(numericValue == BigInt(1))
+  end decode
+
+  def encode(value: Bool): String =
+    val rawValue = Array.fill[Byte](MAX_BYTE_LENGTH)(0.toByte)
+    if value.value then rawValue(rawValue.length - 1) = 1 else rawValue(rawValue.length - 1) = 0
+    Numeric.toHexStringNoPrefix(rawValue)
+  end encode
+end Address
 
 class Address(_value: SolidityUInt) extends SolidityType[String] :
 

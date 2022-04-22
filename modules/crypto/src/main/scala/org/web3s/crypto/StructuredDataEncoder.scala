@@ -1,15 +1,15 @@
 package org.web3s.crypto
 
-import io.circe.Json
-import io.circe.Json.JString
+import io.circe.{Json, JsonObject}
+import io.circe.Json.{JArray, JBoolean, JNull, JNumber, JObject, JString}
+import izumi.reflect.macrortti.LightTypeTagRef.SymName.SymTypeName
+import org.web3s.abi.SolidityTypes
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 import org.web3s.crypto.Hash.{sha3, sha3String}
 import org.web3s.crypto.StructuredDataEncoder.convertArgToBytes
 import org.web3s.utils.Numeric
 
 import java.io.IOException
-import scala.quoted.*
-import scala.reflect.Typeable
 import scala.util.Try
 
 
@@ -62,10 +62,10 @@ class StructuredDataEncoder(jsonMessageInString: String):
 
   def typeHash(primaryType: String): Array[Byte] = Numeric.hexStringToByteArray(sha3String(encodeType(primaryType)))
 
-  private def convertToBigInt[T:Typeable](value: T): BigInt =
-    value match
-      case v: String => if v.startsWith("0x") then Numeric.toBigInt(v) else BigInt(v)
-      case _ => BigInt(0)
+  private def convertToBigInt(value: Json): BigInt =
+    value.asString match
+      case Some(v: String) => if v.startsWith("0x") then Numeric.toBigInt(v) else BigInt(v)
+      case None => BigInt(0)
   end convertToBigInt
 
 
@@ -77,14 +77,13 @@ class StructuredDataEncoder(jsonMessageInString: String):
     end match
   end getArrayDimensionsFromDeclaration
 
-  def getDepthsAndDimensions[T: Typeable](data: T, depth: Int): List[(Int, Int)] =
-    data match
-      case data: List[_] => depth -> data.size :: data.map(getDepthsAndDimensions(_, depth + 1)).reduce(_ ++ _)
-      case _ => Nil
-    end match
+  def getDepthsAndDimensions(data: Json, depth: Int): List[(Int, Int)] =
+    data.asArray match
+      case Some(data) => depth -> data.size :: data.map(getDepthsAndDimensions(_, depth + 1)).reduce(_ ++ _)
+      case None => Nil
   end getDepthsAndDimensions
 
-  def getArrayDimensionsFromData[T: Typeable](data: T): List[Int] =
+  def getArrayDimensionsFromData(data: Json): List[Int] =
     getDepthsAndDimensions(data, 0)
       .groupMap(_._1)(_._2).view
       .values
@@ -92,14 +91,14 @@ class StructuredDataEncoder(jsonMessageInString: String):
       .toList
 
 
-  def flattenMultidimensionalArray[T: Typeable](data: T): List[Any] =
-    data match
-      case data: List[_] => data.map(flattenMultidimensionalArray).reduce(_ ++ _)
-      case a  => List(a)
-    end match
+  def flattenMultidimensionalArray(data: Json): List[Json] =
+    if data.isArray then
+      data.asArray.map(_.flatMap(flattenMultidimensionalArray)).toList.flatten//.reduce(_ ++ _)
+    else
+      data :: Nil
   end flattenMultidimensionalArray
 
-  private def convertToEncodeItem[T:Typeable](baseType: String, data: T): Array[Byte] =
+  private def convertToEncodeItem(baseType: String, data: Json): Array[Byte] =
     Try {
       baseType.toLowerCase match
         case x if x.startsWith("uint") || x.startsWith("int") =>
@@ -111,14 +110,14 @@ class StructuredDataEncoder(jsonMessageInString: String):
             val result: Array[Byte] = Array.fill[Byte](MAX_BYTE_LENGTH)(0xff.toByte)
             Array.copy(rawValue,0,result,MAX_BYTE_LENGTH - rawValue.length, rawValue.length)
             result
-        case "string" => data.asInstanceOf[String].getBytes("UTF-8")
-        case "bytes" => Numeric.hexStringToByteArray(data.asInstanceOf[String])
-        case _ => convertArgToBytes(data.asInstanceOf[String])
+        case "string" => data.asString.getOrElse("").getBytes
+        case "bytes" => Numeric.hexStringToByteArray(data.asString.getOrElse(""))
+        case _ => convertArgToBytes(data.asString.getOrElse(""))
       end match
     }.getOrElse(Array.empty[Byte])
   end convertToEncodeItem
 
-  private def getArrayItems[T:Typeable](field: StructuredData.Entry, value: T): List[Any] =
+  private def getArrayItems(field: StructuredData.Entry, value: Json): List[Json] =
     val expectedDimensions = getArrayDimensionsFromDeclaration(field.`type`.value)
     val dataDimensions = getArrayDimensionsFromData(value)
     val format = s"Array Data $value has dimensions ${dataDimensions.mkString(",")}, but expected dimensions are ${expectedDimensions.mkString(",")}"
@@ -131,6 +130,62 @@ class StructuredDataEncoder(jsonMessageInString: String):
   end getArrayItems
 
   def encodeData(primaryType: String, data: Map[String, Json]):Array[Byte] = ???
+  //   val types = messageObject.types
+  //   var encTypes = "bytes32" :: Nil
+  //   var encValues = typeHash(primaryType) :: Nil
+
+  //   for
+  //     field <- types(primaryType)
+  //   do
+  //     for
+  //       value <- data.get(field.name.value)
+  //     do
+  //       field.`type`.value match
+  //         case "string" =>
+  //           encTypes = "bytes32" :: encTypes
+  //           encValues =  Numeric.hexStringToByteArray(sha3String(value.asString.get)) :: encValues
+  //         case "bytes" =>
+  //           encTypes = "bytes32" :: encTypes
+  //           encValues = sha3(Numeric.hexStringToByteArray(value.asString.get)) :: encValues
+  //         case x if types.contains(x) =>
+  //           encTypes = "bytes32" :: encTypes
+  //           encValues = sha3(encodeData(x, value.as[Map[String,Json]].getOrElse(Map.empty))) :: encValues
+  //         case x if StructuredDataEncoder.bytesTypeRegex.matches(x) =>
+  //           encTypes = x :: encTypes
+  //           encValues = Numeric.hexStringToByteArray(value.asString.get) :: encValues
+  //         case x if StructuredDataEncoder.arrayTypeRegex.matches(x) =>
+  //           val baseTypeName = x.takeWhile(_ != '[')
+  //           val arrayItems = getArrayItems(field, value)
+  //           val arrayEncoding =
+  //             if types.contains(baseTypeName) then
+  //               arrayItems.map(item=>sha3(encodeData(baseTypeName, item.as[Map[String,Json]].getOrElse(Map.empty))))
+  //             else
+  //               arrayItems.map(convertToEncodeItem(baseTypeName, _))
+  //           encTypes = "bytes32" :: encTypes
+  //           encValues = sha3(arrayEncoding.reduce(_++_)) :: encValues
+  //         case x if x.startsWith("uint") || x.startsWith("int") =>
+  //           encTypes = x :: encTypes
+  //           encValues = convertToBigInt(value).toByteArray :: encValues
+  //         case x =>
+  //           encTypes = x :: encTypes
+
+  //       end match
+
+  //     end for
+  //   end for
+  // end encodeData
+  // private def encodeType(typeName: String, data: Json): Array[Byte] =
+  //   val tag = SolidityTypes.getTypeTag(typeName)
+  //   data  match
+  //     case JNull       => Array.empty[Byte]
+  //     case JBoolean(b) =>
+  //     case JNumber(n)  =>
+  //     case JString(s)  =>
+  //     case JArray(a)   =>
+  //     case JObject(o)  => encodeType(typeName, o.toMap)
+  //   end match
+
+  // end encodeType
 
   def hashMessage(primaryType: String, data: Map[String, Json]):Array[Byte]  = sha3(encodeData(primaryType, data))
 
@@ -147,12 +202,8 @@ class StructuredDataEncoder(jsonMessageInString: String):
     sha3(encodeData("EIP712Domain", domainData))
   end hashDomain
 
-  def structuredData: Array[Byte] =
-    val prefix = "\u0019\u0001".getBytes
-    val domainHash = hashDomain
-    val messageHash   = hashMessage(messageObject.primaryType, messageObject.message)
-    prefix ++ domainHash ++ messageHash
-  end structuredData
+  def structuredData: Array[Byte] = "\u0019\u0001".getBytes ++ hashDomain ++ hashMessage(messageObject.primaryType, messageObject.message)
 
   def hashStructuredData: Array[Byte] = sha3(structuredData)
+
 end StructuredDataEncoder

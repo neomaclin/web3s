@@ -2,6 +2,18 @@ package org.web3s.abi.datatypes
 
 import izumi.reflect.Tag
 
+object StaticArray:
+
+  // def decode[T:Tag](input: String, offset: Int, length: Int): T =
+  //    0 until length map TypeDecoder.def
+
+
+
+  // end decode
+
+  // def encode
+end StaticArray
+
 abstract class StaticArray[T <: SolidityType[_] : Tag](expectedSize: Int,
                                                         override val value: List[T]
                                                        )extends SolidityArray[T](value):

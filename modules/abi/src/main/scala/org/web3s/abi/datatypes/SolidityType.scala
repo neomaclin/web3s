@@ -7,7 +7,11 @@ object SolidityType:
 end SolidityType
 
 trait SolidityType[T]:
+
   def bytes32PaddedLength: Int = SolidityType.MAX_BYTE_LENGTH
+
   def value: T
+
   def getTypeAsString: String
+  
 end SolidityType
