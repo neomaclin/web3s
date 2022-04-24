@@ -10,7 +10,7 @@ object DynamicBytes:
   val DEFAULT = new DynamicBytes(Array.empty[Byte])
 
   def encode(dynamicBytes: DynamicBytes): String =
-    SolidityUInt.encode(new SolidityUInt(BigInt(dynamicBytes.value.length))) ++ Bytes.encode(dynamicBytes)
+    NumericType.encode(new SolidityUInt(BigInt(dynamicBytes.value.length))) ++  Bytes.encode(dynamicBytes)
 
   // def decode(input: String, offset: Int): DynamicBytes =
   //   val encodedLength = SolidityUInt.decode(input, offset)

@@ -2,8 +2,6 @@ package org.web3s.abi.datatypes
 
 import org.web3s.abi.datatypes.SolidityType.MAX_BIT_LENGTH
 
-
-/** Common integer properties. */
 object IntType:
 
   private def isValidBitSize(bitSize: Int) = bitSize % 8 == 0 && bitSize > 0 && bitSize <= MAX_BIT_LENGTH

@@ -14,17 +14,14 @@ object Address:
   val DEFAULT_LENGTH = 160
   val DEFAULT = new Address(BigInt(0))
 
-  def decode(rawInput: String, offset: Int): Bool =
-    val input = rawInput.substring(offset, offset + Bool.MAX_BYTE_LENGTH_FOR_HEX_STRING)
-    val numericValue = Numeric.toBigInt(input)
-    new Bool(numericValue == BigInt(1))
-  end decode
+//  def decode(rawInput: String, offset: Int): Bool =
+//    val input = rawInput.substring(offset, offset + Bool.MAX_BYTE_LENGTH_FOR_HEX_STRING)
+//    val numericValue = Numeric.toBigInt(input)
+//    new Bool(numericValue == BigInt(1))
+//  end decode
 
-  def encode(value: Bool): String =
-    val rawValue = Array.fill[Byte](MAX_BYTE_LENGTH)(0.toByte)
-    if value.value then rawValue(rawValue.length - 1) = 1 else rawValue(rawValue.length - 1) = 0
-    Numeric.toHexStringNoPrefix(rawValue)
-  end encode
+  def encode(value: Address): String = NumericType.encode(value.toUInt)
+  
 end Address
 
 class Address(_value: SolidityUInt) extends SolidityType[String] :
@@ -38,6 +35,8 @@ class Address(_value: SolidityUInt) extends SolidityType[String] :
   def this(hexValue: String) = this(Address.DEFAULT_LENGTH, hexValue)
 
   def getTypeAsString: String = Address.TYPE_NAME
+  
+  def toUInt: SolidityUInt = _value
 
   override def value: String = toString
   

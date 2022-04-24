@@ -7,7 +7,7 @@ import org.web3s.abi.datatypes.primitive.*
 
 object SolidityTypes:
 
-  def getType(`type`: String, primitives: Boolean): Tag[_ <: SolidityType[_] | AnyVal] =
+  def getType(`type`: String, primitives: Boolean): Tag[_ <: SolidityType[_]] =
     `type`.toLowerCase match
       case "address" =>
         Tag[Address]
@@ -18,53 +18,53 @@ object SolidityTypes:
       case "bytes" =>
         Tag[DynamicBytes]
       case "byte" =>
-        Tag[Byte]
+        Tag[PrimitiveByte]
       case "char" =>
-        Tag[Char]
+        Tag[PrimitiveChar]
       case "double" =>
-        Tag[Double]
+        Tag[PrimitiveDouble]
       case "float" =>
-        Tag[Float]
+        Tag[PrimitiveFloat]
       case "uint" =>
         Tag[SolidityUInt]
       case "short" =>
-        if primitives then Tag[Short] else Tag[Int16]
+        Tag[PrimitiveShort]
       case "int" =>
-        if primitives then Tag[Int] else Tag[Int32]
+        Tag[PrimitiveInt]
       case "long" =>
-        if primitives then Tag[Long] else Tag[Int64]
+        Tag[PrimitiveLong]
       case "uint8" =>
-        if primitives then Tag[Short] else Tag[UInt8]
+         Tag[UInt8]
       case "int8" =>
-        if primitives then Tag[Short] else Tag[Int8]
+        if primitives then Tag[PrimitiveShort] else Tag[Int8]
       case "uint16" =>
-        if primitives then Tag[Int] else Tag[UInt16]
+        if primitives then Tag[PrimitiveInt] else Tag[UInt16]
       case "int16" =>
-        if primitives then Tag[Int] else Tag[Int16]
+        if primitives then Tag[PrimitiveInt] else Tag[Int16]
       case "uint24" =>
-        if primitives then Tag[Int] else Tag[UInt24]
+        if primitives then Tag[PrimitiveInt] else Tag[UInt24]
       case "int24" =>
-        if primitives then Tag[Int] else Tag[Int24]
+        if primitives then Tag[PrimitiveInt] else Tag[Int24]
       case "uint32" =>
-        if primitives then Tag[Long] else Tag[UInt32]
+        if primitives then Tag[PrimitiveLong] else Tag[UInt32]
       case "int32" =>
-        if primitives then Tag[Int] else Tag[Int32]
+        if primitives then Tag[PrimitiveInt] else Tag[Int32]
       case "uint40" =>
-        if primitives then Tag[Long] else Tag[UInt40]
+        if primitives then Tag[PrimitiveLong] else Tag[UInt40]
       case "int40" =>
-        if primitives then Tag[Long] else Tag[Int40]
+        if primitives then Tag[PrimitiveLong] else Tag[Int40]
       case "uint48" =>
-        if primitives then Tag[Long] else Tag[UInt48]
+        if primitives then Tag[PrimitiveLong] else Tag[UInt48]
       case "int48" =>
-        if primitives then Tag[Long] else Tag[Int48]
+        if primitives then Tag[PrimitiveLong] else Tag[Int48]
       case "uint56" =>
-        if primitives then Tag[Long] else Tag[UInt56]
+        if primitives then Tag[PrimitiveLong] else Tag[UInt56]
       case "int56" =>
-        if primitives then Tag[Long] else Tag[Int56]
+        if primitives then Tag[PrimitiveLong] else Tag[Int56]
       case "uint64" =>
-        if primitives then Tag[Long] else Tag[UInt64]
+        Tag[UInt64]
       case "int64" =>
-        if primitives then Tag[Long] else Tag[Int64]
+        if primitives then Tag[PrimitiveLong] else Tag[Int64]
       case "uint72" =>
         Tag[UInt72]
       case "int72" =>

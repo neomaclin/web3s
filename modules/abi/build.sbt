@@ -2,4 +2,4 @@ import Dependencies._
 
 name := "abi"
 
-libraryDependencies ++= cats ++ reflection
+libraryDependencies ++= cats ++ reflection ++ scalaTest

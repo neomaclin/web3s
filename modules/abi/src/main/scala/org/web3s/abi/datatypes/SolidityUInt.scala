@@ -7,7 +7,7 @@ object SolidityUInt:
   val TYPE_NAME = "uint"
   val DEFAULT = new SolidityUInt(BigInt(0))
 
-  def encode(value: SolidityUInt): String = NumericType.encode(value)
+  //def encode(value: SolidityUInt): String = NumericType.encode(value)
 
   // def decode(input: String, offset: Int): Int =
   //   val inputSubStr =  input.substring(offset, offset + Bool.MAX_BYTE_LENGTH_FOR_HEX_STRING)
