@@ -1,6 +1,7 @@
 package org.web3s.abi.datatypes
 
 
+import org.web3s.abi.Encodable
 import org.web3s.abi.datatypes.*
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 import org.web3s.utils.Numeric
@@ -9,7 +10,9 @@ import org.web3s.utils.Numeric
  * Address type, which by default is equivalent to uint160 which follows the Ethereum specification.
  */
 object Address:
-  
+
+  given Encodable[Address] = Address.encode(_)
+
   val TYPE_NAME = "address"
   val DEFAULT_LENGTH = 160
   val DEFAULT = new Address(BigInt(0))
@@ -23,6 +26,7 @@ object Address:
   def encode(value: Address): String = NumericType.encode(value.toUInt)
   
 end Address
+
 
 class Address(_value: SolidityUInt) extends SolidityType[String] :
 

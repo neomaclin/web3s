@@ -2,6 +2,7 @@ package org.web3s.abi.datatypes
 
 import izumi.reflect.Tag
 
+
 class DynamicStruct[T <: SolidityType[_] : Tag](override val value: List[T]) extends DynamicArray[T](value) with StructType {
 
   def this(value: T*) = this(List(value*))

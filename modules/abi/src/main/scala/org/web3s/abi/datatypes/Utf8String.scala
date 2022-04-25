@@ -1,11 +1,14 @@
 
 package org.web3s.abi.datatypes
 
-import org.web3s.abi.datatypes
+import org.web3s.abi.{Encodable, datatypes}
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 
 /** UTF-8 encoded string type. */
 object Utf8String:
+
+  given Encodable[Utf8String] = Utf8String.encode(_)
+
   val TYPE_NAME = "string"
   val DEFAULT = new Utf8String("")
   

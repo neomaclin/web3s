@@ -1,7 +1,6 @@
 package org.web3s.abit.datatypes
 
-import org.web3s.abi.datatypes.Bool
-
+import org.web3s.abi.datatypes.{Bool, NumericType, SolidityInt}
 import org.scalatest.funsuite.AnyFunSuite
 
 class TypeDecoderTest extends AnyFunSuite :
@@ -19,6 +18,10 @@ class TypeDecoderTest extends AnyFunSuite :
     assert(Bool.decode("0000000000000000000000000000000000000000000000007fffffffffffffff" + "0000000000000000000000000000000000000000000000000000000000000000" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 64) == new Bool(false))
     assert(Bool.decode("0000000000000000000000000000000000000000000000007fffffffffffffff" + "0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 64) == new Bool(true))
   }
+  
+//  test("UintDecode"){
+//    val test = NumericType.decode[SolidityInt]("0000000000000000000000000000000000000000000000000000000000000000")
+//  }
 //
 //  def testUintDecode() = {
 //    assertEquals(TypeDecoder.instantiateType("uint", 123), new Nothing(BigInteger.valueOf(123)))

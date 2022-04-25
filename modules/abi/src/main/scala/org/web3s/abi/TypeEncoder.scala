@@ -1,6 +1,7 @@
 package org.web3s.abi
 
 import izumi.reflect.Tag
+import org.bouncycastle.util
 import org.web3s.abi.datatypes.*
 import org.web3s.abi.datatypes.SolidityType.MAX_BIT_LENGTH
 import org.web3s.utils.Numeric
@@ -9,11 +10,13 @@ import scala.collection.mutable
 
 object TypeEncoder:
 
-  def isDynamic[T:Tag]: Boolean = Tag[T].tag.toString match {
-    case "DynamicBytes" | "Utf8String" | "DynamicArray" => true
-    case "StaticArray" | "DynamicStruct" => true
-    case _ => false
-  }
+  def encode[T <: SolidityType[_] : Tag](using Encodable[T])(value: T) =
+    summon[Encodable[T]].encode(value)
+//  def isDynamic[T:Tag]: Boolean = Tag[T].tag.toString match {
+//    case "DynamicBytes" | "Utf8String" | "DynamicArray" => true
+//    case "StaticArray" | "DynamicStruct" => true
+//    case _ => false
+//  }
     //  def encodeAddress(address: Address): String = encodeNumeric(address.toUint)
 //
 ////  def encodeNumeric(numericType: NumericType) = {

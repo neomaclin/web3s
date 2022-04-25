@@ -1,18 +1,14 @@
 package org.web3s.abi.datatypes
 
+import org.web3s.abi.Encodable
 import org.web3s.abi.datatypes.SolidityType.MAX_BIT_LENGTH
 
 object SolidityUInt:
   
   val TYPE_NAME = "uint"
   val DEFAULT = new SolidityUInt(BigInt(0))
-
-  //def encode(value: SolidityUInt): String = NumericType.encode(value)
-
-  // def decode(input: String, offset: Int): Int =
-  //   val inputSubStr =  input.substring(offset, offset + Bool.MAX_BYTE_LENGTH_FOR_HEX_STRING)
-  //   NumericType.decode(inputSubStr, offset).value.intValue
-  // end decode
+  
+  given Encodable[SolidityUInt] = NumericType.encode(_)
   
 end SolidityUInt
 

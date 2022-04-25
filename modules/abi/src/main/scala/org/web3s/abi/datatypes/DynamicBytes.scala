@@ -1,6 +1,7 @@
 
 package org.web3s.abi.datatypes
 
+import org.web3s.abi.Encodable
 import org.web3s.abi.TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING
 import org.web3s.utils.Numeric
 
@@ -12,6 +13,7 @@ object DynamicBytes:
   def encode(dynamicBytes: DynamicBytes): String =
     NumericType.encode(new SolidityUInt(BigInt(dynamicBytes.value.length))) ++  Bytes.encode(dynamicBytes)
 
+  given Encodable[DynamicBytes] = DynamicBytes.encode(_)
   // def decode(input: String, offset: Int): DynamicBytes =
   //   val encodedLength = SolidityUInt.decode(input, offset)
   //   val hexStringEncodedLength = encodedLength << 1

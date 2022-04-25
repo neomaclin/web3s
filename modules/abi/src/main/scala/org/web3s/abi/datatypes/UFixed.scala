@@ -1,11 +1,14 @@
 
 package org.web3s.abi.datatypes
 
+import org.web3s.abi.Encodable
 import org.web3s.abi.datatypes.FixedPointType.DEFAULT_BIT_LENGTH
 
 object UFixed:
   val TYPE_NAME = "ufixed"
   val DEFAULT = new UFixed(BigInt(0))
+  given Encodable[UFixed] = NumericType.encode(_)
+  
 end UFixed
 
 class UFixed(val mBitSize: Int,
@@ -20,3 +23,4 @@ class UFixed(val mBitSize: Int,
   override def valid(mBitSize: Int, nBitSize: Int, value: BigInt): Boolean = super.valid(mBitSize, nBitSize, value) && value.signum != -1
 
 end UFixed
+

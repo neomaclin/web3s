@@ -2,11 +2,14 @@
 package org.web3s.abi.datatypes
 
 import izumi.reflect.Tag
+import org.web3s.abi.Encodable
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 import org.web3s.utils.Numeric
 
 object Bytes:
   val TYPE_NAME = "bytes"
+
+  given Encodable[Bytes] = Bytes.encode(_)
 
   def encode(bytesType: BytesType): String =
     val value = bytesType.value
@@ -41,3 +44,4 @@ class Bytes(val byteSize: Int,
     length > 0 && length <= 32 && length == byteSize
 
 end Bytes
+

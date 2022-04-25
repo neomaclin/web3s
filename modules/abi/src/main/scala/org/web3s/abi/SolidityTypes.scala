@@ -232,7 +232,7 @@ object SolidityTypes:
   private val uintR = """UInt(\d*)""".r
   private val intR = """Int(\d*)""".r
 
-  def typeLengthOf[T <: NumericType :Tag]:Int =
+  def typeLengthOf[T <: NumericType : Tag]:Int =
     Tag[T].tag.toString match
       case uintR(size) => size.toInt
       case intR(size) => size.toInt

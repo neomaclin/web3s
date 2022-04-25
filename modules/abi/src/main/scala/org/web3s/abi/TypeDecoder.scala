@@ -14,11 +14,9 @@ object TypeDecoder:
   
   final val MAX_BYTE_LENGTH_FOR_HEX_STRING = MAX_BYTE_LENGTH << 1
 
-  def decode[T <: SolidityType[_]](using decoder: TypeDecoder[T])(data: String, offset: Int): T =
-    decoder.decode(data,offset)
+//  def decode[T <: SolidityType[_]](using decoder: TypeDecoder[T])(data: String, offset: Int): T =
+//    decoder.decode(data,offset)
 
-  def decode[T <: AnyVal](using decoder: PrimaryTypeDecoder[T])(data: String, offset: Int): T =
-    decoder.decode(data,offset)
 
 end TypeDecoder
 

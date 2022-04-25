@@ -1,10 +1,13 @@
 package org.web3s.abi.datatypes
 
+import org.web3s.abi.Encodable
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 import org.web3s.utils.Numeric
 
 
 object Bool:
+
+  given Encodable[Bool] = Bool.encode(_)
 
   val TYPE_NAME = "bool"
   val DEFAULT = new Bool(false)
