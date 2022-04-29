@@ -1,7 +1,7 @@
-package org.web3s.abit.datatypes
+package org.web3s.abit
 
-import org.web3s.abi.datatypes.{Bool, NumericType, SolidityInt}
 import org.scalatest.funsuite.AnyFunSuite
+import org.web3s.abi.datatypes.{Bool, NumericType, SolidityInt}
 
 class TypeDecoderTest extends AnyFunSuite :
 

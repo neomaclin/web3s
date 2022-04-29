@@ -10,8 +10,7 @@ object StaticArray:
   def encode[T <: SolidityType[_] : Tag : Encodable](value: DynamicStruct[T]): String =
     DynamicArray.encodeStructsArraysOffsets(value) ++ value.value.map(TypeEncoder.encode[T](_)).mkString
   
-
-    
+  
   def encode[T <: SolidityType[_] : Tag : Encodable](value: StaticArray[T]): String =
     value.value.map(TypeEncoder.encode[T](_)).mkString
 

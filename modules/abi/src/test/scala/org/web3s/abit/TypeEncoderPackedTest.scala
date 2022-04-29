@@ -1,11 +1,11 @@
 
-package org.web3s.abit.datatypes
-
+package org.web3s.abit
 
 import org.scalatest.funsuite.AnyFunSuite
-import org.web3s.abi.TypeEncoder
 import org.web3s.abi.datatypes.*
+import org.web3s.abi.datatypes.generated.*
 import org.web3s.abi.datatypes.primitive.*
+import org.web3s.abi.{Encodable, TypeEncoder}
 
 class TypeEncoderPackedTest extends AnyFunSuite :
   test("AddressEncodePacked"){
@@ -342,16 +342,16 @@ class TypeEncoderPackedTest extends AnyFunSuite :
 //    assert(TypeEncoder.encodePacked(minusOne), "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 //  }
 //
-//  test("StaticBytesEncodePacked"){
-//    val staticBytes = new Nothing(Array[Byte](0, 1, 2, 3, 4, 5))
-//    assert(TypeEncoder.encodePacked(staticBytes), "000102030405")
-//    val empty = new Nothing(Array[Byte](0))
-//    assert(TypeEncoder.encodePacked(empty), "00")
-//    val ones = new Nothing(Array[Byte](127))
-//    assert(TypeEncoder.encodePacked(ones), "7f")
-//    val dave = new Nothing("dave".getBytes)
-//    assert(TypeEncoder.encodePacked(dave), "64617665")
-//  }
+  test("StaticBytesEncodePacked"){
+    val staticBytes = new Bytes6(Array[Byte](0, 1, 2, 3, 4, 5))
+    assert(summon[Encodable[Bytes]].encodePacked(staticBytes) == "000102030405")
+    val empty = new Bytes1(Array[Byte](0))
+    assert(summon[Encodable[Bytes]].encodePacked(empty) == "00")
+    val ones = new Bytes1(Array[Byte](127))
+    assert(summon[Encodable[Bytes]].encodePacked(ones) == "7f")
+    val dave = new Bytes4("dave".getBytes)
+    assert(summon[Encodable[Bytes]].encodePacked(dave) == "64617665")
+  }
 //
   test("Utf8StringEncodePacked"){
     val string = new Utf8String("Hello, world!")

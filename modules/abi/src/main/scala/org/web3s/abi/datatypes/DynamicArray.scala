@@ -2,7 +2,7 @@ package org.web3s.abi.datatypes
 
 import izumi.reflect.Tag
 import izumi.reflect.macrortti.LightTypeTagUnpacker
-import org.web3s.abi.{Encodable, TypeEncoder}
+import org.web3s.abi.{Encodable, SolidityTypes, TypeEncoder}
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 import org.web3s.utils.Numeric
 
@@ -52,7 +52,8 @@ class DynamicArray[T <: SolidityType[_] : Tag](val values: List[T]) extends Soli
 
   override def bytes32PaddedLength: Int = super.bytes32PaddedLength + SolidityType.MAX_BYTE_LENGTH
 
-  override def getTypeAsString: String = values.map(_.getTypeAsString).mkString("[", ",", "]")
+  override def getTypeAsString: String =
+    SolidityTypes.getTypeAString[T] + values.map(_.getTypeAsString).mkString("[", ",", "]")
 
 
 end DynamicArray

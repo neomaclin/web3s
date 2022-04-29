@@ -13,3 +13,8 @@ object TypeEncoder:
 
   def encodePacked[T <: SolidityType[_] : Tag: Encodable](value: T): String = summon[Encodable[T]].encodePacked(value)
 
+//  def encode[T <: SolidityType[_] : Tag: Encodable, S[_]<:StaticArray[_]: EncodableSeq](values: S[T]): String = ???
+//
+//  def encodePacked[T <: SolidityType[_] : Tag: Encodable, S[_]<:StaticArray[_]: EncodableSeq](values: S[T]): String = ???
+
+

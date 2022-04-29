@@ -1,11 +1,12 @@
-package org.web3s.abit.datatypes
+package org.web3s.abit
 
 import org.scalatest.funsuite.AnyFunSuite
-import org.web3s.utils.Numeric
 import org.web3s.abi.TypeEncoder
 import org.web3s.abi.datatypes.*
 import org.web3s.abi.datatypes.generated.*
 import org.web3s.abi.datatypes.primitive.*
+import org.web3s.abit.datatypes.{Bar, Foo}
+import org.web3s.utils.Numeric
 
 class TypeEncoderTest extends AnyFunSuite :
   test("BoolEncode") {

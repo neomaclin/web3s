@@ -241,15 +241,65 @@ object SolidityTypes:
 
   def typeLengthInBytes[T <: NumericType: Tag]:Int = typeLengthOf[T] >> 3
     
-  //
-  //  /**
-  //   * Returns the provided class type as a string. In case of a struct, it will return the struct
-  //   * name. For the tuple notation of a struct, example ((string,UInt256)), think of taking an
-  //   * instance of the struct and calling the <code>instance.getTypeAsString()</code> method.
-  //   */
-  //  def getTypeAString(`type`: Class[_ <: Type[_]]): String = if (Tag[Utf8String] == `type`) "string"
-  //  else if (Tag[DynamicBytes] == `type`) "bytes"
-  //  else `type`.getSimpleName.toLowerCase
+
+  def getTypeAString[T:Tag]: String = Tag[T].tag.toString.toLowerCase match
+    case "utf8string" => "string"
+  
+    case other => other
+//
+//    case "string" =>
+//      Tag[Utf8String]
+//    case "bytes" =>
+//      Tag[DynamicBytes]
+//    case "byte" =>
+//      Tag[PrimitiveByte]
+//    case "char" =>
+//      Tag[PrimitiveChar]
+//    case "double" =>
+//      Tag[PrimitiveDouble]
+//    case "float" =>
+//      Tag[PrimitiveFloat]
+//    case "uint" =>
+//      Tag[SolidityUInt]
+//    case "short" =>
+//      Tag[PrimitiveShort]
+//    case "int" =>
+//      Tag[PrimitiveInt]
+//    case "long" =>
+//      Tag[PrimitiveLong]
+//    case "uint8" =>
+//      Tag[UInt8]
+//    case "int8" =>
+//      if primitives then Tag[PrimitiveShort] else Tag[Int8]
+//    case "uint16" =>
+//      if primitives then Tag[PrimitiveInt] else Tag[UInt16]
+//    case "int16" =>
+//      if primitives then Tag[PrimitiveInt] else Tag[Int16]
+//    case "uint24" =>
+//      if primitives then Tag[PrimitiveInt] else Tag[UInt24]
+//    case "int24" =>
+//      if primitives then Tag[PrimitiveInt] else Tag[Int24]
+//    case "uint32" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[UInt32]
+//    case "int32" =>
+//      if primitives then Tag[PrimitiveInt] else Tag[Int32]
+//    case "uint40" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[UInt40]
+//    case "int40" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[Int40]
+//    case "uint48" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[UInt48]
+//    case "int48" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[Int48]
+//    case "uint56" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[UInt56]
+//    case "int56" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[Int56]
+//    case "uint64" =>
+//      Tag[UInt64]
+//    case "int64" =>
+//      if primitives then Tag[PrimitiveLong] else Tag[Int64]
+
 
 
 end SolidityTypes
