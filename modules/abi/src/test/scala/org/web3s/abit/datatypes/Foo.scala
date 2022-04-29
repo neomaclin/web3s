@@ -7,5 +7,6 @@ import org.web3s.abi.datatypes.{DynamicArray, DynamicStruct, StaticArray, Utf8St
 final case class Foo(id: String, name: String) extends DynamicStruct[Utf8String](new Utf8String(id),new Utf8String(name))
 
 object Foo:
-  given Encodable[Foo] = StaticArray.encode(_)
-  
+  given Encodable[Foo] = new Encodable[Foo]:
+    override def encode(value: Foo): String = StaticArray.encode(value)
+    override def encodePacked(value: Foo): String = StaticArray.encode(value)

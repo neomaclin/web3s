@@ -1,13 +1,22 @@
 package org.web3s.abi.datatypes
 
-import org.web3s.abi.Encodable
+import izumi.reflect.Tag
+import org.web3s.abi.{Decodable, Encodable, datatypes}
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
 import org.web3s.utils.Numeric
 
 
+
 object Bool:
 
-  given Encodable[Bool] = Bool.encode(_)
+  given Encodable[Bool] = new Encodable[Bool]:
+    override def encode(value: Bool): String = Bool.encode(value)
+    override def encodePacked(value: Bool): String = Bool.encode(value).substring(62, 64)
+  
+  given Decodable[Bool] = new Decodable[Bool]:
+    override def decode(data: String, offset: Int): Bool = Bool.decode(data, offset)
+
+
 
   val TYPE_NAME = "bool"
   val DEFAULT = new Bool(false)

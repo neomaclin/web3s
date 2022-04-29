@@ -1,9 +1,10 @@
 package org.web3s.abi.datatypes
 
 
-import org.web3s.abi.Encodable
+import org.web3s.abi.{Decodable, Encodable}
 import org.web3s.abi.datatypes.*
 import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
+import org.web3s.abi.datatypes.generated.UInt160
 import org.web3s.utils.Numeric
 
 /**
@@ -11,17 +12,19 @@ import org.web3s.utils.Numeric
  */
 object Address:
 
-  given Encodable[Address] = Address.encode(_)
+  given Encodable[Address] = new Encodable[Address]:
+    override def encode(value: Address): String = Address.encode(value)
+    override def encodePacked(value: Address): String =
+      Address.encode(value).substring(64 - value.toUInt.bitSize / 4, 64)
+
+  given Decodable[Address] = new Decodable[Address]:
+    override def decode(data: String, offset: Int):Address = Address.decode(data,offset)
 
   val TYPE_NAME = "address"
   val DEFAULT_LENGTH = 160
   val DEFAULT = new Address(BigInt(0))
 
-//  def decode(rawInput: String, offset: Int): Bool =
-//    val input = rawInput.substring(offset, offset + Bool.MAX_BYTE_LENGTH_FOR_HEX_STRING)
-//    val numericValue = Numeric.toBigInt(input)
-//    new Bool(numericValue == BigInt(1))
-//  end decode
+  def decode(rawInput: String, offset: Int): Address = new Address(SolidityUInt.decode[UInt160](rawInput, offset))
 
   def encode(value: Address): String = NumericType.encode(value.toUInt)
   

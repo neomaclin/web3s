@@ -7,24 +7,26 @@ import org.web3s.utils.Numeric
 
 object DynamicBytes:
 
+  given Encodable[DynamicBytes] = new Encodable[DynamicBytes] :
+    override def encode(value: DynamicBytes): String = DynamicBytes.encode(value)
+    override def encodePacked(value: DynamicBytes): String = DynamicBytes.encode(value).substring(64)
+
   val TYPE_NAME = "bytes"
   val DEFAULT = new DynamicBytes(Array.empty[Byte])
 
   def encode(dynamicBytes: DynamicBytes): String =
     NumericType.encode(new SolidityUInt(BigInt(dynamicBytes.value.length))) ++  Bytes.encode(dynamicBytes)
-
-  given Encodable[DynamicBytes] = DynamicBytes.encode(_)
-  // def decode(input: String, offset: Int): DynamicBytes =
-  //   val encodedLength = SolidityUInt.decode(input, offset)
-  //   val hexStringEncodedLength = encodedLength << 1
-
-  //   val valueOffset = offset + MAX_BYTE_LENGTH_FOR_HEX_STRING
-  //   val data = input.substring(valueOffset, valueOffset + hexStringEncodedLength)
-  //   val bytes = Numeric.hexStringToByteArray(data)
-
-  //   new DynamicBytes(bytes)
-  // end decode
   
+  def decode(input: String, offset: Int): DynamicBytes =
+    val encodedLength = SolidityUInt.decode[SolidityUInt](input, 0).value.intValue()
+    val hexStringEncodedLength = encodedLength << 1
+
+    val valueOffset = offset + MAX_BYTE_LENGTH_FOR_HEX_STRING
+    val data = input.substring(valueOffset, valueOffset + hexStringEncodedLength)
+    val bytes = Numeric.hexStringToByteArray(data)
+
+    new DynamicBytes(bytes)
+  end decode
 
 end DynamicBytes
 

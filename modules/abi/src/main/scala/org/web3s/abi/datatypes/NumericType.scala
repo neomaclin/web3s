@@ -6,8 +6,12 @@ import org.web3s.abi.datatypes.SolidityType.{MAX_BIT_LENGTH, MAX_BYTE_LENGTH}
 import org.web3s.utils.Numeric
 
 object NumericType:
-  given Encodable[NumericType] = NumericType.encode(_)
-  
+
+  given Encodable[NumericType] = new Encodable[NumericType] :
+    override def encode(value: NumericType): String = NumericType.encode(value)
+
+    override def encodePacked(value: NumericType): String = NumericType.encode(value).substring(64 - value.bitSize / 4, 64)
+
   def encode(numericType: NumericType): String =
     def toByteArray(numericType: NumericType): Array[Byte] =
       numericType match
@@ -29,17 +33,16 @@ object NumericType:
     Numeric.toHexStringNoPrefix(paddedRawValue)
   end encode
 
-
-//  def decode[T <: NumericType : Tag](input: String): T =
-//    val inputByteArray = Numeric.hexStringToByteArray(input)
-//    val typeLengthAsBytes = SolidityTypes.typeLengthInBytes[T]
-//    val resultByteArray = new Array[Byte](typeLengthAsBytes + 1)
-//
-//    val valueOffset = SolidityType.MAX_BYTE_LENGTH - typeLengthAsBytes
-//    Array.copy(inputByteArray, valueOffset, resultByteArray, 1, typeLengthAsBytes)
-//    val numericValue = BigInt(resultByteArray)
-//
-//  end decode
+  //  def decode[T <: NumericType : Tag](input: String): T =
+  //    val inputByteArray = Numeric.hexStringToByteArray(input)
+  //    val typeLengthAsBytes = SolidityTypes.typeLengthInBytes[T]
+  //    val resultByteArray = new Array[Byte](typeLengthAsBytes + 1)
+  //
+  //    val valueOffset = SolidityType.MAX_BYTE_LENGTH - typeLengthAsBytes
+  //    Array.copy(inputByteArray, valueOffset, resultByteArray, 1, typeLengthAsBytes)
+  //    val numericValue = BigInt(resultByteArray)
+  //
+  //  end decode
 
 
 end NumericType

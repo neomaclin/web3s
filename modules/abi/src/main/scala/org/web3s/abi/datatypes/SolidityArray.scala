@@ -11,7 +11,7 @@ object SolidityArray:
   //   value.value.map(TypeEncoder.encode[T](_)).mkString
   // end encode
 
-//  def decode[T <: SolidityType[_] : Tag](encoded: String): SolidityArray[T] =
+//  def decode[T <: SolidityArray[_] : Tag](encoded: String): SolidityArray[T] =
 //
 //  end decode
 

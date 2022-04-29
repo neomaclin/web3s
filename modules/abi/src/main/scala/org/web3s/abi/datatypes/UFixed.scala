@@ -7,7 +7,10 @@ import org.web3s.abi.datatypes.FixedPointType.DEFAULT_BIT_LENGTH
 object UFixed:
   val TYPE_NAME = "ufixed"
   val DEFAULT = new UFixed(BigInt(0))
-  given Encodable[UFixed] = NumericType.encode(_)
+
+  given Encodable[UFixed] = new Encodable[UFixed]:
+    override def encode(value: UFixed): String = NumericType.encode(value)
+    override def encodePacked(value: UFixed): String = NumericType.encode(value)
   
 end UFixed
 

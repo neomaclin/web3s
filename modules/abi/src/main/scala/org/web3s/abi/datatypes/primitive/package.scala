@@ -5,8 +5,9 @@ import org.web3s.abi.datatypes.generated.*
 
 package primitive:
 
-  import scala.reflect.Typeable
+  import org.web3s.abi.Encodable
 
+  import scala.reflect.Typeable
 
   sealed trait PrimitiveType[T <: AnyVal] extends SolidityType[T]
 
@@ -64,7 +65,24 @@ package primitive:
         case x: Char =>  Utf8String.encode(x.toSolidityType)
         case x: Double =>  throw new UnsupportedOperationException("Type cannot be encoded: Double")
         case x: Float =>  throw new  UnsupportedOperationException("Type cannot be encoded: Float")
+    end encode
 
+    def encodePacked[T <:AnyVal: Typeable](v: PrimitiveType[T]): String =
+      v.value match
+        case x: Byte =>  summon[Encodable[Bytes]].encodePacked(x.toSolidityType)
+        case x: Short => summon[Encodable[NumericType]].encodePacked(x.toSolidityType)
+        case x: Int =>  summon[Encodable[NumericType]].encodePacked(x.toSolidityType)
+        case x: Long =>  summon[Encodable[NumericType]].encodePacked(x.toSolidityType)
+        case x: Char =>  summon[Encodable[Utf8String]].encodePacked(x.toSolidityType)
+        case x: Double =>  throw new UnsupportedOperationException("Type cannot be encoded: Double")
+        case x: Float =>  throw new  UnsupportedOperationException("Type cannot be encoded: Float")
+    end encodePacked
+
+//    given Encodable[PrimitiveType[AnyVal]] = new Encodable[PrimitiveType[AnyVal]]:
+//      override def encode(value: PrimitiveType[AnyVal]): String = PrimitiveType.encode(value)
+//      override def encodePacked(value: PrimitiveType[AnyVal]): String = PrimitiveType.encode(value).substring(62, 64)
+
+  end PrimitiveType
 
 end primitive
 
