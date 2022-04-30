@@ -12,12 +12,14 @@ object AbiTypesGenerator extends Generator with IOApp :
   val destDir =
     (System.getProperty("user.dir") + "/modules/abi/src/main/scala/" + packageName.replace('.', '/')).replace('/', File.separatorChar) + File.separatorChar
   
-  override def run(args: List[String]): IO[ExitCode] = for {
-    _ <- write[IO](generateIntTypes, destDir)
-    _ <- write[IO](generateUIntTypes, destDir)
-    _ <- write[IO](generateBytesTypes, destDir)
-    _ <- write[IO](generateStaticArrayTypes, destDir)
-  } yield ExitCode.Success
+  override def run(args: List[String]): IO[ExitCode] = 
+    for 
+      _ <- write[IO](generateIntTypes, destDir)
+      _ <- write[IO](generateUIntTypes, destDir)
+      _ <- write[IO](generateBytesTypes, destDir)
+      _ <- write[IO](generateStaticArrayTypes, destDir)
+    yield 
+      ExitCode.Success
 
   def generateIntTypes[F[_] : Files : Concurrent]: Stream[F, (String, String)] =
     def intTemplate(size: Int): (String, String) =

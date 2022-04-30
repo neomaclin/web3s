@@ -40,20 +40,19 @@ object DynamicArray:
         case _ =>
           if chain.values.exists(_.map(_.ref.name).exists(_.endsWith("DynamicStruct"))) then encodeStructsArraysOffsets(value)
           else ""
-    val content = value.value.map(TypeEncoder.encode[T](_)).mkString
+    val content = value.values.map(TypeEncoder.encode[T](_)).mkString
     size ++ offset ++ content
 
 end DynamicArray
 
 
-class DynamicArray[T <: SolidityType[_] : Tag](val values: List[T]) extends SolidityArray[T](values) :
+class DynamicArray[T <: SolidityType[_] : Tag](override val values: List[T]) extends SolidityArray[T](values) :
 
   def this(values: T*) = this(List(values *))
 
   override def bytes32PaddedLength: Int = super.bytes32PaddedLength + SolidityType.MAX_BYTE_LENGTH
 
-  override def getTypeAsString: String =
-    SolidityTypes.getTypeAString[T] + values.map(_.getTypeAsString).mkString("[", ",", "]")
+  override def getTypeAsString: String = SolidityTypes.getTypeAString[T] + "[]"
 
 
 end DynamicArray

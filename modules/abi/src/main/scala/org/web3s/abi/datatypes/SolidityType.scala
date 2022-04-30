@@ -13,5 +13,15 @@ trait SolidityType[+T]:
   def value: T
 
   def getTypeAsString: String
-  
+
 end SolidityType
+
+trait SoliditySeqType[+T] extends SolidityType[T]:
+
+  def values: List[T]
+
+  override def value: T = values.head
+
+  def getTypeAsString: String
+
+end SoliditySeqType

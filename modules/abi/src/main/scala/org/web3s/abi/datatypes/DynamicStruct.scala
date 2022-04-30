@@ -3,11 +3,12 @@ package org.web3s.abi.datatypes
 import izumi.reflect.Tag
 
 
-class DynamicStruct[T <: SolidityType[_] : Tag](override val value: List[T]) extends DynamicArray[T](value) with StructType {
+class DynamicStruct[T <: SolidityType[_] : Tag](override val values: List[T]) extends DynamicArray[T](values) with StructType {
 
-  def this(value: T*) = this(List(value*))
+  def this() = this(Nil)
+  def this(values: T*) = this(List(values*))
 
   override def bytes32PaddedLength: Int = super.bytes32PaddedLength + 32
 
-  override def getTypeAsString: String = value.map(_.getTypeAsString).mkString("(", ",", ")")
+  override def getTypeAsString: String = values.map(_.getTypeAsString).mkString("(", ",", ")")
 }

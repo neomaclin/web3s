@@ -440,7 +440,7 @@ class TypeEncoderTest extends AnyFunSuite :
   }
   test("DynamicArray") {
 
-    val array = new DynamicArray[SolidityUInt](new SolidityUInt(BigInt(1)), new SolidityUInt(BigInt(2)), new SolidityUInt(BigInt(3)))
+    val array = new DynamicArray[NumericType](new SolidityUInt(BigInt(1)), new SolidityUInt(BigInt(2)), new SolidityUInt(BigInt(3)))
     assert(DynamicArray.encode(array) == "0000000000000000000000000000000000000000000000000000000000000003" + "0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000000000000000000002" + "0000000000000000000000000000000000000000000000000000000000000003")
   }
 
@@ -466,7 +466,7 @@ class TypeEncoderTest extends AnyFunSuite :
   }
 
   test("EmptyArray") {
-    val array = new DynamicArray[SolidityUInt](Nil)
+    val array = new DynamicArray[NumericType](Nil)
     assert(DynamicArray.encode(array) == "0000000000000000000000000000000000000000000000000000000000000000")
   }
 

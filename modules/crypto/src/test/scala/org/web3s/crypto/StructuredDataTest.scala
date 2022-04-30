@@ -152,7 +152,7 @@ class StructuredDataTest extends AnyFunSuite :
     // [[1, 2, 3], [4, 5, 6]]
     val testArrayData1 = List(List(1, 2, 3), List(4, 5, 6))
     val expectedDimensions1 = List(2, 3)
-    assert(dataEncoder.getArrayDimensionsFromData(testArrayData1) sameElements expectedDimensions1)
+    assert(dataEncoder.getArrayDimensionsFromData(testArrayData1) == expectedDimensions1)
 
     // [[1, 2, 3]]
     val testArrayData2 = List(List(1, 2, 3))

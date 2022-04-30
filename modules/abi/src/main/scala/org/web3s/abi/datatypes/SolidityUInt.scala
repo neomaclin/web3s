@@ -33,9 +33,9 @@ object SolidityUInt:
   given Decodable[SolidityUInt] = new Decodable[SolidityUInt]:
     override def decode(data: String, offset: Int): SolidityUInt = SolidityUInt.decode(data, offset)
 
-  given Encodable[SolidityUInt] = new Encodable[SolidityUInt]:
-    override def encode(value: SolidityUInt): String = summon[Encodable[NumericType]].encode(value)
-    override def encodePacked(value: SolidityUInt): String = summon[Encodable[NumericType]].encodePacked(value)
+//  given Encodable[SolidityUInt] = new Encodable[SolidityUInt]:
+//    override def encode(value: SolidityUInt): String = summon[Encodable[NumericType]].encode(value)
+//    override def encodePacked(value: SolidityUInt): String = summon[Encodable[NumericType]].encodePacked(value)
 
 end SolidityUInt
 

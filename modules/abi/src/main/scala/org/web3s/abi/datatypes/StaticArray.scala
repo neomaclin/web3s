@@ -8,21 +8,24 @@ import org.web3s.utils.Numeric
 object StaticArray:
   
   def encode[T <: SolidityType[_] : Tag : Encodable](value: DynamicStruct[T]): String =
-    DynamicArray.encodeStructsArraysOffsets(value) ++ value.value.map(TypeEncoder.encode[T](_)).mkString
+    DynamicArray.encodeStructsArraysOffsets(value) ++ value.values.map(TypeEncoder.encode[T](_)).mkString
   
   
   def encode[T <: SolidityType[_] : Tag : Encodable](value: StaticArray[T]): String =
-    value.value.map(TypeEncoder.encode[T](_)).mkString
+    value.values.map(TypeEncoder.encode[T](_)).mkString
+
+  def encodePacked[T <: SolidityType[_] : Tag : Encodable](value: StaticArray[T]): String =
+      value.values.map(TypeEncoder.encode[T](_)).mkString
 
 end StaticArray
 
 abstract class StaticArray[+T <: SolidityType[_] : Tag](expectedSize: Int,
-                                                       override val value: List[T]
-                                                      ) extends SolidityArray[T](value) :
+                                                       override val values: List[T]
+                                                      ) extends SolidityArray[T](values) :
 
-  require(value.size <= SolidityArray.MAX_SIZE_OF_STATIC_ARRAY, "Static arrays with a length greater than " + SolidityArray.MAX_SIZE_OF_STATIC_ARRAY + " are not supported.")
+  require(values.size <= SolidityArray.MAX_SIZE_OF_STATIC_ARRAY, "Static arrays with a length greater than " + SolidityArray.MAX_SIZE_OF_STATIC_ARRAY + " are not supported.")
 
-  require(value.size == expectedSize, "Expected array of type [" + getClass.getSimpleName + "] to have [" + expectedSize + "] elements.")
+  require(values.size == expectedSize, "Expected array of type [" + getClass.getSimpleName + "] to have [" + expectedSize + "] elements.")
 
   def this(expectedSize: Int, value: T*) = this(expectedSize, List(value *))
 

@@ -244,7 +244,8 @@ object SolidityTypes:
 
   def getTypeAString[T:Tag]: String = Tag[T].tag.toString.toLowerCase match
     case "utf8string" => "string"
-  
+    case "solidityuint" => "uint"
+    case "solidityint" => "int"
     case other => other
 //
 //    case "string" =>
