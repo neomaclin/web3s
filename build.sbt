@@ -1,17 +1,27 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "3.1.1"
+ThisBuild / scalaVersion := "3.1.3"
 
-lazy val utils = project in file("modules/utils")
+lazy val utils = project
 
-lazy val abi = (project in file("modules/abi")).dependsOn(utils)
-lazy val rlp = (project in file("modules/rlp")).dependsOn(utils)
-lazy val crypto = (project in file("modules/crypto")).dependsOn(utils,rlp,abi)
-lazy val codegen = (project in file("modules/codegen")).dependsOn(utils,rlp,abi)
-lazy val core = (project in file("modules/core")).dependsOn(crypto,abi)
+lazy val abi = project.dependsOn(utils)
+lazy val rlp = project.dependsOn(utils)
+lazy val crypto = project.dependsOn(utils,rlp,abi)
+lazy val codegen = project.dependsOn(utils,rlp,abi)
+
+lazy val core =  (project in file("protocols/core")).dependsOn(crypto,abi)
+
+lazy val besu = (project in file("protocols/besu")).dependsOn(core).dependsOn(crypto,abi)
+lazy val eea = (project in file("protocols/eea")).dependsOn(core).dependsOn(crypto,abi)
+lazy val geth = (project in file("protocols/geth")).dependsOn(core).dependsOn(crypto,abi)
+lazy val parity = (project in file("protocols/parity")).dependsOn(core).dependsOn(crypto,abi)
+lazy val providers = (project in file("protocols/providers")).dependsOn(core).dependsOn(crypto,abi)
+
+
+lazy val contracts = project.dependsOn(core)
 lazy val root = (project in file("."))
-  .dependsOn(core)
-  .aggregate(utils,abi,rlp,crypto,codegen,core)
+  .aggregate(besu,eea,geth,parity,providers,core)
+  .aggregate(utils,abi,rlp,crypto,codegen)
   .settings(
     name := "web3s"
   )

@@ -6,3 +6,6 @@
 **/target/
 **/**/*.class
 **/**/*.bin
+**/**/*.java
+**/**/*.gradle
+.gradle
