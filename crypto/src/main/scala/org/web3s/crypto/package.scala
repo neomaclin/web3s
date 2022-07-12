@@ -48,7 +48,7 @@ package crypto:
 
     def isCanonical: Boolean = s.compareTo(Sign.HALF_CURVE_ORDER) <= 0
 
-    def toCanonicalised: ECDSASignature = 
+    def toCanonicalised: ECDSASignature =
       if (isCanonical) this else ECDSASignature(r, Sign.CURVE.getN.subtract(s.bigInteger))
     // If S is in the upper half of the number of valid points, then bring it back to
     // the lower half. Otherwise, imagine that

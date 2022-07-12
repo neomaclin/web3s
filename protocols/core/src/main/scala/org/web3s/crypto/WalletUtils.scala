@@ -1,18 +1,20 @@
-//package org.web3s.crypto
-//
-//import org.web3s.utils.Numeric
-//import org.web3s.crypto.Credentials
-//import org.web3s.crypto.exception.CipherException
-//import org.web3s.crypto.Keys._
-//import org.web3s.crypto.Bip32ECKeyPair.HARDENED_BIT
-//
-//import java.security.InvalidAlgorithmParameterException
-//import java.security.NoSuchAlgorithmException
-//import java.security.NoSuchProviderException
-//
-//object WalletUtils:
-//
-//  private val secureRandom = SecureRandomUtils.secureRandom
+package org.web3s.crypto
+
+import org.web3s.utils.Numeric
+import org.web3s.crypto.Credentials
+import org.web3s.crypto.exception.CipherException
+import org.web3s.crypto.Keys.*
+import org.web3s.crypto.Bip32ECKeyPair.HARDENED_BIT
+
+import java.security.InvalidAlgorithmParameterException
+import java.security.NoSuchAlgorithmException
+import java.security.NoSuchProviderException
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId, ZoneOffset}
+
+object WalletUtils:
+
+  private val secureRandom = SecureRandomUtils.secureRandom
 //
 //  @throws[NoSuchAlgorithmException]
 //  @throws[NoSuchProviderException]
@@ -107,14 +109,14 @@
 //    val seed = MnemonicUtils.generateSeed(mnemonic, password)
 //    Credentials.create(ECKeyPair.create(sha256(seed)))
 //  }
-//
-//
-//  private def getWalletFileName(walletFile: WalletFile) = {
-//    val format = DateTimeFormatter.ofPattern("'UTC--'yyyy-MM-dd'T'HH-mm-ss.nVV'--'")
-//    val now = ZonedDateTime.now(ZoneOffset.UTC)
-//    now.format(format) + walletFile.getAddress + ".json"
-//  }
-//
+
+
+  private def getWalletFileName(walletFile: Wallet.WalletFile) = {
+    val format = DateTimeFormatter.ofPattern("'UTC--'yyyy-MM-dd'T'HH-mm-ss.nVV'--'")
+    val now = LocalDateTime.now(ZoneId.ofOffset("UTC",ZoneOffset.UTC))
+    now.format(format) + walletFile.address + ".json"
+  }
+
 //  def defaultKeyDirectory: String = defaultKeyDirectory(System.getProperty("os.name"))
 //
 //  private def defaultKeyDirectory(osName1: String) = {
@@ -175,7 +177,7 @@
 //    val masterKeypair = Bip32ECKeyPair.generateKeyPair(seed)
 //    val bip44Keypair = generateBip44KeyPair(masterKeypair, testNet)
 //    Credentials.create(bip44Keypair)
-//
-//
-//end WalletUtils
-//
+
+
+end WalletUtils
+

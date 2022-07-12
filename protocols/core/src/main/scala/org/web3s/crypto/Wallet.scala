@@ -5,17 +5,16 @@ import org.bouncycastle.crypto.generators.{PKCS5S2ParametersGenerator, SCrypt}
 import org.bouncycastle.crypto.params.KeyParameter
 import org.web3s.crypto.Keys
 import org.web3s.utils.Numeric
-
 import org.web3s.utils.Numeric
 import org.web3s.crypto.Credentials
 import org.web3s.crypto.exception.CipherException
-import org.web3s.crypto.Keys._
+import org.web3s.crypto.Keys.*
 import org.web3s.crypto.Bip32ECKeyPair.HARDENED_BIT
+import org.web3s.crypto.SecureRandomUtils.secureRandom
 
 import java.security.InvalidAlgorithmParameterException
 import java.security.NoSuchAlgorithmException
 import java.security.NoSuchProviderException
-
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.{InvalidAlgorithmParameterException, InvalidKeyException, NoSuchAlgorithmException}
 import java.util.UUID
@@ -88,21 +87,20 @@ object Wallet:
   }
 
 
-  def generateRandomBytes(size: Int) = ???
-  //  {
-  //    val bytes = new Array[Byte](size)
-  //    secureRandom.nextBytes(bytes)
-  //    bytes
-  //  }
+  def generateRandomBytes(size: Int) =
+    val bytes = new Array[Byte](size)
+    secureRandom.nextBytes(bytes)
+    bytes
+
 
   def createWalletFile(
-            ecKeyPair: ECKeyPair,
-            cipherText: Array[Byte],
-            iv: Array[Byte],
-            salt: Array[Byte],
-            mac: Array[Byte],
-            _n: Int,
-            _p: Int): WalletFile =
+                        ecKeyPair: ECKeyPair,
+                        cipherText: Array[Byte],
+                        iv: Array[Byte],
+                        salt: Array[Byte],
+                        mac: Array[Byte],
+                        _n: Int,
+                        _p: Int): WalletFile =
     WalletFile(
       address = Keys.getAddress(ecKeyPair),
       crypto = Crypto(
@@ -128,9 +126,9 @@ object Wallet:
     System.arraycopy(derivedKey, 16, result, 0, 16)
     System.arraycopy(cipherText, 0, result, 16, cipherText.length)
     Hash.sha3(result)
- 
+
   @throws[CipherException]
-  def create(password: String, ecKeyPair: ECKeyPair, n: Int, p: Int) = 
+  def create(password: String, ecKeyPair: ECKeyPair, n: Int, p: Int) =
     val salt = generateRandomBytes(32)
     val derivedKey = generateDerivedScryptKey(password.getBytes(UTF_8), salt, n, R, p, DKLEN)
     val encryptKey = Arrays.copyOfRange(derivedKey, 0, 16)
@@ -139,7 +137,7 @@ object Wallet:
     val cipherText = performCipherOperation(Cipher.ENCRYPT_MODE, iv, encryptKey, privateKeyBytes)
     val mac = generateMac(derivedKey, cipherText)
     createWalletFile(ecKeyPair, cipherText, iv, salt, mac, n, p)
-  
+
   @throws[CipherException]
   def createStandard(password: String, ecKeyPair: ECKeyPair): WalletFile = create(password, ecKeyPair, N_STANDARD, P_STANDARD)
 
@@ -163,9 +161,9 @@ object Wallet:
     val cipherText: Array[Byte] = Numeric.hexStringToByteArray(crypto.ciphertext)
     val derivedKey = crypto.kdfparams match {
       case ScryptKdfParams(dklen: Int, n: Int, p: Int, r: Int, salt: String) =>
-         generateDerivedScryptKey(password.getBytes(UTF_8), Numeric.hexStringToByteArray(salt), n, r, p, dklen)
-      case Aes128CtrKdfParams(dklen: Int, c: Int, prf: String, salt: String)=>
-         generateAes128CtrDerivedKey(password.getBytes(UTF_8), Numeric.hexStringToByteArray(salt), c, prf)
+        generateDerivedScryptKey(password.getBytes(UTF_8), Numeric.hexStringToByteArray(salt), n, r, p, dklen)
+      case Aes128CtrKdfParams(dklen: Int, c: Int, prf: String, salt: String) =>
+        generateAes128CtrDerivedKey(password.getBytes(UTF_8), Numeric.hexStringToByteArray(salt), c, prf)
     }
 
     val derivedMac: Array[Byte] = generateMac(derivedKey, cipherText)

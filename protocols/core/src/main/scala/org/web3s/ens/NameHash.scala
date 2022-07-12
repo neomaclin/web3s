@@ -2,8 +2,12 @@ package org.web3s.ens
 
 import org.web3s.utils.Numeric
 import org.web3s.crypto.Hash
+
+import scala.util.{Failure, Success, Try}
 import java.util.Arrays
 import java.net.IDN
+import exceptions.EnsResolutionException
+
 object NameHash:
 
   private val EMPTY = new Array[Byte](32)
@@ -31,7 +35,14 @@ object NameHash:
    * @return normalised ens name
    * @throws EnsResolutionException if the name cannot be normalised
    */
-  def normalise(ensName: String): String = IDN.toASCII(ensName, IDN.USE_STD3_ASCII_RULES).toLowerCase
+  def normalise(ensName: String): String =
+    Try(
+      IDN.toASCII(ensName, IDN.USE_STD3_ASCII_RULES).toLowerCase
+    ) match
+      case Success(value) => value
+      case Failure(_) => throw new EnsResolutionException("Invalid ENS name provided: " + ensName)
+
+
 
    
   /**
