@@ -9,7 +9,7 @@ lazy val rlp = project.dependsOn(utils)
 lazy val crypto = project.dependsOn(utils,rlp,abi)
 lazy val codegen = project.dependsOn(utils,rlp,abi)
 
-lazy val core =  (project in file("protocols/core")).dependsOn(crypto,abi)
+lazy val core =  (project in file("protocols/core")).dependsOn(crypto  % "test->test;compile->compile" ,abi)
 
 lazy val besu = (project in file("protocols/besu")).dependsOn(core).dependsOn(crypto,abi)
 lazy val eea = (project in file("protocols/eea")).dependsOn(core).dependsOn(crypto,abi)

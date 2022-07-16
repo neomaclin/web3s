@@ -15,5 +15,3 @@ object SampleKeys:
   val KEY_PAIR: ECKeyPair = ECKeyPair(PRIVATE_KEY, PUBLIC_KEY)
   val CREDENTIALS: Credentials = Credentials.create(KEY_PAIR)
 
-end SampleKeys
-
