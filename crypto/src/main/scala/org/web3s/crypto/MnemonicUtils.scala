@@ -42,13 +42,13 @@ object MnemonicUtils:
    * @return Byte array representation of the entropy
    */
   def generateEntropy(mnemonic: String): Array[Byte] = {
-   // val bits = BitSet.empty
-    val (size,bits) = mnemonicToBits(mnemonic)
+    // val bits = BitSet.empty
+    val (size, bits) = mnemonicToBits(mnemonic)
     if (size == 0) throw new IllegalArgumentException("Empty mnemonic")
     val ent = 32 * size / 33
     if (ent % 8 != 0) throw new IllegalArgumentException("Wrong mnemonic size")
     val entropy = new Array[Byte](ent / 8)
-     entropy.indices foreach (i => entropy(i) = readByte(bits, i))
+    entropy.indices foreach (i => entropy(i) = readByte(bits, i))
     validateEntropy(entropy)
     val expectedChecksum = calculateChecksum(entropy)
     val actualChecksum = readByte(bits, entropy.length)
@@ -60,8 +60,7 @@ object MnemonicUtils:
 
   def generateSeed(mnemonic: String, passphraseOption: Option[String]): Array[Byte] = {
     if (isMnemonicEmpty(mnemonic)) throw new IllegalArgumentException("Mnemonic is required to generate a seed")
-    val passphrase = passphraseOption.getOrElse("")
-    val salt = String.format("mnemonic%s", passphrase)
+    val salt = "mnemonic%s".format(passphraseOption.getOrElse(""))
     val gen = new PKCS5S2ParametersGenerator(new SHA512Digest)
     gen.init(mnemonic.getBytes, salt.getBytes, SEED_ITERATIONS)
     gen.generateDerivedParameters(SEED_KEY_SIZE).asInstanceOf[KeyParameter].getKey
@@ -90,7 +89,7 @@ object MnemonicUtils:
     if (ent < 128 || ent > 256 || ent % 32 != 0) throw new IllegalArgumentException("The allowed size of ENT is 128-256 bits of " + "multiples of 32")
   end validateEntropy
 
-  private def convertToBits(initialEntropy: Array[Byte], checksum: Byte):Array[Boolean] =
+  private def convertToBits(initialEntropy: Array[Byte], checksum: Byte): Array[Boolean] =
     val ent = initialEntropy.length * 8
     val checksumLength = ent / 32
     val totalLength = ent + checksumLength
@@ -115,14 +114,14 @@ object MnemonicUtils:
 
   private def toBit(value: Byte, index: Int) = ((value >>> (7 - index)) & 1) > 0
 
-  private def toInt(bits: Array[Boolean]):Int =
+  private def toInt(bits: Array[Boolean]): Int =
     var value = 0
     for i <- bits.indices do if (bits(i)) value += 1 << bits.length - i - 1
     value
   end toInt
 
 
-  private def mnemonicToBits(mnemonic: String):(Int, java.util.BitSet) =
+  private def mnemonicToBits(mnemonic: String): (Int, java.util.BitSet) =
     var bit = 0
     val bitSet = new java.util.BitSet
     val vocabulary = getWords
@@ -136,7 +135,7 @@ object MnemonicUtils:
       for
         k <- 0 until 11
       do
-        bitSet.set(bit,isBitSet(index, 10 - k))
+        bitSet.set(bit, isBitSet(index, 10 - k))
         bit += 1
       end for
 
@@ -144,8 +143,8 @@ object MnemonicUtils:
   end mnemonicToBits
 
 
-  private def readByte(bits: java.util.BitSet, startByte: Int):Byte = {
-    var res:Byte = 0
+  private def readByte(bits: java.util.BitSet, startByte: Int): Byte = {
+    var res: Byte = 0
     for
       k <- 0 until 8
     do if (bits.get(startByte * 8 + k)) res = (res | (1 << (7 - k))).toByte

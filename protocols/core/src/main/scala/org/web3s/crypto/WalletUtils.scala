@@ -1,7 +1,12 @@
+
 package org.web3s.crypto
 
+import cats.effect.Concurrent
+import cats.syntax.functor._
 import org.web3s.utils.Numeric
+import org.web3s.crypto.Hash
 import org.web3s.crypto.Credentials
+import org.web3s.crypto.MnemonicUtils
 import org.web3s.crypto.exception.CipherException
 import org.web3s.crypto.Keys.*
 import org.web3s.crypto.Bip32ECKeyPair.HARDENED_BIT
@@ -10,174 +15,145 @@ import java.security.InvalidAlgorithmParameterException
 import java.security.NoSuchAlgorithmException
 import java.security.NoSuchProviderException
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZoneOffset}
+import java.time.{ZonedDateTime, ZoneId, ZoneOffset}
+import fs2.{Stream, hash, text}
+import fs2.io.file.{Files, Path}
+
+import scala.util.Try
 
 object WalletUtils:
 
+  import io.circe._
+  import io.circe.syntax._
+  import io.circe.parser._
+
   private val secureRandom = SecureRandomUtils.secureRandom
-//
-//  @throws[NoSuchAlgorithmException]
-//  @throws[NoSuchProviderException]
-//  @throws[InvalidAlgorithmParameterException]
-//  @throws[CipherException]
-//  def generateFullNewWalletFile(password: String, destinationDirectory: File): String = generateNewWalletFile(password, destinationDirectory, true)
-//
-//  @throws[NoSuchAlgorithmException]
-//  @throws[NoSuchProviderException]
-//  @throws[InvalidAlgorithmParameterException]
-//  @throws[CipherException]
-//  def generateLightNewWalletFile(password: String, destinationDirectory: File): String = generateNewWalletFile(password, destinationDirectory, false)
-//
-//  @throws[CipherException]
-//  @throws[InvalidAlgorithmParameterException]
-//  @throws[NoSuchAlgorithmException]
-//  @throws[NoSuchProviderException]
-//  def generateNewWalletFile(password: String, destinationDirectory: File): String = generateFullNewWalletFile(password, destinationDirectory)
-//
-//  @throws[CipherException]
-//  @throws[InvalidAlgorithmParameterException]
-//  @throws[NoSuchAlgorithmException]
-//  @throws[NoSuchProviderException]
-//  def generateNewWalletFile(password: String, destinationDirectory: File, useFullScrypt: Boolean): String =
-//    generateWalletFile(password, Keys.createEcKeyPair, destinationDirectory, useFullScrypt)
-//
-//  @throws[CipherException]
-//  def generateWalletFile(password: String, ecKeyPair: ECKeyPair, destinationDirectory: File, useFullScrypt: Boolean): String = {
-//    val walletFile =
-//      if useFullScrypt
-//        then Wallet.createStandard(password, ecKeyPair)
-//        else Wallet.createLight(password, ecKeyPair)
-//    val fileName = getWalletFileName(walletFile)
-//    val destination = new File(destinationDirectory, fileName)
-//
-//    fileName
-//  }
-//
-//  /**
-//   * Generates a BIP-39 compatible Ethereum wallet. The private key for the wallet can be
-//   * calculated using following algorithm:
-//   *
-//   * <pre>
-//   * Key = SHA-256(BIP_39_SEED(mnemonic, password))
-//   * </pre>
-//   *
-//   * @param password             Will be used for both wallet encryption and passphrase for BIP-39 seed
-//   * @param destinationDirectory The directory containing the wallet
-//   * @return A BIP-39 compatible Ethereum wallet
-//   * @throws CipherException if the underlying cipher is not available
-//   * @throws IOException     if the destination cannot be written to
-//   */
-//  @throws[CipherException]
-//  def generateBip39Wallet(password: String, destinationDirectory: File): Bip39Wallet = {
-//    val initialEntropy = new Array[Byte](16)
-//    secureRandom.nextBytes(initialEntropy)
-//    val mnemonic = MnemonicUtils.generateMnemonic(initialEntropy)
-//    val seed = MnemonicUtils.generateSeed(mnemonic, password)
-//    val privateKey = ECKeyPair.create(sha256(seed))
-//    val walletFile = generateWalletFile(password, privateKey, destinationDirectory, false)
-//    Bip39Wallet(walletFile, mnemonic)
-//  }
-//
-//  /**
-//   * Generates a BIP-39 compatible Ethereum wallet using a mnemonic passed as argument.
-//   *
-//   * @param password             Will be used for both wallet encryption and passphrase for BIP-39 seed
-//   * @param mnemonic             The mnemonic that will be used to generate the seed
-//   * @param destinationDirectory The directory containing the wallet
-//   * @return A BIP-39 compatible Ethereum wallet
-//   * @throws CipherException if the underlying cipher is not available
-//   * @throws IOException     if the destination cannot be written to
-//   */
-//  @throws[CipherException]
-//  def generateBip39WalletFromMnemonic(password: String, mnemonic: String, destinationDirectory: File): Bip39Wallet = {
-//    val seed = MnemonicUtils.generateSeed(mnemonic, password)
-//    val privateKey = ECKeyPair.create(sha256(seed))
-//    val walletFile = generateWalletFile(password, privateKey, destinationDirectory, false)
-//    Bip39Wallet(walletFile, mnemonic)
-//  }
-//
-//  @throws[CipherException]
-//  def loadCredentials(password: String, source: String): Credentials = loadCredentials(password, new File(source))
-//
-//  // @throws[CipherException]
-//  // def loadCredentials(password: String, source: File): Credentials = {
-//  //   val walletFile = objectMapper.readValue(source, classOf[WalletFile])
-//  //   Credentials.create(Wallet.decrypt(password, walletFile))
-//  // }
-//
-//  def loadBip39Credentials(password: String, mnemonic: String): Credentials = {
-//    val seed = MnemonicUtils.generateSeed(mnemonic, password)
-//    Credentials.create(ECKeyPair.create(sha256(seed)))
-//  }
+
+  def generateFullNewWalletFile[F[_] : Files : Concurrent](password: String, destinationDirectory: Path): F[Path] =
+    generateNewWalletFile(password, destinationDirectory, true)
+
+  def generateLightNewWalletFile[F[_] : Files : Concurrent](password: String, destinationDirectory: Path): F[Path] =
+    generateNewWalletFile(password, destinationDirectory, false)
+
+  def generateNewWalletFile[F[_] : Files : Concurrent](password: String, destinationDirectory: Path): F[Path] =
+    generateFullNewWalletFile(password, destinationDirectory)
+
+  def generateNewWalletFile[F[_] : Files : Concurrent](password: String,
+                                                       destinationDirectory: Path,
+                                                       useFullScrypt: Boolean): F[Path] =
+    generateWalletFile(password, Keys.createEcKeyPair, destinationDirectory, useFullScrypt)
+
+  def generateWalletFile[F[_] : Files : Concurrent](password: String,
+                                                    ecKeyPair: ECKeyPair,
+                                                    destinationDirectory: Path,
+                                                    useFullScrypt: Boolean): F[Path] =
+    val walletFile =
+      if useFullScrypt then Wallet.createStandard(password, ecKeyPair)
+      else Wallet.createLight(password, ecKeyPair)
+    val destination = destinationDirectory / getWalletFileName(walletFile)
+    Stream(walletFile)
+      .map(_.asJson.noSpaces)
+      .through(text.utf8.encode)
+      .through(Files[F].writeAll(destination))
+      .compile
+      .drain
+      .as(destination)
 
 
-  private def getWalletFileName(walletFile: Wallet.WalletFile) = {
+  def generateBip39Wallet[F[_] : Files : Concurrent](password: String,
+                                                     destinationDirectory: Path): F[Bip39Wallet] =
+    val initialEntropy = new Array[Byte](16)
+    secureRandom.nextBytes(initialEntropy)
+    val mnemonic = MnemonicUtils.generateMnemonic(initialEntropy)
+    val seed = MnemonicUtils.generateSeed(mnemonic, Some(password))
+    val privateKey = ECKeyPair.create(Hash.sha256(seed))
+    generateWalletFile(password, privateKey, destinationDirectory, false)
+      .map(path => Bip39Wallet(path.toString, mnemonic))
+
+
+  def generateBip39WalletFromMnemonic[F[_] : Files : Concurrent](password: String,
+                                                                 mnemonic: String,
+                                                                 destinationDirectory: Path): F[Bip39Wallet] =
+    val seed = MnemonicUtils.generateSeed(mnemonic, Some(password))
+    val privateKey = ECKeyPair.create(Hash.sha256(seed))
+    generateWalletFile(password, privateKey, destinationDirectory, false)
+      .map(path => Bip39Wallet(path.toString, mnemonic))
+
+
+  def loadCredentials[F[_] : Files : Concurrent](password: String, source: String): F[Option[Credentials]] =
+    loadCredentials(password, Path(source))
+
+  def loadCredentials[F[_] : Files : Concurrent](password: String, source: Path): F[Option[Credentials]] =
+    Files[F]
+      .readAll(source)
+      .through(text.utf8.decode)
+      .through(text.lines)
+      .map(decode[Wallet.WalletFile])
+      .map(_.map(walletFile => Credentials.create(Wallet.decrypt(password, walletFile))))
+      .flatMap(Stream.fromEither(_))
+      .compile
+      .last
+
+
+  def loadBip39Credentials(password: String, mnemonic: String): Credentials =
+    val seed = MnemonicUtils.generateSeed(mnemonic, Some(password))
+    Credentials.create(ECKeyPair.create(Hash.sha256(seed)))
+
+
+  private def getWalletFileName(walletFile: Wallet.WalletFile): String =
     val format = DateTimeFormatter.ofPattern("'UTC--'yyyy-MM-dd'T'HH-mm-ss.nVV'--'")
-    val now = LocalDateTime.now(ZoneId.ofOffset("UTC",ZoneOffset.UTC))
-    now.format(format) + walletFile.address + ".json"
-  }
+    val now = ZonedDateTime.now(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
+    walletFile.address.map(now.format(format) + _ + ".json").getOrElse("address-missing.json")
 
-//  def defaultKeyDirectory: String = defaultKeyDirectory(System.getProperty("os.name"))
-//
-//  private def defaultKeyDirectory(osName1: String) = {
-//    val osName = osName1.toLowerCase
-//    if (osName.startsWith("mac")) String.format("%s%sLibrary%sEthereum", System.getProperty("user.home"), File.separator, File.separator)
-//    else if (osName.startsWith("win")) String.format("%s%sEthereum", System.getenv("APPDATA"), File.separator)
-//    else String.format("%s%s.ethereum", System.getProperty("user.home"), File.separator)
-//  }
-//
-//  def testnetKeyDirectory: String = "%s%stestnet%skeystore".format(defaultKeyDirectory, File.separator, File.separator)
-//
-//  def mainnetKeyDirectory: String = "%s%skeystore".format(defaultKeyDirectory, File.separator)
-//
-//  def rinkebyKeyDirectory: String = "%s%srinkeby%skeystore".format(defaultKeyDirectory, File.separator, File.separator)
-//
-//  def isValidPrivateKey(privateKey: String): Boolean =
-//    Numeric.cleanHexPrefix(privateKey).length == PRIVATE_KEY_LENGTH_IN_HEX
-//
-//  def isValidAddress(input: String): Boolean =
-//    isValidAddress(input, ADDRESS_LENGTH_IN_HEX)
-//
-//  def isValidAddress(input: String, addressLength: Int): Boolean =
-//    val cleanInput = Numeric.cleanHexPrefix(input)
-//    Try(Numeric.toBigIntNoPrefix(cleanInput)).toOption.exist(_ => cleanInput.length == addressLength)
-//
-//
-//    /**
-//     * Generates a BIP-44 compatible Ethereum wallet on top of BIP-39 generated seed.
-//     *
-//     * @param password             Will be used for both wallet encryption and passphrase for BIP-39 seed
-//     * @param destinationDirectory The directory containing the wallet
-//     * @param testNet              should use the testNet derive path
-//     * @return A BIP-39 compatible Ethereum wallet
-//     * @throws CipherException if the underlying cipher is not available
-//     * @throws IOException     if the destination cannot be written to
-//     */
-//  @throws[CipherException]
-//  def generateBip44Wallet(password: String, destinationDirectory: File, testNet: Boolean = false): Bip39Wallet = {
-//    val initialEntropy = new Array[Byte](16)
-//    SecureRandomUtils.secureRandom.nextBytes(initialEntropy)
-//    val mnemonic = MnemonicUtils.generateMnemonic(initialEntropy)
-//    val seed = MnemonicUtils.generateSeed(mnemonic, null)
-//    val masterKeypair = Bip32ECKeyPair.generateKeyPair(seed)
-//    val bip44Keypair = generateBip44KeyPair(masterKeypair, testNet)
-//    val walletFile = generateWalletFile(password, bip44Keypair, destinationDirectory, false)
-//    Bip39Wallet(walletFile, mnemonic)
-//  }
-//
-//  def generateBip44KeyPair(master: Bip32ECKeyPair, testNet: Boolean = false): Bip32ECKeyPair =
-//    val path =
-//      if testNet
-//      then Array(44 | HARDENED_BIT, 0 | HARDENED_BIT, 0 | HARDENED_BIT, 0) // /m/44'/0'/0
-//      else Array(44 | HARDENED_BIT, 60 | HARDENED_BIT, 0 | HARDENED_BIT, 0, 0) // m/44'/60'/0'/0/0
-//    Bip32ECKeyPair.deriveKeyPair(master, path)
-//
-//  def loadBip44Credentials(password: String, mnemonic: String, testNet: Boolean = false):Credentials =
-//    val seed = MnemonicUtils.generateSeed(mnemonic, password)
-//    val masterKeypair = Bip32ECKeyPair.generateKeyPair(seed)
-//    val bip44Keypair = generateBip44KeyPair(masterKeypair, testNet)
-//    Credentials.create(bip44Keypair)
+  def defaultKeyDirectory: Path = defaultKeyDirectory(sys.env("os.name"))
+
+  private def defaultKeyDirectory(osName1: String): Path =
+    osName1.toLowerCase match
+      case osName if osName.startsWith("mac") => Path(sys.env("user.home")) / "Library" / "Ethereum"
+      case osName if osName.startsWith("win") => Path(sys.env("APPDATA")) / "Ethereum"
+      case _ => Path(sys.env("user.home")) / ".ethereum"
 
 
-end WalletUtils
+  def testnetKeyDirectory: Path = defaultKeyDirectory / "testnet" / "keystore"
+
+  def mainnetKeyDirectory: Path = defaultKeyDirectory / "keystore"
+
+  def rinkebyKeyDirectory: Path = defaultKeyDirectory / "rinkeby" / "keystore"
+
+  def isValidPrivateKey(privateKey: String): Boolean =
+    Numeric.cleanHexPrefix(privateKey).length == PRIVATE_KEY_LENGTH_IN_HEX
+
+  def isValidAddress(input: String): Boolean =
+    isValidAddress(input, ADDRESS_LENGTH_IN_HEX)
+
+  def isValidAddress(input: String, addressLength: Int): Boolean =
+    val cleanInput = Numeric.cleanHexPrefix(input)
+    Try(Numeric.toBigIntNoPrefix(cleanInput)).toOption.exists(_ => cleanInput.length == addressLength)
+
+  def generateBip44KeyPair(master: Bip32ECKeyPair, testNet: Boolean = false): Bip32ECKeyPair =
+    val path =
+      if testNet
+      then Array(44 | HARDENED_BIT, 0 | HARDENED_BIT, 0 | HARDENED_BIT, 0) // /m/44'/0'/0
+      else Array(44 | HARDENED_BIT, 60 | HARDENED_BIT, 0 | HARDENED_BIT, 0, 0) // m/44'/60'/0'/0/0
+    Bip32ECKeyPair.deriveKeyPair(master, path)
+
+  def loadBip44Credentials(password: String, mnemonic: String, testNet: Boolean = false): Credentials =
+    val seed = MnemonicUtils.generateSeed(mnemonic, Some(password))
+    val masterKeypair = Bip32ECKeyPair.generateKeyPair(seed)
+    val bip44Keypair = generateBip44KeyPair(masterKeypair, testNet)
+    Credentials.create(ECKeyPair(bip44Keypair.privateKey.getOrElse(BigInt(0)), bip44Keypair.publicKey))
+
+
+  def generateBip44Wallet[F[_] : Files : Concurrent](password: String,
+                                                     destinationDirectory: Path,
+                                                     testNet: Boolean = false): F[Bip39Wallet] =
+    val initialEntropy = new Array[Byte](16)
+    SecureRandomUtils.secureRandom.nextBytes(initialEntropy)
+    val mnemonic = MnemonicUtils.generateMnemonic(initialEntropy)
+    val seed = MnemonicUtils.generateSeed(mnemonic, None)
+    val masterKeypair = Bip32ECKeyPair.generateKeyPair(seed)
+    val bip44Keypair = generateBip44KeyPair(masterKeypair, testNet)
+    generateWalletFile(password, bip44Keypair.toECKeyPair, destinationDirectory, false)
+      .map(path => Bip39Wallet(path.toString, mnemonic))
+
 

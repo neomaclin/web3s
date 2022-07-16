@@ -17,8 +17,6 @@ package crypto:
 
   object SecureRandomUtils:
     def secureRandom = new SecureRandom
-  end SecureRandomUtils
-
 
   object Credentials:
 

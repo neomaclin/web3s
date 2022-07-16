@@ -1,16 +1,17 @@
 package org.web3s.crypto
 
+import cats.{Eq, Show}
 import org.bouncycastle.crypto.digests.SHA256Digest
 import org.bouncycastle.crypto.generators.{PKCS5S2ParametersGenerator, SCrypt}
 import org.bouncycastle.crypto.params.KeyParameter
 import org.web3s.crypto.Keys
-import org.web3s.utils.Numeric
 import org.web3s.utils.Numeric
 import org.web3s.crypto.Credentials
 import org.web3s.crypto.exception.CipherException
 import org.web3s.crypto.Keys.*
 import org.web3s.crypto.Bip32ECKeyPair.HARDENED_BIT
 import org.web3s.crypto.SecureRandomUtils.secureRandom
+import org.web3s.crypto.Wallet.KdfParams
 
 import java.security.InvalidAlgorithmParameterException
 import java.security.NoSuchAlgorithmException
@@ -24,6 +25,11 @@ import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 
 
 object Wallet:
+  import cats.syntax._
+  import cats.syntax.functor._
+  import io.circe.{ Decoder, Encoder }, io.circe.generic.semiauto._
+  import io.circe.syntax._
+  import cats.implicits._, cats._, cats.derived._
 
   private val N_LIGHT = 1 << 12
   private val P_LIGHT = 6
@@ -40,7 +46,7 @@ object Wallet:
   val AES_128_CTR = "pbkdf2"
   val SCRYPT = "scrypt"
 
-  final case class WalletFile(address: String,
+  final case class WalletFile(address: Option[String],
                               crypto: Crypto,
                               id: String,
                               version: Int)
@@ -68,7 +74,7 @@ object Wallet:
 
   @throws[CipherException]
   private def generateAes128CtrDerivedKey(password: Array[Byte], salt: Array[Byte], c: Int, prf: String) = {
-    if (!(prf == "hmac-sha256")) throw new CipherException("Unsupported prf:" + prf)
+    if prf =!= "hmac-sha256" then throw new CipherException("Unsupported prf:" + prf)
     val gen = new PKCS5S2ParametersGenerator(new SHA256Digest)
     gen.init(password, salt, c)
     gen.generateDerivedParameters(256).asInstanceOf[KeyParameter].getKey
@@ -102,7 +108,7 @@ object Wallet:
                         _n: Int,
                         _p: Int): WalletFile =
     WalletFile(
-      address = Keys.getAddress(ecKeyPair),
+      address = Some(Keys.getAddress(ecKeyPair)),
       crypto = Crypto(
         cipher = CIPHER,
         ciphertext = Numeric.toHexStringNoPrefix(cipherText),
@@ -125,7 +131,7 @@ object Wallet:
     val result = new Array[Byte](16 + cipherText.length)
     System.arraycopy(derivedKey, 16, result, 0, 16)
     System.arraycopy(cipherText, 0, result, 16, cipherText.length)
-    Hash.sha3(result)
+    org.web3s.crypto.Hash.sha3(result)
 
   @throws[CipherException]
   def create(password: String, ecKeyPair: ECKeyPair, n: Int, p: Int) =
@@ -145,15 +151,14 @@ object Wallet:
   def createLight(password: String, ecKeyPair: ECKeyPair): WalletFile = create(password, ecKeyPair, N_LIGHT, P_LIGHT)
 
   @throws[CipherException]
-  def validate(walletFile: WalletFile): Unit = {
+  def validate(walletFile: WalletFile): Unit =
     val crypto = walletFile.crypto
     if (walletFile.version != CURRENT_VERSION) throw new CipherException("Wallet version is not supported")
     if (!(crypto.cipher == CIPHER)) throw new CipherException("Wallet cipher is not supported")
     if (!(crypto.kdf == AES_128_CTR) && !(crypto.kdf == SCRYPT)) throw new CipherException("KDF type is not supported")
-  }
 
   @throws[CipherException]
-  def decrypt(password: String, walletFile: WalletFile): ECKeyPair = {
+  def decrypt(password: String, walletFile: WalletFile): ECKeyPair =
     validate(walletFile)
     val crypto: Crypto = walletFile.crypto
     val mac: Array[Byte] = Numeric.hexStringToByteArray(crypto.mac)
@@ -171,4 +176,57 @@ object Wallet:
     val encryptKey: Array[Byte] = Arrays.copyOfRange(derivedKey, 0, 16)
     val privateKey: Array[Byte] = performCipherOperation(Cipher.DECRYPT_MODE, iv, encryptKey, cipherText)
     ECKeyPair.create(privateKey)
+
+  given Decoder[CipherParams] = deriveDecoder[CipherParams]
+
+  given Encoder[CipherParams] = deriveEncoder[CipherParams]
+
+  given Show[CipherParams] = semiauto.show
+
+  given Eq[CipherParams] = semiauto.eq
+
+  given Decoder[Aes128CtrKdfParams] = deriveDecoder[Aes128CtrKdfParams]
+
+  given Encoder[Aes128CtrKdfParams] = deriveEncoder[Aes128CtrKdfParams]
+
+  given Show[Aes128CtrKdfParams] = semiauto.show
+
+  given Eq[Aes128CtrKdfParams] = semiauto.eq
+
+  given Decoder[ScryptKdfParams] = deriveDecoder[ScryptKdfParams]
+
+  given Encoder[ScryptKdfParams] = deriveEncoder[ScryptKdfParams]
+
+  given Show[ScryptKdfParams] = semiauto.show
+
+  given Eq[ScryptKdfParams] = semiauto.eq
+
+  given Decoder[KdfParams] = List[Decoder[KdfParams]](
+      Decoder[Aes128CtrKdfParams].widen,
+      Decoder[ScryptKdfParams].widen,
+    ).reduceLeft(_ or _)
+
+  given Encoder[KdfParams] = Encoder.instance {
+    case a: Aes128CtrKdfParams => a.asJson
+    case s: ScryptKdfParams => s.asJson
   }
+
+  given Show[KdfParams] = semiauto.show
+
+  given Eq[KdfParams] = semiauto.eq
+
+  given Decoder[Crypto] = deriveDecoder[Crypto]
+
+  given Encoder[Crypto] = deriveEncoder[Crypto]
+
+  given Show[Crypto] = semiauto.show
+
+  given Eq[Crypto] = semiauto.eq
+
+  given Decoder[WalletFile] = deriveDecoder[WalletFile]
+
+  given Encoder[WalletFile] = deriveEncoder[WalletFile]
+
+  given Show[WalletFile] = semiauto.show
+
+  given Eq[WalletFile] = semiauto.eq

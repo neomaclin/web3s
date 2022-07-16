@@ -9,20 +9,20 @@ import java.nio.ByteBuffer
 import org.web3s.crypto.Base58
 
 class Bip32Test extends AnyFunSuite :
-  
+
   test("deriveKeyPairVector1") {
     // Chain m
-//    testGenerated(
-//      "000102030405060708090a0b0c0d0e0f",
-//      "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi",
-//      "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8",
-//      Array.emptyIntArray)
-//    // Chain m/0H
-//    testGenerated(
-//      "000102030405060708090a0b0c0d0e0f",
-//      "xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7",
-//      "xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw",
-//      Array[Int](0 | HARDENED_BIT))
+    //    testGenerated(
+    //      "000102030405060708090a0b0c0d0e0f",
+    //      "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi",
+    //      "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8",
+    //      Array.emptyIntArray)
+    //    // Chain m/0H
+    //    testGenerated(
+    //      "000102030405060708090a0b0c0d0e0f",
+    //      "xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7",
+    //      "xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw",
+    //      Array[Int](0 | HARDENED_BIT))
     // Chain m/0H/1
     testGenerated(
       "000102030405060708090a0b0c0d0e0f",
@@ -100,31 +100,35 @@ class Bip32Test extends AnyFunSuite :
       Array[Int](0 | HARDENED_BIT))
   }
 
+  import Bip32Test._
   private def testGenerated(seed: String, expectedPriv: String, expectedPub: String, path: Array[Int]) =
     var pair = Bip32ECKeyPair.generateKeyPair(Numeric.hexStringToByteArray(seed))
     pair = Bip32ECKeyPair.deriveKeyPair(pair, path)
-    val actualPriv =  Base58.encode(addChecksum(serializePrivate(pair)))
+    val actualPriv = Base58.encode(addChecksum(serializePrivate(pair)))
     assert(expectedPriv == actualPriv)
     val actualPub = Base58.encode(addChecksum(serializePublic(pair)))
     assert(expectedPub == actualPub)
   end testGenerated
 
-  private def addChecksum(input: Array[Byte]) =
+
+object Bip32Test:
+
+  def addChecksum(input: Array[Byte]) =
     val inputLength = input.length
     val checksummed = new Array[Byte](inputLength + 4)
     Array.copy(input, 0, checksummed, 0, inputLength)
     val checksum = hashTwice(input)
     Array.copy(checksum, 0, checksummed, inputLength, 4)
     checksummed
-  end addChecksum
 
-  private def serializePublic(pair: Bip32ECKeyPair) = serialize(pair, 0x0488B21E, true)
 
-  private def serializePrivate(pair: Bip32ECKeyPair) = serialize(pair, 0x0488ADE4, false)
+  def serializePublic(pair: Bip32ECKeyPair) = serialize(pair, 0x0488B21E, true)
 
-  private def hashTwice(input: Array[Byte]) = sha256(sha256(input))
+  def serializePrivate(pair: Bip32ECKeyPair) = serialize(pair, 0x0488ADE4, false)
 
-  private def serialize(pair: Bip32ECKeyPair, header: Int, pub: Boolean) =
+  def hashTwice(input: Array[Byte]) = sha256(sha256(input))
+
+  def serialize(pair: Bip32ECKeyPair, header: Int, pub: Boolean) =
     val ser = ByteBuffer.allocate(78)
     ser.putInt(header)
     ser.put(pair.depth.toByte)
@@ -134,5 +138,3 @@ class Bip32Test extends AnyFunSuite :
     ser.put(if (pub) pair.publicKeyPoint.getEncoded(true)
     else pair.privateKeyBytes33)
     ser.array
-  end serialize
-end Bip32Test

@@ -18,9 +18,7 @@ object Bip32ECKeyPair:
 
   def generateKeyPair(seed: Array[Byte]): Bip32ECKeyPair =
     val (il, ir) = hmacSha512("Bitcoin seed".getBytes, seed).splitAt(32)
-    val keypair = Bip32ECKeyPair.create(il, ir.take(32))
-    keypair
-  end generateKeyPair
+    Bip32ECKeyPair.create(il, ir.take(32))
 
   def deriveKeyPair(master: Bip32ECKeyPair, path: Array[Int]): Bip32ECKeyPair =
     path.foldLeft(master)(_.deriveChildKey(_))
@@ -103,4 +101,6 @@ final case class Bip32ECKeyPair(privateKey: Option[BigInt],
   
   def depth: Int = parent.fold(0)(_.depth + 1)
 
+
+  def toECKeyPair: ECKeyPair = ECKeyPair(privateKey = privateKey.getOrElse(BigInt(0)), publicKey = publicKey)
 end Bip32ECKeyPair
