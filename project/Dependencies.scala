@@ -29,7 +29,6 @@ object Dependencies {
   val fs2 = Seq(
     "co.fs2" %% "fs2-core" % versions.fs2,
     "co.fs2" %% "fs2-io" % versions.fs2,
-
   )
 
   val http4s =  Seq(
@@ -45,6 +44,7 @@ object Dependencies {
   val cats = Seq(
     "org.typelevel" %% "cats-core",
     "org.typelevel" %% "cats-kernel",
+    "org.typelevel" %% "cats-free",
   ).map(_ % versions.cats)
 
   val reflection = Seq(

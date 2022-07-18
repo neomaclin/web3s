@@ -1,6 +1,7 @@
 package org.web3s.protocol.core
 
 import org.web3s.protocol.core.methods.response.*
+import org.web3s.protocol.core.methods.response.admin.*
 import org.web3s.protocol.core.methods.request.Transaction
 /** Core Ethereum JSON-RPC API. */
 trait Ethereum[F[_]] {
@@ -11,19 +12,19 @@ trait Ethereum[F[_]] {
 
   def netVersion: F[NetVersion]
 
-  //def netListening: F[NetListening]
+  def netListening: F[NetListening]
 
   def netPeerCount: F[NetPeerCount]
 
-  //def adminNodeInfo: F[AdminNodeInfo]
+  def adminNodeInfo: F[AdminNodeInfo]
 
-  //def adminPeers: F[AdminPeers]
+  def adminPeers: F[AdminPeers]
 
   def adminAddPeer(url: String): F[BooleanResponse]
 
   def adminRemovePeer(url: String): F[BooleanResponse]
 
-  //def adminDataDir: F[AdminDataDir]
+  def adminDataDir: F[AdminDataDir]
 
   def ethProtocolVersion: F[EthProtocolVersion]
 
@@ -31,7 +32,7 @@ trait Ethereum[F[_]] {
 
   def ethCoinbase: F[EthCoinbase]
 
- // def ethSyncing: F[EthSyncing]
+  def ethSyncing: F[EthSyncing]
 
   def ethMining: F[EthMining]
 
@@ -39,9 +40,9 @@ trait Ethereum[F[_]] {
 
   def ethGasPrice: F[EthGasPrice]
 
-  //def ethMaxPriorityFeePerGas: F[EthMaxPriorityFeePerGas]
+  def ethMaxPriorityFeePerGas: F[EthMaxPriorityFeePerGas]
 
-  //def ethFeeHistory(blockCount: Int, newestBlock: DefaultBlockParameter, rewardPercentiles: List[Double]): F[EthFeeHistory]
+  def ethFeeHistory(blockCount: Int, newestBlock: DefaultBlockParameter, rewardPercentiles: List[Double]): F[EthFeeHistory]
 
   def ethAccounts: F[EthAccounts]
 
@@ -73,27 +74,27 @@ trait Ethereum[F[_]] {
 
   def ethEstimateGas(transaction: Transaction): F[EthEstimateGas]
 
-  //def ethGetBlockByHash(blockHash: String, returnFullTransactionObjects: Boolean): F[EthBlock]
+  def ethGetBlockByHash(blockHash: String, returnFullTransactionObjects: Boolean): F[EthBlock]
 
-  //def ethGetBlockByNumber(defaultBlockParameter: DefaultBlockParameter, returnFullTransactionObjects: Boolean): F[EthBlock]
+  def ethGetBlockByNumber(defaultBlockParameter: DefaultBlockParameter, returnFullTransactionObjects: Boolean): F[EthBlock]
 
-  //def ethGetTransactionByHash(transactionHash: String): F[EthTransaction]
+  def ethGetTransactionByHash(transactionHash: String): F[EthTransaction]
 
-  //def ethGetTransactionByBlockHashAndIndex(blockHash: String, transactionIndex: BigInt): F[EthTransaction]
+  def ethGetTransactionByBlockHashAndIndex(blockHash: String, transactionIndex: BigInt): F[EthTransaction]
 
-  //def ethGetTransactionByBlockNumberAndIndex(defaultBlockParameter: DefaultBlockParameter, transactionIndex: BigInt): F[EthTransaction]
+  def ethGetTransactionByBlockNumberAndIndex(defaultBlockParameter: DefaultBlockParameter, transactionIndex: BigInt): F[EthTransaction]
 
-  //def ethGetTransactionReceipt(transactionHash: String): F[EthGetTransactionReceipt]
+  def ethGetTransactionReceipt(transactionHash: String): F[EthGetTransactionReceipt]
 
-  //def ethGetUncleByBlockHashAndIndex(blockHash: String, transactionIndex: BigInt): F[EthBlock]
+  def ethGetUncleByBlockHashAndIndex(blockHash: String, transactionIndex: BigInt): F[EthBlock]
 
-  //def ethGetUncleByBlockNumberAndIndex(defaultBlockParameter: DefaultBlockParameter, transactionIndex: BigInt): F[EthBlock]
+  def ethGetUncleByBlockNumberAndIndex(defaultBlockParameter: DefaultBlockParameter, transactionIndex: BigInt): F[EthBlock]
 
   def ethGetCompilers: F[EthGetCompilers]
 
   def ethCompileLLL(sourceCode: String): F[EthCompileLLL]
 
-  //def ethCompileSolidity(sourceCode: String): F[EthCompileSolidity]
+  def ethCompileSolidity(sourceCode: String): F[EthCompileSolidity]
 
   def ethCompileSerpent(sourceCode: String): F[EthCompileSerpent]
 
@@ -105,11 +106,11 @@ trait Ethereum[F[_]] {
 
   def ethUninstallFilter(filterId: BigInt): F[EthUninstallFilter]
 
-  //def ethGetFilterChanges(filterId: BigInt): F[EthLog]
+  def ethGetFilterChanges(filterId: BigInt): F[EthLog]
 
-  //def ethGetFilterLogs(filterId: BigInt): F[EthLog]
+  def ethGetFilterLogs(filterId: BigInt): F[EthLog]
 
-  //def ethGetLogs(ethFilter: EthFilter): F[EthLog]
+  def ethGetLogs(ethFilter: EthFilter): F[EthLog]
 
   def ethGetWork: F[EthGetWork]
 

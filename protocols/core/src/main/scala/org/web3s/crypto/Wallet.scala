@@ -25,9 +25,10 @@ import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 
 
 object Wallet:
+
   import cats.syntax._
   import cats.syntax.functor._
-  import io.circe.{ Decoder, Encoder }, io.circe.generic.semiauto._
+  import io.circe.{Decoder, Encoder}, io.circe.generic.semiauto._
   import io.circe.syntax._
   import cats.implicits._, cats._, cats.derived._
 
@@ -153,9 +154,9 @@ object Wallet:
   @throws[CipherException]
   def validate(walletFile: WalletFile): Unit =
     val crypto = walletFile.crypto
-    if (walletFile.version != CURRENT_VERSION) throw new CipherException("Wallet version is not supported")
-    if (!(crypto.cipher == CIPHER)) throw new CipherException("Wallet cipher is not supported")
-    if (!(crypto.kdf == AES_128_CTR) && !(crypto.kdf == SCRYPT)) throw new CipherException("KDF type is not supported")
+    if walletFile.version != CURRENT_VERSION then throw new CipherException("Wallet version is not supported")
+    if crypto.cipher != CIPHER then throw new CipherException("Wallet cipher is not supported")
+    if (crypto.kdf != AES_128_CTR) && (crypto.kdf != SCRYPT) then throw new CipherException("KDF type is not supported")
 
   @throws[CipherException]
   def decrypt(password: String, walletFile: WalletFile): ECKeyPair =
@@ -181,7 +182,6 @@ object Wallet:
 
   given Encoder[CipherParams] = deriveEncoder[CipherParams]
 
-  given Show[CipherParams] = semiauto.show
 
   given Eq[CipherParams] = semiauto.eq
 
@@ -189,7 +189,6 @@ object Wallet:
 
   given Encoder[Aes128CtrKdfParams] = deriveEncoder[Aes128CtrKdfParams]
 
-  given Show[Aes128CtrKdfParams] = semiauto.show
 
   given Eq[Aes128CtrKdfParams] = semiauto.eq
 
@@ -197,21 +196,18 @@ object Wallet:
 
   given Encoder[ScryptKdfParams] = deriveEncoder[ScryptKdfParams]
 
-  given Show[ScryptKdfParams] = semiauto.show
 
   given Eq[ScryptKdfParams] = semiauto.eq
 
   given Decoder[KdfParams] = List[Decoder[KdfParams]](
-      Decoder[Aes128CtrKdfParams].widen,
-      Decoder[ScryptKdfParams].widen,
-    ).reduceLeft(_ or _)
+    Decoder[Aes128CtrKdfParams].widen,
+    Decoder[ScryptKdfParams].widen,
+  ).reduceLeft(_ or _)
 
   given Encoder[KdfParams] = Encoder.instance {
     case a: Aes128CtrKdfParams => a.asJson
     case s: ScryptKdfParams => s.asJson
   }
-
-  given Show[KdfParams] = semiauto.show
 
   given Eq[KdfParams] = semiauto.eq
 
@@ -219,14 +215,10 @@ object Wallet:
 
   given Encoder[Crypto] = deriveEncoder[Crypto]
 
-  given Show[Crypto] = semiauto.show
-
   given Eq[Crypto] = semiauto.eq
 
   given Decoder[WalletFile] = deriveDecoder[WalletFile]
 
   given Encoder[WalletFile] = deriveEncoder[WalletFile]
-
-  given Show[WalletFile] = semiauto.show
 
   given Eq[WalletFile] = semiauto.eq
