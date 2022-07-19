@@ -7,6 +7,3 @@ opaque type EthGetTransactionCount = Response[String]
 
 object EthGetTransactionCount:
   def apply(response: Response[String]): EthGetTransactionCount = response
-
-extension (x: EthGetTransactionCount)
-  def transactionCount: BigInt = Numeric.decodeQuantity(x.result)

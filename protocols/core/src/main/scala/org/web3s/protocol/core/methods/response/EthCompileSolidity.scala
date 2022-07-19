@@ -1,11 +1,15 @@
 package org.web3s.protocol.core.methods.response
 
 
+import org.web3s.model.AbiDefinition
 import org.web3s.protocol.core.Response
 
 opaque type EthCompileSolidity = Response[Map[String, EthCompileSolidity.Code]]
 
 object EthCompileSolidity:
+
+  def apply(response: Response[Map[String, Code]]): EthCompileSolidity = response
+
   final case class Code(
                          code: String,
                          info: SolidityInfo
@@ -21,7 +25,4 @@ object EthCompileSolidity:
                                  developerDoc: Documentation
                                )
   final case class Documentation(methods: Map[String, String])
-  def apply(response: Response[String]): EthCompileSolidity = response
 
-extension (x: EthCompileSolidity)
-  def compiledSourceCode: BigInt = x.result

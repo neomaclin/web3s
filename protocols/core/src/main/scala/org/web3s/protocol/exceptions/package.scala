@@ -2,7 +2,7 @@ package org.web3s.protocol
 
 package exceptions {
 
-  import org.web3s.protocol.core.methods.response.TransactionReceipt
+  import org.web3s.protocol.core.methods.response.EthGetTransactionReceipt.TransactionReceipt
 
   final case class ClientConnectionException(message: String) extends RuntimeException(message)
 

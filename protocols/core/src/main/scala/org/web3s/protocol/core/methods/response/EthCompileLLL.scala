@@ -9,4 +9,4 @@ object EthCompileLLL:
   def apply(response: Response[String]): EthCompileLLL = response
 
 extension (x: EthCompileLLL)
-  def compiledSourceCode: BigInt = x.result
+  def compiledSourceCode: String = x.result

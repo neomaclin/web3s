@@ -7,6 +7,3 @@ opaque type EthGetUncleCountByBlockNumber = Response[String]
 
 object EthGetUncleCountByBlockNumber:
   def apply(response: Response[String]): EthGetUncleCountByBlockNumber = response
-
-extension (x: EthGetUncleCountByBlockNumber)
-  def uncleCount: BigInt = Numeric.decodeQuantity(x.result)

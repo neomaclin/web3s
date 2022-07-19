@@ -6,6 +6,3 @@ opaque type DbGetString = Response[String]
 
 object DbGetString:
   def apply(response: Response[String]): DbGetString = response
-
-extension (x: DbGetString)
-  def storedValue: String = x.result

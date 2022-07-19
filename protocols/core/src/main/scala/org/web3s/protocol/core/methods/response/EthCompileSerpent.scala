@@ -6,6 +6,3 @@ opaque type EthCompileSerpent = Response[String]
 
 object EthCompileSerpent:
   def apply(response: Response[String]): EthCompileSerpent = response
-
-extension (x: EthCompileSerpent)
-  def compiledSourceCode: BigInt = x.result

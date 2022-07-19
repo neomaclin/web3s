@@ -2,16 +2,21 @@ package org.web3s
 
 import cats.effect.Async
 import org.web3s.protocol.core.*
+import org.web3s.protocol.core.methods.request.Transaction
 import org.web3s.protocol.core.methods.response.*
 import org.web3s.protocol.core.methods.response.admin.*
 import org.web3s.services.Web3sService
 
+
 class Web3sEthereum[F[_] : Async](services: Web3sService[F]) extends Ethereum[F]:
+  import io.circe._
+  import io.circe.syntax._
+  import io.circe.generic.auto._
   override def web3ClientVersion: F[Web3ClientVersion] =
     services.send(Request(method = "web3_clientVersion")).map(Web3ClientVersion.apply)
 
   override def web3Sha3(data: String): F[Web3Sha3] =
-    services.send(Request(method = "web3_sha3", params = List(data))).map(Web3Sha3.apply)
+    services.send(Request(method = "web3_sha3", params = List(data.asJson))).map(Web3Sha3.apply)
 
   override def netVersion: F[NetVersion] =
     services.send(Request(method = "net_version")).map(NetVersion.apply)
@@ -29,10 +34,10 @@ class Web3sEthereum[F[_] : Async](services: Web3sService[F]) extends Ethereum[F]
     services.send(Request(method = "admin_peers")).map(AdminPeers.apply)
 
   override def adminAddPeer(url: String): F[BooleanResponse] =
-    services.send(Request(method = "admin_addPeer", params = List(url))).map(BooleanResponse.apply)
+    services.send(Request(method = "admin_addPeer", params = List(url.asJson))).map(BooleanResponse.apply)
 
   override def adminRemovePeer(url: String): F[BooleanResponse] =
-    services.send(Request(method = "admin_removePeer", params = List(url))).map(BooleanResponse.apply)
+    services.send(Request(method = "admin_removePeer", params = List(url.asJson))).map(BooleanResponse.apply)
 
   override def adminDataDir: F[AdminDataDir] =
     services.send(Request(method = "admin_datadir")).map(AdminDataDir.apply)

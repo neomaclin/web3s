@@ -8,4 +8,4 @@ object NetListening:
   def apply(response: Response[Boolean]): NetListening = response
 
 extension (x: NetListening)
-  def isListening: String = x.result
+  def isListening: Boolean = x.result

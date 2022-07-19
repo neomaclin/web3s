@@ -35,4 +35,4 @@ object EthBlock:
   def apply(response: Response[Block]): EthBlock = response
 
 extension (x: EthBlock)
-  def block: Block = x.result
+  def block: EthBlock.Block = x.result

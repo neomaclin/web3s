@@ -18,7 +18,7 @@ object EthGetTransactionReceipt:
                                        status: String,
                                        from: String,
                                        to: String,
-                                       logs: List[Log],
+                                       logs: List[EthLog.Log],
                                        logsBloom: String,
                                        revertReason: String,
                                        `type`: String,
