@@ -6,7 +6,15 @@ import org.web3s.utils.Numeric
 opaque type EthBlock = Response[EthBlock.Block]
 
 object EthBlock:
-  type TransactionResult = EthTransaction.Transaction | String
+  import io.circe.Decoder
+  import io.circe.syntax._
+  import io.circe.generic.semiauto._
+  import EthTransaction._
+
+  type TransactionResult = Transaction
+
+  given Decoder[Block] = deriveDecoder[Block]
+
   final case class Block(
                           number: String,
                           hash: String,
@@ -27,12 +35,12 @@ object EthBlock:
                           gasLimit: String,
                           gasUsed: String,
                           timestamp: String,
-                          transactions: List[EthBlock.TransactionResult],
+                          transactions: List[TransactionResult],
                           uncles: List[String],
                           sealFields: List[String],
                           baseFeePerGas: String
                         )
-  def apply(response: Response[Block]): EthBlock = response
+  def apply(responses: Response[Block]): EthBlock = responses
 
 extension (x: EthBlock)
   def block: EthBlock.Block = x.result

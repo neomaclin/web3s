@@ -22,5 +22,6 @@ lazy val root = (project in file("."))
   .aggregate(besu,eea,geth,parity,providers,core)
   .aggregate(utils,abi,rlp,crypto,codegen)
   .settings(
-    name := "web3s"
+    name := "web3s",
+
   )

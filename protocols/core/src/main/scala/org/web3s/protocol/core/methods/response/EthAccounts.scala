@@ -5,7 +5,7 @@ import org.web3s.protocol.core.Response
 opaque type EthAccounts = Response[Seq[String]]
 
 object EthAccounts:
-  def apply(response: Response[Seq[String]]): EthAccounts = response
+  def apply(responses: Response[Seq[String]]): EthAccounts = responses
 
 extension (x: EthAccounts)
   def accounts: Seq[String] = x.result

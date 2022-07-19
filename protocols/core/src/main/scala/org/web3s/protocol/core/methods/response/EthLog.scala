@@ -5,7 +5,7 @@ import org.web3s.protocol.core.Response
 opaque type EthLog = Response[List[EthLog.LogResult]]
 
 object EthLog:
-  type LogResult = EthLog.Log | String
+  type LogResult = EthLog.Log
 
   def apply(responses: Response[List[EthLog.LogResult]]): EthLog = responses
 

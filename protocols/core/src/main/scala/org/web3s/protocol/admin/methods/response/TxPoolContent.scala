@@ -1,14 +1,20 @@
 package org.web3s.protocol.admin.methods.response
 
 import org.web3s.protocol.core.Response
+import org.web3s.protocol.core.methods.response.EthTransaction
 import org.web3s.protocol.core.methods.response.EthTransaction.Transaction
 
 
 opaque type TxPoolContent = Response[TxPoolContent.TxPoolContentResult]
 
 object TxPoolContent:
-  final case class TxPoolContentResult(pending: Map[String, Map[BigInt, Transaction]],
-                                       queued: Map[String, Map[BigInt, Transaction]])
+  import io.circe.Decoder
+  import io.circe.generic.semiauto._
+  import EthTransaction._
+  given Decoder[TxPoolContentResult] = deriveDecoder[TxPoolContentResult]
+
+  final case class TxPoolContentResult(pending: Map[String, Map[Long, Transaction]],
+                                       queued: Map[String, Map[Long, Transaction]])
 
   def apply(response: Response[TxPoolContentResult]): TxPoolContent = response
 

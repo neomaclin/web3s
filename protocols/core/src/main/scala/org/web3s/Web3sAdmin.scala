@@ -1,26 +1,31 @@
 package org.web3s
 
 import cats.effect.Async
+import cats.syntax.functor._
 import org.web3s.protocol.admin.Admin
 import org.web3s.protocol.admin.methods.response.*
 import org.web3s.protocol.core.methods.request.Transaction
+import org.web3s.protocol.core.methods.response.EthTransaction
 import org.web3s.protocol.core.methods.response.EthSendTransaction
-import org.web3s.protocol.core.Request
+import org.web3s.protocol.core.{Request, Response}
 import org.web3s.services.Web3sService
 
 class Web3sAdmin[F[_] : Async](services: Web3sService[F]) extends Admin[F]:
   import io.circe.generic.auto._
+  import io.circe.syntax._
   override def personalListAccounts: F[PersonalListAccounts] =
-    services.send(Request(method = "personal_listAccounts")).map(PersonalListAccounts.apply)
+    services.fetch[List[String]](Request(method = "personal_listAccounts")).map(PersonalListAccounts.apply)
 
   override def personalNewAccount(password: String): F[NewAccountIdentifier] =
-    services.send(Request(method = "personal_newAccount", params = List(password.asJson))).map(NewAccountIdentifier.apply)
+    services.fetch[String](Request(method = "personal_newAccount", params = List(password.asJson))).map(NewAccountIdentifier.apply)
 
   def personalUnlockAccount(address: String, passphrase: String, duration: Option[BigInt] = None): F[PersonalUnlockAccount] =
-    services.send(Request(method = "personal_unlockAccount"), params = List(address.asJson, passphrase.asJson) ++ duration.map(_.asJson)).map(PersonalUnlockAccount.apply)
+    val params = List(address.asJson, passphrase.asJson) ++ duration.map(_.asJson).toList
+    services.fetch[Boolean](Request(method = "personal_unlockAccount", params)).map(PersonalUnlockAccount.apply)
 
   override def personalSendTransaction(transaction: Transaction, password: String): F[EthSendTransaction] =
-    services.send(Request(method = "personal_sendTransaction")).map(EthSendTransaction.apply)
+    services.fetch[String](Request(method = "personal_sendTransaction")).map(EthSendTransaction.apply)
 
   override def txPoolContent: F[TxPoolContent] =
-    services.send(Request(method = "txpool_content")).map(TxPoolContent.apply)
+    import TxPoolContent._
+    services.fetch[TxPoolContent.TxPoolContentResult](Request(method = "txpool_content")).map(TxPoolContent.apply)

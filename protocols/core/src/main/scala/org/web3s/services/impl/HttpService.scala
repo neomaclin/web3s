@@ -1,29 +1,41 @@
 package org.web3s.services.impl
 
 import org.http4s.client.Client
-import org.http4s.client.dsl.io._
+import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.syntax.literals.uri
-import cats.effect._
-import io.circe.syntax._
-import org.http4s.{Uri,Method,Header}
-import org.http4s.implicits._
+import cats.effect.*
+import io.circe.Decoder.Result
+import io.circe.{Decoder, HCursor}
+import io.circe.generic.semiauto.deriveDecoder
+import org.http4s.{Header, Method, Uri}
+import org.http4s.implicits.*
 import org.web3s.protocol.core.{Request, Response}
 import org.web3s.services.Web3sService
-import io.circe.generic.auto._
-import org.http4s.circe._
-import CirceEntityDecoder._
-import CirceEntityEncoder._
 
-final case class HttpService[F[_] : Async](uri: Uri = uri"http://localhost:8545/",
+
+final case class HttpService[F[_] : Async: Concurrent](uri: Uri = uri"http://localhost:8545/",
                                            client: Client[F],
                                            headers: Header.ToRaw*
                                           ) extends Web3sService[F] :
 
-  def send[T:Decoder](request: Request): F[Response[T]] =
-    val posting = Method.POST[Request](request, uri, headers)
-    client.expect[Response[T]](posting)
+  import io.circe.{Encoder,Decoder}
+  import io.circe.syntax._
+
+  import io.circe.generic.semiauto._
+  import org.http4s.circe._
+  import CirceEntityDecoder._
+  import CirceEntityEncoder._
+  private val dsl = Http4sClientDsl[F]
+
+  given Encoder[Request] = deriveEncoder[Request]
+
+  def fetch[T:Decoder](request: Request): F[Response[T]] =
+    import dsl._
+    given Decoder[Response[T]] = Response.decode[T]
+    client.expect(Method.POST[Request](request, uri, headers))(jsonOf[F,Response[T]])
 
 
   def sendBatch[T:Decoder](requests: List[Request]): F[List[Response[T]]] =
-    val posting = Method.POST[List[Request]](requests, uri, headers)
-    client.expect[List[Response[T]]](posting)
+    import dsl._
+    given Decoder[Response[T]] = Response.decode[T]
+    client.expect[List[Response[T]]](Method.POST[List[Request]](requests, uri, headers))
