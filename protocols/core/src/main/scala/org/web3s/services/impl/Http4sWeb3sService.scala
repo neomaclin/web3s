@@ -11,11 +11,13 @@ import org.http4s.{Header, Method, Uri}
 import org.http4s.implicits.*
 import org.web3s.protocol.core.{Request, Response}
 import org.web3s.services.Web3sService
+import fs2.Stream
 
 
-final case class HttpService[F[_] : Async: Concurrent](uri: Uri = uri"http://localhost:8545/",
-                                           client: Client[F],
-                                           headers: Header.ToRaw*
+final case class Http4sWeb3sService[F[_] : Async: Concurrent](uri: Uri = uri"http://localhost:8545/",
+                                                              client: Client[F],
+                                                              dsl: Http4sClientDsl[F],
+                                                              headers: Header.ToRaw*
                                           ) extends Web3sService[F] :
 
   import io.circe.{Encoder,Decoder}
@@ -25,7 +27,7 @@ final case class HttpService[F[_] : Async: Concurrent](uri: Uri = uri"http://loc
   import org.http4s.circe._
   import CirceEntityDecoder._
   import CirceEntityEncoder._
-  private val dsl = Http4sClientDsl[F]
+  
 
   given Encoder[Request] = deriveEncoder[Request]
 
@@ -35,7 +37,11 @@ final case class HttpService[F[_] : Async: Concurrent](uri: Uri = uri"http://loc
     client.expect(Method.POST[Request](request, uri, headers))(jsonOf[F,Response[T]])
 
 
-  def sendBatch[T:Decoder](requests: List[Request]): F[List[Response[T]]] =
+  def fetchBatch[T:Decoder](requests: List[Request]): F[List[Response[T]]] =
     import dsl._
     given Decoder[Response[T]] = Response.decode[T]
     client.expect[List[Response[T]]](Method.POST[List[Request]](requests, uri, headers))
+
+  def fetchStream[T:Decoder](request: Request): Stream[F,T] =
+    import dsl._
+    client.stream(request)

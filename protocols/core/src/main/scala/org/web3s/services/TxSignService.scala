@@ -8,6 +8,7 @@ import org.web3s.crypto.Hash
 import org.web3s.crypto.transaction.{RawTransaction, Transaction}
 
 import org.web3s.tx.ChainIdLong
+
 trait TxSignService[F[_]]:
   def sign(rawTransaction: RawTransaction, chainId: Long): F[Array[Byte]]
 

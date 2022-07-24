@@ -9,4 +9,4 @@ object TxPoolStatus:
 
 extension (x: TxPoolStatus)
   def pending: Int = x.result.getOrElse("pending", "0").toInt
-  def queued: Int = x.result.getOrElse("pending", "0").toInt
+  def queued: Int = x.result.getOrElse("queued", "0").toInt

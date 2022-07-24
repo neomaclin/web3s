@@ -1,7 +1,7 @@
 package org.web3s
 
-import cats.effect.Async
-import cats.syntax.functor._
+import cats.MonadThrow
+import cats.syntax.functor.*
 import org.web3s.protocol.admin.Admin
 import org.web3s.protocol.admin.methods.response.*
 import org.web3s.protocol.core.methods.request.Transaction
@@ -10,7 +10,7 @@ import org.web3s.protocol.core.methods.response.EthSendTransaction
 import org.web3s.protocol.core.{Request, Response}
 import org.web3s.services.Web3sService
 
-class Web3sAdmin[F[_] : Async](services: Web3sService[F]) extends Admin[F]:
+class Web3sAdmin[F[_] : MonadThrow](using services: Web3sService[F]) extends Admin[F]:
   import io.circe.generic.auto._
   import io.circe.syntax._
   override def personalListAccounts: F[PersonalListAccounts] =
@@ -19,7 +19,7 @@ class Web3sAdmin[F[_] : Async](services: Web3sService[F]) extends Admin[F]:
   override def personalNewAccount(password: String): F[NewAccountIdentifier] =
     services.fetch[String](Request(method = "personal_newAccount", params = List(password.asJson))).map(NewAccountIdentifier.apply)
 
-  def personalUnlockAccount(address: String, passphrase: String, duration: Option[BigInt] = None): F[PersonalUnlockAccount] =
+  override def personalUnlockAccount(address: String, passphrase: String, duration: Option[BigInt] = None): F[PersonalUnlockAccount] =
     val params = List(address.asJson, passphrase.asJson) ++ duration.map(_.asJson).toList
     services.fetch[Boolean](Request(method = "personal_unlockAccount", params)).map(PersonalUnlockAccount.apply)
 

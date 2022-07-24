@@ -1,6 +1,7 @@
 package org.web3s
 
-import cats.effect.Async
+
+import cats.MonadThrow
 import cats.syntax.functor.*
 import org.web3s.protocol.admin.methods.response.TxPoolContent
 import org.web3s.protocol.core.*
@@ -10,7 +11,7 @@ import org.web3s.protocol.core.methods.response.admin.*
 import org.web3s.services.Web3sService
 
 
-class Web3sEthereum[F[_] : Async](services: Web3sService[F]) extends Ethereum[F]:
+class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends Ethereum[F]:
   import io.circe._
   import io.circe.syntax._
   import io.circe.generic.auto._

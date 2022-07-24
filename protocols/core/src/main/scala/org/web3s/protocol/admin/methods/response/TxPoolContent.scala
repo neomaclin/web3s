@@ -13,8 +13,8 @@ object TxPoolContent:
   import EthTransaction._
   given Decoder[TxPoolContentResult] = deriveDecoder[TxPoolContentResult]
 
-  final case class TxPoolContentResult(pending: Map[String, Map[Long, Transaction]],
-                                       queued: Map[String, Map[Long, Transaction]])
+  final case class TxPoolContentResult(pending: Map[String, Map[BigInt, Transaction]],
+                                       queued: Map[String, Map[BigInt, Transaction]])
 
   def apply(response: Response[TxPoolContentResult]): TxPoolContent = response
 
