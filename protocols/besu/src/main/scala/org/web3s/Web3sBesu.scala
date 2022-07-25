@@ -3,6 +3,7 @@ package org.web3s
 import cats.MonadThrow
 import org.web3s.protocol.core.Request
 import org.web3s.protocol.core.methods.response.*
+import org.web3s.protocol.besu.methods.response.*
 import org.web3s.services.Web3sService
 
 class Web3sBesu[F[_]: MonadThrow](using services: Web3sService[F]) extends Besu[F[_]]:

@@ -5,6 +5,7 @@ import cats.MonadThrow
 import cats.syntax.functor.*
 import org.web3s.protocol.admin.methods.response.TxPoolContent
 import org.web3s.protocol.core.*
+import org.web3s.protocol.core.Response.EthBigInt
 import org.web3s.protocol.core.methods.request.Transaction
 import org.web3s.protocol.core.methods.response.*
 import org.web3s.protocol.core.methods.response.admin.*
@@ -28,7 +29,7 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
     services.fetch[Boolean](Request(method = "net_listening")).map(NetListening.apply)
 
   override def netPeerCount: F[NetPeerCount] =
-    services.fetch[String](Request(method = "net_peerCount")).map(NetPeerCount.apply)
+    services.fetch[EthBigInt](Request(method = "net_peerCount")).map(NetPeerCount.apply)
 
   override def adminNodeInfo: F[AdminNodeInfo] =
     services.fetch[AdminNodeInfo.NodeInfo](Request(method = "admin_nodeInfo")).map(AdminNodeInfo.apply)
@@ -49,7 +50,7 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
     services.fetch[String](Request(method = "eth_protocolVersion")).map(EthProtocolVersion.apply)
 
   override def ethChainId: F[EthChainId] =
-    services.fetch[String](Request(method = "eth_chainId")).map(EthChainId.apply)
+    services.fetch[EthBigInt](Request(method = "eth_chainId")).map(EthChainId.apply)
 
   override def ethCoinbase: F[EthCoinbase] =
     services.fetch[String](Request(method = "eth_coinbase")).map(EthCoinbase.apply)
@@ -61,13 +62,13 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
     services.fetch[Boolean](Request(method = "eth_mining")).map(EthMining.apply)
 
   override def ethHashrate: F[EthHashrate] =
-    services.fetch[String](Request(method = "eth_hashrate")).map(EthHashrate.apply)
+    services.fetch[EthBigInt](Request(method = "eth_hashrate")).map(EthHashrate.apply)
 
   override def ethGasPrice: F[EthGasPrice] =
-    services.fetch[String](Request(method = "eth_gasPrice")).map(EthGasPrice.apply)
+    services.fetch[EthBigInt](Request(method = "eth_gasPrice")).map(EthGasPrice.apply)
 
   override def ethMaxPriorityFeePerGas: F[EthMaxPriorityFeePerGas] =
-    services.fetch[String](Request(method = "eth_maxPriorityFeePerGas")).map(EthMaxPriorityFeePerGas.apply)
+    services.fetch[EthBigInt](Request(method = "eth_maxPriorityFeePerGas")).map(EthMaxPriorityFeePerGas.apply)
 
   override def ethFeeHistory(blockCount: Int, newestBlock: DefaultBlockParameter, rewardPercentiles: List[Double]): F[EthFeeHistory] =
     services.fetch[EthFeeHistory.FeeHistory](Request(method = "eth_feeHistory")).map(EthFeeHistory.apply)
@@ -76,10 +77,10 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
     services.fetch[Seq[String]](Request(method = "eth_accounts")).map(EthAccounts.apply)
 
   override def ethBlockNumber: F[EthBlockNumber] =
-    services.fetch[String](Request(method = "eth_blockNumber")).map(EthBlockNumber.apply)
+    services.fetch[EthBigInt](Request(method = "eth_blockNumber")).map(EthBlockNumber.apply)
 
   override def ethGetBalance(address: String, defaultBlockParameter: DefaultBlockParameter): F[EthGetBalance] =
-    services.fetch[String](Request(method = "eth_getBalance")).map(EthGetBalance.apply)
+    services.fetch[EthBigInt](Request(method = "eth_getBalance")).map(EthGetBalance.apply)
 
   override def ethGetStorageAt(address: String, position: BigInt, defaultBlockParameter: DefaultBlockParameter): F[EthGetStorageAt] =
     services.fetch[String](Request(method = "eth_getStorageAt")).map(EthGetStorageAt.apply)
@@ -89,19 +90,19 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
 
 
   override def ethGetBlockTransactionCountByHash(blockHash: String): F[EthGetBlockTransactionCountByHash] =
-    services.fetch[String](Request(method = "eth_getBlockTransactionCountByHash")).map(EthGetBlockTransactionCountByHash.apply)
+    services.fetch[EthBigInt](Request(method = "eth_getBlockTransactionCountByHash")).map(EthGetBlockTransactionCountByHash.apply)
 
 
   override def ethGetBlockTransactionCountByNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetBlockTransactionCountByNumber] =
-    services.fetch[String](Request(method = "eth_getBlockTransactionCountByNumber")).map(EthGetBlockTransactionCountByNumber.apply)
+    services.fetch[EthBigInt](Request(method = "eth_getBlockTransactionCountByNumber")).map(EthGetBlockTransactionCountByNumber.apply)
 
 
   override def ethGetUncleCountByBlockHash(blockHash: String): F[EthGetUncleCountByBlockHash] =
-    services.fetch[String](Request(method = "eth_getUncleCountByBlockHash")).map(EthGetUncleCountByBlockHash.apply)
+    services.fetch[EthBigInt](Request(method = "eth_getUncleCountByBlockHash")).map(EthGetUncleCountByBlockHash.apply)
 
 
   override def ethGetUncleCountByBlockNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetUncleCountByBlockNumber] =
-    services.fetch[String](Request(method = "eth_getUncleCountByBlockNumber")).map(EthGetUncleCountByBlockNumber.apply)
+    services.fetch[EthBigInt](Request(method = "eth_getUncleCountByBlockNumber")).map(EthGetUncleCountByBlockNumber.apply)
 
 
   override def ethGetCode(address: String, defaultBlockParameter: DefaultBlockParameter): F[EthGetCode] =
@@ -125,7 +126,7 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
 
 
   override def ethEstimateGas(transaction: Transaction): F[EthEstimateGas] =
-    services.fetch[String](Request(method = "eth_estimateGas")).map(EthEstimateGas.apply)
+    services.fetch[EthBigInt](Request(method = "eth_estimateGas")).map(EthEstimateGas.apply)
 
 
   override def ethGetBlockByHash(blockHash: String, returnFullTransactionObjects: Boolean): F[EthBlock] =
@@ -175,7 +176,6 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
 
   override def ethCompileSolidity(sourceCode: String): F[EthCompileSolidity] =
     import EthCompileSolidity._
-
     services.fetch[Map[String, EthCompileSolidity.Code]](Request(method = "eth_compileSolidity")).map(EthCompileSolidity.apply)
 
 
@@ -184,15 +184,15 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
 
 
   override def ethNewFilter(ethFilter: EthFilter): F[EthFilter] =
-    services.fetch[String](Request(method = "eth_newFilter")).map(EthFilter.apply)
+    services.fetch[EthBigInt](Request(method = "eth_newFilter")).map(EthFilter.apply)
 
 
   override def ethNewBlockFilter: F[EthFilter] =
-    services.fetch[String](Request(method = "eth_newBlockFilter")).map(EthFilter.apply)
+    services.fetch[EthBigInt](Request(method = "eth_newBlockFilter")).map(EthFilter.apply)
 
 
   override def ethNewPendingTransactionFilter: F[EthFilter] =
-    services.fetch[String](Request(method = "eth_newPendingTransactionFilter")).map(EthFilter.apply)
+    services.fetch[EthBigInt](Request(method = "eth_newPendingTransactionFilter")).map(EthFilter.apply)
 
 
   override def ethUninstallFilter(filterId: BigInt): F[EthUninstallFilter] =
