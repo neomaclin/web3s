@@ -15,5 +15,3 @@ class AssertionsTest extends AnyFunSuite :
       verifyPrecondition(false, "")
     }
   }
-  
-end AssertionsTest

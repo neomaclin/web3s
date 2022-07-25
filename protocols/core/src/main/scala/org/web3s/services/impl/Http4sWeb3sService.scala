@@ -42,6 +42,6 @@ final case class Http4sWeb3sService[F[_] : Async: Concurrent](uri: Uri = uri"htt
     given Decoder[Response[T]] = Response.decode[T]
     client.expect[List[Response[T]]](Method.POST[List[Request]](requests, uri, headers))
 
-  def fetchStream[T:Decoder](request: Request): Stream[F,T] =
-    import dsl._
-    client.stream(request)
+  def fetchStream[T:Decoder](request: Request): Stream[F,T] = ???
+//    import dsl._
+//    client.stream(request)

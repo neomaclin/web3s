@@ -1,6 +1,7 @@
 package org.web3s
 
 import cats.MonadThrow
+import cats.syntax.functor._
 import org.web3s.protocol.eea.Eea
 import org.web3s.protocol.core.Request
 import org.web3s.protocol.core.methods.response.EthSendTransaction

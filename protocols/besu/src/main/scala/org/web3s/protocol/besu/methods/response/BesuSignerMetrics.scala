@@ -1,9 +1,9 @@
 package org.web3s.protocol.besu.methods.response
 
 import org.web3s.protocol.core.Response
-import org.web3s.protocol.core.Response.EthBigInt
+import org.web3s.utils.EthBigInt
 
-opaque type BesuSignerMetrics = Response[List[BesuSignerMetric]]
+opaque type BesuSignerMetrics = Response[List[BesuSignerMetrics.BesuSignerMetric]]
 
 object BesuSignerMetrics:
   
@@ -11,8 +11,9 @@ object BesuSignerMetrics:
                                     proposedBlockCount: EthBigInt,
                                     lastProposedBlockNumber: EthBigInt
                                    )
-  def apply(response: Response[List[BesuSignerMetric]]): BesuEthAccountsMapResponse = response
+
+  def apply(responses: Response[List[BesuSignerMetric]]): BesuSignerMetrics = responses
 
 extension (x: BesuSignerMetrics)
-  def signerMetrics: List[BesuSignerMetric] = x.result
+  def signerMetrics: List[BesuSignerMetrics.BesuSignerMetric] = x.result
 

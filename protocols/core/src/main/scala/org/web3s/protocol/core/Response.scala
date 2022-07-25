@@ -2,7 +2,10 @@ package org.web3s.protocol.core
 
 import io.circe.Decoder.Result
 import io.circe.{Decoder, HCursor}
-import io.circe.generic.semiauto._
+import io.circe.generic.semiauto.*
+import org.web3s.utils.Numeric
+
+import scala.util.Try
 
 final case class Response[T: Decoder](id: Long,
                                       jsonrpc: String,
@@ -10,13 +13,7 @@ final case class Response[T: Decoder](id: Long,
                                       error: Response.Error)
 
 object Response {
-  opaque type EthBigInt = BigInt
-
-  object EthBigInt:
-    def apply(value: BigInt): EthBigInt = value
-
-  given Decoder[EthBigInt] = Decoder.decodeString.emapTry(org.web3s.utils.Numeric.decodeQuantity).map(EthBigInt.apply)
-
+  
   private given Decoder[Error] = deriveDecoder
 
   def decode[T: Decoder]: Decoder[Response[T]] = (c: HCursor) =>

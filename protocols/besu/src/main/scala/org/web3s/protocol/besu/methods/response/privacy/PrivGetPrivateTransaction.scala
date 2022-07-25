@@ -1,12 +1,15 @@
 package org.web3s.protocol.besu.methods.response.privacy
 
-class PrivGetPrivateTransaction {
-
-}
+import org.web3s.protocol.core.Response
+import org.web3s.protocol.eea.util.*
 
 opaque type PrivGetPrivateTransaction = Response[PrivGetPrivateTransaction.PrivateTransaction]
 
 object PrivGetPrivateTransaction:
+//
+//  extension (x: PrivGetPrivateTransaction)
+//    def address: String = x.result
+//
   final case class PrivateTransaction(
                                        hash: String,
                                        nonce: String,
@@ -25,6 +28,4 @@ object PrivGetPrivateTransaction:
 
   def apply(response: Response[PrivateTransaction]): PrivGetPrivateTransaction = response
 
-extension (x: PrivGetPrivateTransaction)
-  def address: String = x.result
 

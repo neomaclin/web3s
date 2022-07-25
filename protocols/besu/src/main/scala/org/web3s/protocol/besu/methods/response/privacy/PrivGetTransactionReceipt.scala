@@ -15,7 +15,7 @@ object PrivGetTransactionReceipt:
                                              commitmentHash: String,
                                              transactionHash: String,
                                              privateFrom: String,
-                                             privateFor: ArrayList[String],
+                                             privateFor: List[String],
                                              privacyGroupId: String,
                                              status: String,
                                              revertReason: String)
