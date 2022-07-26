@@ -22,6 +22,6 @@ object BesuFullDebugTraceResponse:
                                       returnValue: String,
                                       structLogs: List[StructLogs])
 
-  def apply(response: Response[FullDebugTraceInfo]): BesuFullDebugTraceResponse = response
+  def apply(responses: Response[FullDebugTraceInfo]): BesuFullDebugTraceResponse = responses
 
 
