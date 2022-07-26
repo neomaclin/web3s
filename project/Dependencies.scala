@@ -17,7 +17,7 @@ object Dependencies {
     val mockito = "1.17.0"
     val scalaLogging = "3.9.5"
     val logback = "1.2.10"
-    val refined = "0.9.28"
+    val refined = "0.9.29"
     val http4s = "0.23.12"
     val jwt = "9.0.4"
     val log4j = "2.17.2"
@@ -99,8 +99,8 @@ object Dependencies {
   
 
   val bouncycastle = Seq(
-    "org.bouncycastle" % "bcprov-jdk15on" % "1.70",
-    "org.bouncycastle" % "bcpkix-jdk15on" % "1.70"
+    "org.bouncycastle" % "bcprov-jdk18on" % "1.71",
+    "org.bouncycastle" % "bcpkix-jdk18on" % "1.71"
 
   )
 
