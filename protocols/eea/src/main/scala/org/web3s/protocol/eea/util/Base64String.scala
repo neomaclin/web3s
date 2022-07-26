@@ -23,11 +23,6 @@ object Base64String:
       throw new IllegalArgumentException(value + " is not a 32 byte base 64 value")
     else DECODER.decode(value)
 
-  def apply(value: Array[Byte]): Base64String =
-    val v = ENCODER.encodeToString(value)
-    if !isValid(v) || v.length != 44 then
-      throw new IllegalArgumentException(value.mkString + " is not a 32 byte base 64 value")
-    else
-      value
+  def apply(value: Array[Byte]): Base64String = apply(ENCODER.encodeToString(value))
 
 
