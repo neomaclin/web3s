@@ -8,11 +8,13 @@ import org.web3s.protocol.core.*
 import org.web3s.utils.EthBigInt
 import org.web3s.utils.EthBigInt._
 import org.web3s.protocol.core.methods.request.Transaction
+import org.web3s.protocol.core.methods.response.model.TransactionReceipt
 import org.web3s.protocol.core.methods.response.*
 import org.web3s.protocol.core.methods.response.admin.*
 import org.web3s.services.Web3sService
 
-
+object Web3sEthereum:
+  val DEFAULT_BLOCK_TIME = 15 * 1000
 class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends Ethereum[F]:
   import io.circe._
   import io.circe.syntax._
@@ -156,7 +158,7 @@ class Web3sEthereum[F[_] : MonadThrow](using services: Web3sService[F]) extends 
 
 
   override def ethGetTransactionReceipt(transactionHash: String): F[EthGetTransactionReceipt] =
-    services.fetch[Option[EthGetTransactionReceipt.TransactionReceipt]](Request(method = "eth_getTransactionReceipt")).map(EthGetTransactionReceipt.apply)
+    services.fetch[Option[TransactionReceipt]](Request(method = "eth_getTransactionReceipt")).map(EthGetTransactionReceipt.apply)
 
 
   override def ethGetUncleByBlockHashAndIndex(blockHash: String, transactionIndex: BigInt): F[EthBlock] =

@@ -11,5 +11,4 @@ import org.web3s.tx.ChainIdLong
 
 trait TxSignService[F[_]]:
   def sign(rawTransaction: RawTransaction, chainId: Long): F[Array[Byte]]
-
   def address: F[String]

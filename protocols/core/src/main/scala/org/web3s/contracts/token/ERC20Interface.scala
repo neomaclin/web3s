@@ -1,7 +1,6 @@
 package org.web3s.contracts.token
 
-import org.web3s.protocol.core.methods.response.EthGetTransactionReceipt.TransactionReceipt
-
+import org.web3s.protocol.core.methods.response.model.TransactionReceipt
 trait ERC20BasicInterface[F[_],T]:
   def totalSupply: F[BigInt]
   def balanceOf(who: String): F[BigInt]

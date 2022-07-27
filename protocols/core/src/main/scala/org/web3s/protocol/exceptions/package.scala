@@ -1,8 +1,8 @@
 package org.web3s.protocol
 
-package exceptions {
+import core.methods.response.model.TransactionReceipt
 
-  import org.web3s.protocol.core.methods.response.EthGetTransactionReceipt.TransactionReceipt
+package exceptions:
 
   final case class ClientConnectionException(message: String) extends RuntimeException(message)
 
@@ -12,4 +12,4 @@ package exceptions {
                                         transactionHash: Option[String],
                                         transactionReceipt: Option[TransactionReceipt]
                                        ) extends RuntimeException(message)
-}
+

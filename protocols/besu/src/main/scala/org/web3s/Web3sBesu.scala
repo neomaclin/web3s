@@ -9,6 +9,7 @@ import org.web3s.protocol.core.*
 import org.web3s.protocol.besu.Besu
 import org.web3s.protocol.core.methods.response.*
 import org.web3s.protocol.besu.methods.response.*
+import org.web3s.protocol.besu.methods.response.model.*
 import org.web3s.protocol.besu.methods.response.privacy.{PrivFindPrivacyGroup, PrivGetPrivateTransaction, *}
 import org.web3s.protocol.core.methods.request
 import org.web3s.protocol.eea.util.Base64String
@@ -114,7 +115,7 @@ class Web3sBesu[F[_]: MonadThrow](using services: Web3sService[F]) extends Besu[
 
 
   def privGetTransactionReceipt(transactionHash: String): F[PrivGetTransactionReceipt]=
-    services.fetch[PrivGetTransactionReceipt.PrivateTransactionReceipt](Request(method = "priv_getTransactionReceipt")).map(PrivGetTransactionReceipt.apply)
+    services.fetch[PrivateTransactionReceipt](Request(method = "priv_getTransactionReceipt")).map(PrivGetTransactionReceipt.apply)
 
 
   def privGetCode(privacyGroupId: String, address: String, defaultBlockParameter: DefaultBlockParameter): F[EthGetCode]=
