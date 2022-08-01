@@ -13,6 +13,16 @@ final case class Trace(action: Trace.Action,
                        transactionPosition: BigInt)
 
 object Trace:
+
+  import io.circe.Decoder
+  import io.circe.syntax._
+  import io.circe.generic.auto._
+  import io.circe.generic.semiauto
+
+
+  given Decoder[Result] = semiauto.deriveDecoder
+  given Decoder[Trace] = semiauto.deriveDecoder
+
   final case class Result(address: String, code: String, gasUsed: String, output: String)
 
   enum Action:

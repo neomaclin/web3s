@@ -6,6 +6,7 @@ import model.FullTraceInfo
 opaque type ParityFullTraceResponse = Response[FullTraceInfo]
 
 object ParityFullTraceResponse:
+
   extension (x: ParityFullTraceResponse)
     def fullTraceInfo: FullTraceInfo = x.result
 
