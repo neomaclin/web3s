@@ -1,5 +1,7 @@
 package org.web3s.protocol.core.methods.response.model
 
+import org.web3s.protocol.core.methods.response.EthLog
+
 final case class TransactionReceipt(
                                      transactionHash: String,
                                      transactionIndex: String,
@@ -12,7 +14,7 @@ final case class TransactionReceipt(
                                      status: String,
                                      from: String,
                                      to: String,
-                                     logs: List[Log],
+                                     logs: List[EthLog.Log],
                                      logsBloom: String,
                                      revertReason: String,
                                      `type`: String,
