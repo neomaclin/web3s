@@ -3,8 +3,8 @@ package org.web3s.crypto
 import io.circe.{Json, JsonObject}
 import io.circe.Json.{JArray, JBoolean, JNull, JNumber, JObject, JString}
 import izumi.reflect.macrortti.LightTypeTagRef.SymName.SymTypeName
-import org.web3s.abi.SolidityTypes
-import org.web3s.abi.datatypes.SolidityType.MAX_BYTE_LENGTH
+import org.web3s.abi.EthTypes
+import org.web3s.abi.datatypes.EthType.MAX_BYTE_LENGTH
 import org.web3s.crypto.Hash.{sha3, sha3String}
 import org.web3s.crypto.StructuredDataEncoder.convertArgToBytes
 import org.web3s.utils.Numeric
@@ -93,7 +93,7 @@ class StructuredDataEncoder(jsonMessageInString: String):
 
   def flattenMultidimensionalArray(data: Json): List[Json] =
     if data.isArray then
-      data.asArray.map(_.flatMap(flattenMultidimensionalArray)).toList.flatten//.reduce(_ ++ _)
+      data.asArray.map(_.flatMap(flattenMultidimensionalArray)).toList.flatten
     else
       data :: Nil
   end flattenMultidimensionalArray

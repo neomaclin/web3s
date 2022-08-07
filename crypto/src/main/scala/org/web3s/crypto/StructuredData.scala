@@ -4,7 +4,7 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.collection.NonEmpty
 import eu.timepit.refined.string.*
 
-import org.web3s.abi.datatypes.{Address, SolidityUInt}
+import org.web3s.abi.datatypes.{Address, EthUInt}
 import org.web3s.abi.datatypes.generated.UInt256
 
 import io.circe._
@@ -32,9 +32,9 @@ object StructuredData:
                                  domain: StructuredData.EIP712Domain)
 
 
-  given io.circe.Decoder[UInt256] = Decoder.decodeInt.map(s => new UInt256(BigInt(s)))
+  given io.circe.Decoder[UInt256] = Decoder.decodeInt.map(s => UInt256(BigInt(s)))
 
-  given io.circe.Decoder[Address] = Decoder.decodeString.map(s => new Address(s))
+  given io.circe.Decoder[Address] = Decoder.decodeString.map(s => Address(s))
 
   given io.circe.Decoder[Entry] = deriveDecoder
 

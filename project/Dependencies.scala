@@ -19,7 +19,7 @@ object Dependencies {
     val logback = "1.2.10"
     val refined = "0.9.29"
     val http4s = "0.23.12"
-    val jwt = "9.0.4"
+    val jwt = "9.0.6"
     val log4j = "2.17.2"
     val fs2 = "3.2.8"
     val munit = "1.0.0-M1"
