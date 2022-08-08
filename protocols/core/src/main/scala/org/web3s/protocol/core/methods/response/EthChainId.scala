@@ -7,8 +7,7 @@ import org.web3s.utils.Numeric
 opaque type EthChainId = Response[EthBigInt]
 
 object EthChainId:
-  extension (x: EthChainId)
-    def chainId: BigInt = x.result.value
-
   def apply(response: Response[EthBigInt]): EthChainId = response
 
+extension (x: EthChainId)
+  def chainId: BigInt = x.result.value

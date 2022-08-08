@@ -8,7 +8,7 @@ opaque type EthEstimateGas = Response[EthBigInt]
 
 object EthEstimateGas:
 
-  extension (x: EthEstimateGas)
-    def amountUsed: BigInt = x.result.value
-
   def apply(response: Response[EthBigInt]): EthEstimateGas = response
+
+extension (x: EthEstimateGas)
+  def amountUsed: BigInt = x.result.value

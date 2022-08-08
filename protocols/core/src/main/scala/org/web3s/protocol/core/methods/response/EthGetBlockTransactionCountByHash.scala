@@ -7,8 +7,8 @@ import org.web3s.utils.Numeric
 opaque type EthGetBlockTransactionCountByHash = Response[EthBigInt]
 
 object EthGetBlockTransactionCountByHash:
-  extension (x: EthGetBlockTransactionCountByHash)
-    def transactionCount: BigInt = x.result.value
 
   def apply(response: Response[EthBigInt]): EthGetBlockTransactionCountByHash = response
 
+extension (x: EthGetBlockTransactionCountByHash)
+  def transactionCount: BigInt = x.result.value

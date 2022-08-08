@@ -7,8 +7,8 @@ import org.web3s.utils.Numeric
 opaque type EthGetBalance = Response[EthBigInt]
 
 object EthGetBalance:
-  extension (x: EthGetBalance)
-    def balance: BigInt = x.result.value
 
   def apply(response: Response[EthBigInt]): EthGetBalance = response
 
+extension (x: EthGetBalance)
+  def balance: BigInt = x.result.value

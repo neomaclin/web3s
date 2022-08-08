@@ -2,31 +2,34 @@ package org.web3s.abi.codec
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.web3s.abi.datatypes.*
+import org.web3s.abi.datatypes.generated.*
+import org.web3s.abi.codec.decoders.given
 
 class TypeDecoderTest extends AnyFunSuite :
-//
-//  test("BoolDecode")  {
-//    assert(Bool.decode("0000000000000000000000000000000000000000000000000000000000000000", 0) == new Bool(false))
-//    assert(Bool.decode("0000000000000000000000000000000000000000000000000000000000000001", 0) == new Bool(true))
-////    assert(TypeDecoder.instantiateType("bool", true), new Nothing(true))
-////    assert(TypeDecoder.instantiateType("bool", 1), new Nothing(true))
-////    assert(TypeDecoder.instantiateType("bool", false), new Nothing(false))
-////    assert(TypeDecoder.instantiateType("bool", 0), new Nothing(false))
-//  }
+
+  test("BoolDecode")  {
+    assert(TypeDecoder.decode[Bool]("0000000000000000000000000000000000000000000000000000000000000000", 0) == Bool(false))
+    assert(TypeDecoder.decode[Bool]("0000000000000000000000000000000000000000000000000000000000000001", 0) == Bool(true))
+//    assert(TypeDecoder.instantiateType("bool", true), new Nothing(true))
+//    assert(TypeDecoder.instantiateType("bool", 1), new Nothing(true))
+//    assert(TypeDecoder.instantiateType("bool", false), new Nothing(false))
+//    assert(TypeDecoder.instantiateType("bool", 0), new Nothing(false))
+  }
 ////
-//  test("BoolDecodeGivenOffset")  { // Decode second parameter as Bool
-//    assert(Bool.decode("0000000000000000000000000000000000000000000000007fffffffffffffff" + "0000000000000000000000000000000000000000000000000000000000000000" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 64) == new Bool(false))
-//    assert(Bool.decode("0000000000000000000000000000000000000000000000007fffffffffffffff" + "0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 64) == new Bool(true))
-//  }
+  test("BoolDecodeGivenOffset")  { // Decode second parameter as Bool
+    assert(TypeDecoder.decode[Bool]("0000000000000000000000000000000000000000000000007fffffffffffffff" + "0000000000000000000000000000000000000000000000000000000000000000" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 64) == Bool(false))
+    assert(TypeDecoder.decode[Bool]("0000000000000000000000000000000000000000000000007fffffffffffffff" + "0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 64) == Bool(true))
+  }
   
 //  test("UintDecode"){
-//    val test = NumericType.decode[SolidityInt]("0000000000000000000000000000000000000000000000000000000000000000")
-//  }
 //
+//    assert(TypeDecoder.decode[UInt8]("0000000000000000000000000000000000000000000000000000000000000000") == UInt8(BigInt(0)))
+//  }
+////
 //  def testUintDecode() = {
 //    assertEquals(TypeDecoder.instantiateType("uint", 123), new Nothing(BigInteger.valueOf(123)))
 //    assertEquals(TypeDecoder.instantiateType("uint", 1.0e20), new Nothing(BigInteger.TEN.pow(20)))
-//    assertEquals(TypeDecoder.decodeNumeric("0000000000000000000000000000000000000000000000000000000000000000", classOf[Nothing]), new Nothing(BigInteger.ZERO))
+//    assertEquals(TypeDecoder.decodeNumeric("0000000000000000000000000000000000000000000000000000000000000000", classOf[Nothing]), UInt8(BigInteger.ZERO))
 //    assertEquals(TypeDecoder.decodeNumeric("00000000000000000000000000000000000000000000000000000000000000ff", classOf[Nothing]), new Nothing(BigInteger.valueOf(255)))
 //    assertEquals(TypeDecoder.decodeNumeric("0000000000000000000000000000000000000000000000000000000000000000", classOf[Nothing]), new Nothing(BigInteger.ZERO))
 //    assertEquals(TypeDecoder.decodeNumeric("000000000000000000000000000000000000000000000000000000000000ffff", classOf[Nothing]), new Nothing(BigInteger.valueOf(65535)))
@@ -296,4 +299,3 @@ class TypeDecoderTest extends AnyFunSuite :
 //    row1 = staticArray3StaticArray3.getValue.get(1).getValue.get(1)
 //    assertEquals(row1.getValue.get(1), new Nothing(2))
 //  }
-end TypeDecoderTest

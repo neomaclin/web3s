@@ -4,6 +4,7 @@ import cats.MonadThrow
 import cats.syntax.functor.*
 import org.web3s.protocol.admin.Admin
 import org.web3s.protocol.admin.methods.response.*
+import org.web3s.protocol.admin.methods.response.decoders.given
 import org.web3s.protocol.core.methods.request.Transaction
 import org.web3s.protocol.core.methods.response.EthTransaction
 import org.web3s.protocol.core.methods.response.EthSendTransaction

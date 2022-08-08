@@ -17,11 +17,12 @@ package encoders:
     val value = bytesType.value
     val length = value.length
     val mod = length % MAX_BYTE_LENGTH
-    val dest = if mod != 0 then
-      val temp = new Array[Byte](length + (MAX_BYTE_LENGTH - mod))
-      Array.copy(value, 0, temp, 0, length)
-      temp
-    else value
+    val dest =
+      if mod != 0 then
+        val temp = new Array[Byte](length + (MAX_BYTE_LENGTH - mod))
+        Array.copy(value, 0, temp, 0, length)
+        temp
+      else value
     Numeric.toHexStringNoPrefix(dest)
 
   private def encodeNumericType[T <: EthNumericType : Typeable](numericType: T): String =
@@ -33,7 +34,6 @@ package encoders:
           if u.value.bitLength == MAX_BIT_LENGTH then u.value.toByteArray.tail else u.value.toByteArray
         case _ =>
           numericType.value.toByteArray
-    end toByteArray
 
     def paddingValue(numericType: T): Byte = if numericType.value.signum == -1 then 0xff.toByte else 0
 
@@ -81,7 +81,7 @@ package encoders:
     override def encodePacked(value: EthUtf8String): String =
       encode(value).substring(64, 64 + value.value.getBytes.length * 2)
 
-  given encodeStaticArrayFor[T <: EthType[_] : Tag : Encodable,A <: StaticArray[T]]: Encodable[A] with
+  given encodeStaticArrayFor[T <: EthType[_] : Tag : Encodable, A <: StaticArray[T]]: Encodable[A] with
     override def encode(value: A): String =
       value.value.map(TypeEncoder.encode[T](_)).mkString
 
@@ -102,7 +102,7 @@ package encoders:
 
     override def encodePacked(value: T): String = encode(value).substring(0, value.value.length * 2)
 
-  given encodePrimitive[P <: PrimitiveType[_]]: Encodable[P] with
+  given encodePrimitive[T <: AnyVal : Typeable, P <: PrimitiveType[T]]: Encodable[P] with
     override def encode(value: P): String = value.value match
       case x: Byte => TypeEncoder.encode(x.asEthType)
       case x: Short => TypeEncoder.encode(x.asEthType)
@@ -120,5 +120,3 @@ package encoders:
       case x: Char => TypeEncoder.encodePacked(x.asEthType)
       case x: Double => throw new UnsupportedOperationException("Type cannot be encoded: Double")
       case x: Float => throw new UnsupportedOperationException("Type cannot be encoded: Float")
-
-

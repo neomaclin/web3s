@@ -6,14 +6,9 @@ import org.web3s.utils.Numeric
 opaque type EthBlock = Response[EthBlock.Block]
 
 object EthBlock:
-  import io.circe.Decoder
-  import io.circe.syntax._
-  import io.circe.generic.semiauto._
   import EthTransaction._
 
   type TransactionResult = Transaction
-
-  given Decoder[Block] = deriveDecoder[Block]
 
   final case class Block(
                           number: String,

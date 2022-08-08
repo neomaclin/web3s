@@ -7,12 +7,6 @@ import org.web3s.protocol.core.Response
 opaque type EthTransaction = Response[Option[EthTransaction.Transaction]]
 
 object EthTransaction:
-  import io.circe.Decoder
-  import io.circe.syntax._
-  import io.circe.generic.semiauto._
-  
-  given Decoder[AccessListObject] = deriveDecoder[AccessListObject]
-  given Decoder[Transaction] = deriveDecoder[Transaction]
   
   final case class AccessListObject(address: String, storageKeys: List[String])
 

@@ -8,9 +8,6 @@ opaque type EthFeeHistory = Response[EthFeeHistory.FeeHistory]
 
 object EthFeeHistory:
 
-  extension (x: EthFeeHistory)
-    def feeHistory: EthFeeHistory.FeeHistory = x.result
-
   final case class FeeHistory(oldestBlock: String,
                               reward: List[List[EthBigInt]],
                               baseFeePerGas: List[EthBigInt],
@@ -19,4 +16,5 @@ object EthFeeHistory:
 
   def apply(responses: Response[FeeHistory]): EthFeeHistory = responses
 
-
+extension (x: EthFeeHistory)
+  def feeHistory: EthFeeHistory.FeeHistory = x.result

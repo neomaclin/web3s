@@ -9,7 +9,7 @@ import java.io.File
 object AbiTypesGenerator extends Generator with IOApp :
 
   val packageName = "org.web3s.abi.datatypes.generated"
-  val destDir =
+  val destDir: String =
     (System.getProperty("user.dir") + "/abi/src/main/scala/" + packageName.replace('.', '/')).replace('/', File.separatorChar) + File.separatorChar
   
   override def run(args: List[String]): IO[ExitCode] = 

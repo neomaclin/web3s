@@ -7,8 +7,8 @@ import org.web3s.utils.Numeric
 opaque type EthGasPrice = Response[EthBigInt]
 
 object EthGasPrice:
-  extension (x: EthGasPrice)
-    def gasPrice: BigInt = x.result.value
-
   def apply(response: Response[EthBigInt]): EthGasPrice = response
+
+extension (x: EthGasPrice)
+  def gasPrice: BigInt = x.result.value
 

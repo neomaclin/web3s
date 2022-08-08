@@ -8,9 +8,6 @@ final case class EthFilter(fromBlock: Option[DefaultBlockParameter] = None,
                            address: List[String]) extends Filter[EthFilter] :
   override def filter: EthFilter = this
 
-end EthFilter
-
-
 object EthFilter:
   def from(fromBlock: DefaultBlockParameter, toBlock: DefaultBlockParameter, address: List[String]): EthFilter =
     EthFilter(Some(fromBlock), Some(toBlock), None, address)

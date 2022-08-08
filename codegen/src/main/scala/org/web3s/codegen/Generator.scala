@@ -14,8 +14,3 @@ trait Generator:
           .through(text.utf8.encode)
           .through(Files[F].writeAll(Path(destinationDir + fileName)))
       ).compile.drain
-
-  end write
-
-
-end Generator

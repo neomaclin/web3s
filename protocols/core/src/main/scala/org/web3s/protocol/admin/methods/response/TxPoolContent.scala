@@ -8,12 +8,6 @@ import org.web3s.protocol.core.methods.response.EthTransaction.Transaction
 opaque type TxPoolContent = Response[TxPoolContent.TxPoolContentResult]
 
 object TxPoolContent:
-  import io.circe.Decoder
-  import io.circe.generic.semiauto._
-  import EthTransaction._
- // given Decoder[BigInt] = Decoder.decodeBigInt
-
-  given Decoder[TxPoolContentResult] = deriveDecoder[TxPoolContentResult]
 
   final case class TxPoolContentResult(pending: Map[String, Map[Long, Transaction]],
                                        queued: Map[String, Map[Long, Transaction]])

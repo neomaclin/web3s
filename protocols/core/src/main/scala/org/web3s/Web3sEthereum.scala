@@ -10,6 +10,7 @@ import org.web3s.utils.EthBigInt._
 import org.web3s.protocol.core.methods.request.Transaction
 import org.web3s.protocol.core.methods.response.model.TransactionReceipt
 import org.web3s.protocol.core.methods.response.*
+import org.web3s.protocol.core.methods.response.decoders.given
 import org.web3s.protocol.core.methods.response.admin.*
 import org.web3s.services.Web3sService
 
