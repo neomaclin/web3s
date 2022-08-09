@@ -96,7 +96,7 @@ class TypeDecoderTest extends AnyFunSuite :
 
   }
 
-  test("IntDecode"){
+  test("IntDecode") {
     assert(TypeDecoder.decode[Int8]("0000000000000000000000000000000000000000000000000000000000000000") == Int8(BigInt(0)))
     assert(TypeDecoder.decode[Int8]("000000000000000000000000000000000000000000000000000000000000007f") == Int8(BigInt(127)))
     assert(TypeDecoder.decode[Int16]("0000000000000000000000000000000000000000000000000000000000000000") == Int16(BigInt(0)))
@@ -162,95 +162,95 @@ class TypeDecoderTest extends AnyFunSuite :
     assert(TypeDecoder.decode[Int248]("0000000000000000000000000000000000000000000000000000000000000000") == Int248(BigInt(0)))
     assert(TypeDecoder.decode[Int248]("007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff") == Int248(BigInt("226156424291633194186662080095093570025917938800079226639565593765455331327")))
     assert(TypeDecoder.decode[Int256]("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff") == Int256(BigInt(-(1))))
-//    assert(TypeDecoder.instantiateType("int", 123), new Nothing(BigInt(123)))
-//    assert(TypeDecoder.instantiateType("int", -123), new Nothing(BigInt(-(123))))
+    //    assert(TypeDecoder.instantiateType("int", 123), new Nothing(BigInt(123)))
+    //    assert(TypeDecoder.instantiateType("int", -123), new Nothing(BigInt(-(123))))
+  }
+  //
+  //  /*
+  //      TODO: Enable once Solidity supports fixed types - see
+  //      https://github.com/ethereum/solidity/issues/409
+  //
+  //      @Test
+  //      public void testUfixedDecode() {
+  //          assert(TypeDecoder.decode[Int](
+  //                  "0000000000000000000000000000000000000000000000000000000000000000",
+  //                  Ufixed24x40.class),
+  //                  (new Ufixed24x40(BigInt(0))));
+  //
+  //          assert(TypeDecoder.decode[Int](
+  //                  "0000000000000000000000000000000000000000000000007fffffffffffffff",
+  //                  Ufixed24x40.class),
+  //                  (new Ufixed24x40(BigInt(Long.MAX_VALUE))));
+  //
+  //          assert(TypeDecoder.decode[Int](
+  //                  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  //                  Ufixed.class),
+  //                  (new Ufixed(
+  //                          new BigInt(
+  //                                  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  //                                  16
+  //                          ))));
+  //      }
+  //
+  //      @Test
+  //      public void testFixedDecode() {
+  //          assert(TypeDecoder.decode[Int](
+  //                  "0000000000000000000000000000000000000000000000000000000000000000",
+  //                  Fixed24x40.class),
+  //                  (new Fixed24x40(BigInt(0))));
+  //
+  //          assert(TypeDecoder.decode[Int](
+  //                  "0000000000000000000000000000000000000000000000007fffffffffffffff",
+  //                  Fixed24x40.class),
+  //                  (new Fixed24x40(BigInt(Long.MAX_VALUE))));
+  //
+  //          assert(TypeDecoder.decode[Int](
+  //                  "ffffffffffffffffffffffffffffffffffffffffffffffff8000000000000000",
+  //                  Fixed24x40.class),
+  //                  (new Fixed24x40(BigInt(Long.MIN_VALUE))));
+  //
+  //          assert(TypeDecoder.decode[Int](
+  //                  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  //                  Fixed.class),
+  //                  (new Fixed(BigInt(-1))));
+  //      }
+  //      */
+  test("StaticBytes") {
+    val testbytes = Array[Byte](0, 1, 2, 3, 4, 5)
+    val staticBytes = Bytes6(testbytes)
+    assert(TypeDecoder.decode[Bytes6]("0001020304050000000000000000000000000000000000000000000000000000") == staticBytes)
+    val empty = Bytes1(Array[Byte](0))
+    assert(TypeDecoder.decode[Bytes1]("0000000000000000000000000000000000000000000000000000000000000000") == empty)
+    val dave = Bytes4("dave".getBytes)
+    assert(TypeDecoder.decode[Bytes4]("6461766500000000000000000000000000000000000000000000000000000000") == dave)
+    //assert(TypeDecoder.instantiateType("bytes6", testbytes), new Nothing(testbytes))
+  }
+
+  test("DynamicBytes") {
+    val testbytes = Array[Byte](0, 1, 2, 3, 4, 5)
+    val dynamicBytes = DynamicBytes(testbytes)
+    assert(TypeDecoder.decode[DynamicBytes]("0000000000000000000000000000000000000000000000000000000000000006"  + "0001020304050000000000000000000000000000000000000000000000000000", 0) == dynamicBytes)
+    val empty = DynamicBytes(Array[Byte](0))
+    assert(TypeDecoder.decode[DynamicBytes]("0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000000000000000000000", 0) == empty)
+    val dave = DynamicBytes("dave".getBytes)
+    assert(TypeDecoder.decode[DynamicBytes]("0000000000000000000000000000000000000000000000000000000000000004" + "6461766500000000000000000000000000000000000000000000000000000000", 0) == dave)
+    val loremIpsum = DynamicBytes(("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " + "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim " + "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex " + "ea commodo consequat. Duis aute irure dolor in reprehenderit in " + "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur " + "sint occaecat cupidatat non proident, sunt in culpa qui officia " + "deserunt mollit anim id est laborum.").getBytes)
+    assert(TypeDecoder.decode[DynamicBytes]("00000000000000000000000000000000000000000000000000000000000001bd" + "4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73" + "656374657475722061646970697363696e6720656c69742c2073656420646f20" + "656975736d6f642074656d706f7220696e6369646964756e74207574206c6162" + "6f726520657420646f6c6f7265206d61676e6120616c697175612e2055742065" + "6e696d206164206d696e696d2076656e69616d2c2071756973206e6f73747275" + "6420657865726369746174696f6e20756c6c616d636f206c61626f726973206e" + "69736920757420616c697175697020657820656120636f6d6d6f646f20636f6e" + "7365717561742e2044756973206175746520697275726520646f6c6f7220696e" + "20726570726568656e646572697420696e20766f6c7570746174652076656c69" + "7420657373652063696c6c756d20646f6c6f726520657520667567696174206e" + "756c6c612070617269617475722e204578636570746575722073696e74206f63" + "63616563617420637570696461746174206e6f6e2070726f6964656e742c2073" + "756e7420696e2063756c706120717569206f666669636961206465736572756e" + "74206d6f6c6c697420616e696d20696420657374206c61626f72756d2e000000", 0) == loremIpsum)
+    //assert(TypeDecoder.instantiateType("bytes", testbytes), new Nothing(testbytes))
   }
 //
-//  /*
-//      TODO: Enable once Solidity supports fixed types - see
-//      https://github.com/ethereum/solidity/issues/409
+  test("Address") {
+    assert(TypeDecoder.decode[Address]("000000000000000000000000be5422d15f39373eb0a97ff8c10fbd0e40e29338") == Address("0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"))
+    assert(TypeDecoder.decode[Address]("000000000000000000000000be5422d15f39373eb0a97ff8c10fbd0e40e29338") == Address("0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"))
+   // assert(TypeDecoder.instantiateType("address", "0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"), new Nothing("0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"))
+   // assert(TypeDecoder.instantiateType("address", BigInt.ONE), new Nothing("0x0000000000000000000000000000000000000001"))
+  }
 //
-//      @Test
-//      public void testUfixedDecode() {
-//          assert(TypeDecoder.decode[Int](
-//                  "0000000000000000000000000000000000000000000000000000000000000000",
-//                  Ufixed24x40.class),
-//                  (new Ufixed24x40(BigInt(0))));
-//
-//          assert(TypeDecoder.decode[Int](
-//                  "0000000000000000000000000000000000000000000000007fffffffffffffff",
-//                  Ufixed24x40.class),
-//                  (new Ufixed24x40(BigInt(Long.MAX_VALUE))));
-//
-//          assert(TypeDecoder.decode[Int](
-//                  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-//                  Ufixed.class),
-//                  (new Ufixed(
-//                          new BigInt(
-//                                  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-//                                  16
-//                          ))));
-//      }
-//
-//      @Test
-//      public void testFixedDecode() {
-//          assert(TypeDecoder.decode[Int](
-//                  "0000000000000000000000000000000000000000000000000000000000000000",
-//                  Fixed24x40.class),
-//                  (new Fixed24x40(BigInt(0))));
-//
-//          assert(TypeDecoder.decode[Int](
-//                  "0000000000000000000000000000000000000000000000007fffffffffffffff",
-//                  Fixed24x40.class),
-//                  (new Fixed24x40(BigInt(Long.MAX_VALUE))));
-//
-//          assert(TypeDecoder.decode[Int](
-//                  "ffffffffffffffffffffffffffffffffffffffffffffffff8000000000000000",
-//                  Fixed24x40.class),
-//                  (new Fixed24x40(BigInt(Long.MIN_VALUE))));
-//
-//          assert(TypeDecoder.decode[Int](
-//                  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-//                  Fixed.class),
-//                  (new Fixed(BigInt(-1))));
-//      }
-//      */
-//  def testStaticBytes() = {
-//    val testbytes = Array[Byte](0, 1, 2, 3, 4, 5)
-//    val staticBytes = new Nothing(testbytes)
-//    assert(TypeDecoder.decodeBytes("0001020304050000000000000000000000000000000000000000000000000000", classOf[Nothing]), staticBytes)
-//    val empty = new Nothing(Array[Byte](0))
-//    assert(TypeDecoder.decodeBytes("0000000000000000000000000000000000000000000000000000000000000000", classOf[Nothing]), empty)
-//    val dave = new Nothing("dave".getBytes)
-//    assert(TypeDecoder.decodeBytes("6461766500000000000000000000000000000000000000000000000000000000", classOf[Nothing]), dave)
-//    assert(TypeDecoder.instantiateType("bytes6", testbytes), new Nothing(testbytes))
-//  }
-//
-//  def testDynamicBytes() = {
-//    val testbytes = Array[Byte](0, 1, 2, 3, 4, 5)
-//    val dynamicBytes = new Nothing(testbytes)
-//    assert(TypeDecoder.decodeDynamicBytes("0000000000000000000000000000000000000000000000000000000000000006" // length + "0001020304050000000000000000000000000000000000000000000000000000", 0), (dynamicBytes))
-//    val empty = new Nothing(Array[Byte](0))
-//    assert(TypeDecoder.decodeDynamicBytes("0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000000000000000000000", 0), empty)
-//    val dave = new Nothing("dave".getBytes)
-//    assert(TypeDecoder.decodeDynamicBytes("0000000000000000000000000000000000000000000000000000000000000004" + "6461766500000000000000000000000000000000000000000000000000000000", 0), dave)
-//    val loremIpsum = new Nothing(("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " + "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim " + "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex " + "ea commodo consequat. Duis aute irure dolor in reprehenderit in " + "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur " + "sint occaecat cupidatat non proident, sunt in culpa qui officia " + "deserunt mollit anim id est laborum.").getBytes)
-//    assert(TypeDecoder.decodeDynamicBytes("00000000000000000000000000000000000000000000000000000000000001bd" + "4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73" + "656374657475722061646970697363696e6720656c69742c2073656420646f20" + "656975736d6f642074656d706f7220696e6369646964756e74207574206c6162" + "6f726520657420646f6c6f7265206d61676e6120616c697175612e2055742065" + "6e696d206164206d696e696d2076656e69616d2c2071756973206e6f73747275" + "6420657865726369746174696f6e20756c6c616d636f206c61626f726973206e" + "69736920757420616c697175697020657820656120636f6d6d6f646f20636f6e" + "7365717561742e2044756973206175746520697275726520646f6c6f7220696e" + "20726570726568656e646572697420696e20766f6c7570746174652076656c69" + "7420657373652063696c6c756d20646f6c6f726520657520667567696174206e" + "756c6c612070617269617475722e204578636570746575722073696e74206f63" + "63616563617420637570696461746174206e6f6e2070726f6964656e742c2073" + "756e7420696e2063756c706120717569206f666669636961206465736572756e" + "74206d6f6c6c697420616e696d20696420657374206c61626f72756d2e000000", 0), loremIpsum)
-//    assert(TypeDecoder.instantiateType("bytes", testbytes), new Nothing(testbytes))
-//  }
-//
-//  def testAddress() = {
-//    assert(TypeDecoder.decodeAddress("000000000000000000000000be5422d15f39373eb0a97ff8c10fbd0e40e29338"), new Nothing("0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"))
-//    assert(TypeDecoder.decodeAddress("000000000000000000000000be5422d15f39373eb0a97ff8c10fbd0e40e29338"), new Nothing("0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"))
-//    assert(TypeDecoder.instantiateType("address", "0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"), new Nothing("0xbe5422d15f39373eb0a97ff8c10fbd0e40e29338"))
-//    assert(TypeDecoder.instantiateType("address", BigInt.ONE), new Nothing("0x0000000000000000000000000000000000000001"))
-//  }
-//
-//  def testUtf8String() = {
-//    assert(TypeDecoder.decodeUtf8String("000000000000000000000000000000000000000000000000000000000000000d" + "48656c6c6f2c20776f726c642100000000000000000000000000000000000000", 0), new Nothing("Hello, world!"))
-//    assert(TypeDecoder.instantiateType("string", "Hello, world!"), new Nothing("Hello, world!"))
-//  }
-//
+  test("Utf8String") {
+    assert(TypeDecoder.decode[EthUtf8String]("000000000000000000000000000000000000000000000000000000000000000d" + "48656c6c6f2c20776f726c642100000000000000000000000000000000000000", 0) == EthUtf8String("Hello, world!"))
+ //   assert(TypeDecoder.instantiateType("string", "Hello, world!"), new Nothing("Hello, world!"))
+  }
+
 //  def testStaticArray() = {
 //    assert(TypeDecoder.decodeStaticArray("000000000000000000000000000000000000000000000000000000000000000a" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 0, new Nothing(2) {}, 2), new Nothing(classOf[Nothing], new Nothing(BigInt.TEN), new Nothing(BigInt(Long.MAX_VALUE))))
 //    assert(TypeDecoder.decodeStaticArray("0000000000000000000000000000000000000000000000000000000000000040" + "0000000000000000000000000000000000000000000000000000000000000080" + "000000000000000000000000000000000000000000000000000000000000000d" + "48656c6c6f2c20776f726c642100000000000000000000000000000000000000" + "000000000000000000000000000000000000000000000000000000000000000d" + "776f726c64212048656c6c6f2c00000000000000000000000000000000000000", 0, new Nothing(2) {}, 2), new Nothing(classOf[Nothing], new Nothing("Hello, world!"), new Nothing("world! Hello,")))

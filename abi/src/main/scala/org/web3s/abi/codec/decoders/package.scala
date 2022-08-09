@@ -18,6 +18,8 @@ package decoders:
   import org.web3s.abi.codec.TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING
   import org.web3s.abi.datatypes.EthNumericType
 
+  import java.nio.charset.StandardCharsets
+
   def typeLengthOf[T <: EthNumericType : Tag]: Int =
     Tag[T].tag.toString match
       case uintR(size) => size.toInt
@@ -34,18 +36,32 @@ package decoders:
     val inputByteArray = Numeric.hexStringToByteArray(input)
     val typeLengthAsBytes = typeLengthInBytes[T]
     val resultByteArray = new Array[Byte](typeLengthAsBytes + 1)
-
     Tag[T].tag.toString match
       case uintR(size) => ()
       case intR(size) => resultByteArray(0) = inputByteArray(0) // take MSB as sign bit
-
     val valueOffset = EthType.MAX_BYTE_LENGTH - typeLengthAsBytes
     Array.copy(inputByteArray, valueOffset, resultByteArray, 1, typeLengthAsBytes)
     BigInt(resultByteArray)
 
+  inline given Decodable[DynamicBytes] with
+    override def decode(rawInput: String, offset: Int): DynamicBytes =
+      val input = rawInput.substring(offset, offset + MAX_BYTE_LENGTH_FOR_HEX_STRING)
+      val encodedLength = TypeDecoder.decode[UInt64](input, 0).value.intValue
+      val hexStringEncodedLength = encodedLength << 1
+      val valueOffset: Int = offset + MAX_BYTE_LENGTH_FOR_HEX_STRING
+
+      val data: String = rawInput.substring(valueOffset, valueOffset + hexStringEncodedLength)
+      val bytes: Array[Byte] = Numeric.hexStringToByteArray(data)
+      DynamicBytes(bytes)
+
+
   inline given Decodable[Address] with
     override def decode(data: String, offset: Int): Address =
       Address(TypeDecoder.decode[UInt160](data, offset))
+
+  inline given Decodable[EthUtf8String] with
+    override def decode(data: String, offset: Int): EthUtf8String =
+      EthUtf8String(new String(TypeDecoder.decode[DynamicBytes](data, offset).value, StandardCharsets.UTF_8))
 
 
   inline given Decodable[Bool] with
@@ -61,13 +77,12 @@ package decoders:
     (data: String, offset: Int) => DecoderMacro.initiateUInt[T](decodeNumeric[T](data, offset))
   }
 
+  inline given decodeBytes[T <: Bytes : Tag]: Decodable[T] =
 
-//  given decodeNumericBytes[T <: Bytes : Tag]: Decodable[T] with
-//      def decode(input: String, offset: Int): T =
-//        val bytesR(lengthStr) = Tag[T].tag.toString
-//        val length = lengthStr.toInt
-//        val hexStringLength = length << 1
-//        val value = Numeric.hexStringToByteArray(input.substring(offset, offset + hexStringLength))
-//        Bytes(length, value).asInstanceOf[T]
+    (data: String, offset: Int) =>
+      val bytesR(lengthStr) = Tag[T].tag.toString
+      val length = lengthStr.toInt
+      val hexStringLength = length << 1
+      DecoderMacro.initiateBytes[T](Numeric.hexStringToByteArray(data.substring(offset, offset + hexStringLength)))
 //    
 //
