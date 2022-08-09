@@ -10,7 +10,6 @@ import org.web3s.utils.Numeric
 
 object Bool:
   val DEFAULT = new Bool(false)
-  val MAX_BYTE_LENGTH_FOR_HEX_STRING: Int = MAX_BYTE_LENGTH << 1
   given (Boolean => Bool) = new Bool(_)
 
 final class Bool(override val value: Boolean) extends EthType[Boolean]:

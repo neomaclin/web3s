@@ -18,7 +18,7 @@ object EthInt:
   val TYPE_NAME = "int"
   val DEFAULT = EthInt(BigInt(0))
 
-class EthInt(override val bitSize: Int,
+open class EthInt(override val bitSize: Int,
              override val value: BigInt) extends EthIntType(EthInt.TYPE_NAME, bitSize, value) :
   def this(value: BigInt) = this(MAX_BIT_LENGTH, value)
 
@@ -27,7 +27,7 @@ object EthUInt:
   val TYPE_NAME = "uint"
   val DEFAULT = EthUInt(BigInt(0))
 
-class EthUInt(override val bitSize: Int,
+open class EthUInt(override val bitSize: Int,
               override val value: BigInt) extends EthIntType(EthUInt.TYPE_NAME, bitSize, value):
   def this(value: BigInt) = this(MAX_BIT_LENGTH, value)
   override def valid: Boolean = super.valid && 0 <= value.signum

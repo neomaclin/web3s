@@ -2,6 +2,7 @@ package org.web3s.abi.codec
 
 
 import org.web3s.abi.datatypes.*
+import org.web3s.abi.datatypes.generated.*
 import org.web3s.abi.EthTypes
 import org.web3s.abi.codec.{Encodable, TypeEncoder}
 import org.web3s.utils.Numeric
@@ -15,6 +16,7 @@ package decoders:
 
   import org.web3s.abi.datatypes.EthType.MAX_BYTE_LENGTH
   import org.web3s.abi.codec.TypeDecoder.MAX_BYTE_LENGTH_FOR_HEX_STRING
+  import org.web3s.abi.datatypes.EthNumericType
 
   def typeLengthOf[T <: EthNumericType : Tag]: Int =
     Tag[T].tag.toString match
@@ -28,49 +30,37 @@ package decoders:
   private val intR = """Int(\d*)""".r
   private val bytesR = "Bytes(\\d+)".r
 
-  given Decodable[Bool] with
+  private def decodeNumeric[T <: EthNumericType : Tag](input: String, offset: Int = 0): BigInt =
+    val inputByteArray = Numeric.hexStringToByteArray(input)
+    val typeLengthAsBytes = typeLengthInBytes[T]
+    val resultByteArray = new Array[Byte](typeLengthAsBytes + 1)
+
+    Tag[T].tag.toString match
+      case uintR(size) => ()
+      case intR(size) => resultByteArray(0) = inputByteArray(0) // take MSB as sign bit
+
+    val valueOffset = EthType.MAX_BYTE_LENGTH - typeLengthAsBytes
+    Array.copy(inputByteArray, valueOffset, resultByteArray, 1, typeLengthAsBytes)
+    BigInt(resultByteArray)
+
+  inline given Decodable[Address] with
+    override def decode(data: String, offset: Int): Address =
+      Address(TypeDecoder.decode[UInt160](data, offset))
+
+
+  inline given Decodable[Bool] with
     override def decode(data: String, offset: Int): Bool =
-      val input = data.substring(offset, offset + Bool.MAX_BYTE_LENGTH_FOR_HEX_STRING)
+      val input = data.substring(offset, offset + MAX_BYTE_LENGTH_FOR_HEX_STRING)
       val numericValue = Numeric.toBigInt(input)
       Bool(numericValue == BigInt(1))
-//  given decodeNumeric[T <: EthUInt:Tag]: Decodable[T] with
-//
-//    def decode(rawInput: String, offset: Int = 0): T =
-//      val input = rawInput.substring(offset, offset + MAX_BYTE_LENGTH_FOR_HEX_STRING)
-//      val inputByteArray = Numeric.hexStringToByteArray(input)
-//      val typeLengthAsBytes = typeLengthInBytes[T]
-//      val resultByteArray = new Array[Byte](typeLengthAsBytes + 1)
-//      val valueOffset = EthType.MAX_BYTE_LENGTH - typeLengthAsBytes
-//      Array.copy(inputByteArray, valueOffset, resultByteArray, 0, typeLengthAsBytes)
 
-     // val numericValue = BigInt(resultByteArray)
-     // init[T](numericValue)
-//      Tag[T].tag.toString match
-//        case uintR(bitSizeStr) => EthInt(bitSizeStr.toInt, numericValue).asInstanceOf[T]
-//        case intR(bitSizeStr) => EthInt(bitSizeStr.toInt, numericValue).asInstanceOf[T]
-//        case "Fixed"  => Fixed(numericValue).asInstanceOf[T]
-//        case "UFixed" => UFixed(numericValue).asInstanceOf[T]
-//        case _ => EthUInt(numericValue).asInstanceOf[T]
+  inline given decodeInt[T <: EthInt : Tag]: Decodable[T] =
+    (data: String, offset: Int) => DecoderMacro.initiateInt[T](decodeNumeric[T](data, offset))
 
+  inline given decodeUInt[T <: EthUInt : Tag]: Decodable[T] = {
+    (data: String, offset: Int) => DecoderMacro.initiateUInt[T](decodeNumeric[T](data, offset))
+  }
 
-//
-//  given decodeNumeric[T <: EthNumericType : Tag]: Decodable[T] with
-//    def decode(rawInput: String, offset: Int = 0): T =
-//      val input = rawInput.substring(offset, offset + MAX_BYTE_LENGTH_FOR_HEX_STRING)
-//      val inputByteArray = Numeric.hexStringToByteArray(input)
-//      val typeLengthAsBytes = typeLengthInBytes[T]
-//      val resultByteArray = new Array[Byte](typeLengthAsBytes + 1)
-//      val valueOffset = EthType.MAX_BYTE_LENGTH - typeLengthAsBytes
-//      Array.copy(inputByteArray, valueOffset, resultByteArray, 0, typeLengthAsBytes)
-//
-//      val numericValue = BigInt(resultByteArray)
-
-//      Tag[T].tag.toString match
-//        case uintR(bitSizeStr) => initiateUInt[T](numericValue)
-//        case intR(bitSizeStr) => EthInt(bitSizeStr.toInt, numericValue).asInstanceOf[T]
-//        case "Fixed"  => Fixed(numericValue).asInstanceOf[T]
-//        case "UFixed" => UFixed(numericValue).asInstanceOf[T]
-//        case _ => EthUInt(numericValue).asInstanceOf[T]
 
 //  given decodeNumericBytes[T <: Bytes : Tag]: Decodable[T] with
 //      def decode(input: String, offset: Int): T =
