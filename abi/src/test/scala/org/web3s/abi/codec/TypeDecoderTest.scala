@@ -4,6 +4,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.web3s.abi.datatypes.*
 import org.web3s.abi.datatypes.generated.*
 import org.web3s.abi.codec.decoders.given
+import org.web3s.abi.codec.decoders.DecoderMacro
 
 class TypeDecoderTest extends AnyFunSuite :
 
@@ -21,10 +22,11 @@ class TypeDecoderTest extends AnyFunSuite :
     assert(TypeDecoder.decode[Bool]("0000000000000000000000000000000000000000000000007fffffffffffffff" + "0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 64) == Bool(true))
   }
   
-//  test("UintDecode"){
-//
-//    assert(TypeDecoder.decode[UInt8]("0000000000000000000000000000000000000000000000000000000000000000") == UInt8(BigInt(0)))
-//  }
+  test("UintDecode"){
+
+   // println(DecoderMacro.initiateUInt[UInt8](BigInt(0)))
+   // assert(TypeDecoder.decode[UInt8]("0000000000000000000000000000000000000000000000000000000000000000") == UInt8(BigInt(0)))
+  }
 ////
 //  def testUintDecode() = {
 //    assertEquals(TypeDecoder.instantiateType("uint", 123), new Nothing(BigInteger.valueOf(123)))

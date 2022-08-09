@@ -31,7 +31,7 @@ object AbiTypesGenerator extends Generator with IOApp :
            |object Int$size:
            |  val DEFAULT = Int$size(BigInt(0))
            |
-           |final class Int$size(value: BigInt) extends EthInt($size, value):
+           |final case class Int$size(override val value: BigInt) extends EthInt($size, value):
            |  def this(value: Long) = this(BigInt(value))
            |""".stripMargin, s"""Int$size.scala""")
     end intTemplate
@@ -48,7 +48,7 @@ object AbiTypesGenerator extends Generator with IOApp :
            |object UInt$size:
            |  val DEFAULT = UInt$size(BigInt(0))
            |
-           |final class UInt$size(value: BigInt) extends EthUInt($size, value):
+           |final case class UInt$size(override val value: BigInt) extends EthUInt($size, value):
            |  def this(value: Long) = this(BigInt(value))
            |""".stripMargin, s"""UInt$size.scala""")
     end uintTemplate
@@ -65,7 +65,7 @@ object AbiTypesGenerator extends Generator with IOApp :
            |object Bytes$size:
            |  val DEFAULT = Bytes$size(new Array[Byte]($size))
            |
-           |final class Bytes$size(override val value: Array[Byte]) extends Bytes($size, value)
+           |final case class Bytes$size(override val value: Array[Byte]) extends Bytes($size, value)
            |""".stripMargin, s"""Bytes$size.scala""")
     end byteTemplate
 
@@ -80,7 +80,7 @@ object AbiTypesGenerator extends Generator with IOApp :
            |import org.web3s.abi.datatypes.{StaticArray, EthType}
            |import izumi.reflect.Tag
            |
-           |final class StaticArray$size[T <: EthType[_] : Tag](override val value: Seq[T]) extends StaticArray($size, value)
+           |final case class StaticArray$size[T <: EthType[_] : Tag](override val value: Seq[T]) extends StaticArray($size, value)
            |
            |""".stripMargin, s"""StaticArray$size.scala""")
     end staticArrayTemplate

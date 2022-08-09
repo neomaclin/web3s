@@ -5,5 +5,5 @@ import org.web3s.abi.datatypes.EthUInt
 object UInt248:
   val DEFAULT = UInt248(BigInt(0))
 
-final class UInt248(value: BigInt) extends EthUInt(248, value):
+final case class UInt248(override val value: BigInt) extends EthUInt(248, value):
   def this(value: Long) = this(BigInt(value))
