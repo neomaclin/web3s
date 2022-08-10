@@ -7,12 +7,7 @@ import org.web3s.abi.datatypes.EthType.MAX_BYTE_LENGTH
 
 /** UTF-8 encoded string type. */
 object EthUtf8String:
-  val DEFAULT = new EthUtf8String("")
-  
- // def encode(value: Utf8String):String = DynamicBytes.encode(new datatypes.DynamicBytes(value.value.getBytes))
-  
-  //def decode(input: String, offset: Int): Utf8String = new Utf8String(new String(DynamicBytes.decode(input, offset).value))
-
+  val DEFAULT = EthUtf8String("")
 
 final class EthUtf8String(override val value: String) extends EthType[String] :
   /**

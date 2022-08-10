@@ -13,11 +13,6 @@ object DecoderMacro {
 
 
   inline def initiateInt[T <: EthInt](value: BigInt): T = ${initiateIntImpl[T]('value)}
-  //  inline def showType[T <: EthUInt]: String = ${ showTypeImpl[T]}
-  //
-  //  private  def showTypeImpl[T <: EthUInt : Type](using quotes: Quotes): Expr[String] =
-  //    import quotes.reflect.*
-  //    Expr(TypeRepr.of[T].classSymbol.get.primaryConstructor.name)
 
 
   private def initiateIntImpl[T <: EthInt : Type](value: Expr[BigInt])(using quotes: Quotes): Expr[T] =

@@ -52,5 +52,3 @@ class DynamicArray[T <: EthType[_] : Tag](override val value: Seq[T]) extends Et
 
   // override def getTypeAsString: String = EthTypes.getTypeAString[T] + "[]"
 
-
-end DynamicArray

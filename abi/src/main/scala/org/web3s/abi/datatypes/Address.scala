@@ -13,8 +13,6 @@ object Address:
   val DEFAULT_LENGTH = 160
   val DEFAULT = Address(BigInt(0))
 
-  //def decode(rawInput: String, offset: Int): Address = new Address(SolidityUInt.decode[UInt160](rawInput, offset))
-
 final class Address(_value: EthUInt) extends EthType[String] :
 
   def this(bitSize: Int, value: BigInt) = this(EthUInt(bitSize, value))

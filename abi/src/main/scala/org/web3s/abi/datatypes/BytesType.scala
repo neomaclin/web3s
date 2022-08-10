@@ -11,4 +11,4 @@ abstract class BytesType(val value: Array[Byte], val `type`: String) extends Eth
     case other: BytesType => (value sameElements other.value) && `type` == other.`type`
     case _ => false
   
-  override def hashCode: Int = 31 * value.hashCode() + `type`.hashCode
+  override def hashCode: Int = 31 * value.hashCode + `type`.hashCode

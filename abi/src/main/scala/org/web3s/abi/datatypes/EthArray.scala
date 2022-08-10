@@ -15,6 +15,6 @@ abstract class EthArray[T <: EthType[_] : Tag](override val value: Seq[T]) exten
   override def bytes32PaddedLength: Int = value.foldLeft(0)(_ + _.bytes32PaddedLength)
 
   def componentTypeAsString: String = Tag[T].tag.toString.toLowerCase match
-    case "utf8string" => "string"
+    case "ethutf8string" => "string"
     case other => other
  // override def getTypeAsString: String = SolidityTypes.getTypeAString[T] + "[" + values.length + "]"
