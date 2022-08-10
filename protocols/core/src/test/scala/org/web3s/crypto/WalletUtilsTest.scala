@@ -1,15 +1,15 @@
 package org.web3s.crypto
 
 import org.scalatest.funsuite.FixtureAsyncFunSuite
-
 import fs2.{Stream, hash, text}
 import fs2.io.file.{Files, Path}
-
-import cats.effect.{ Resource, IO }
-import cats.effect.testing.scalatest._
+import cats.effect.{IO, Resource}
+import cats.effect.testing.scalatest.*
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.web3s.utils.*
 import org.web3s.crypto.SampleKeys
 
+import java.security.Security
 
 class WalletUtilsTest extends FixtureAsyncFunSuite with CatsResourceIO[Path] with AsyncIOSpec :
 
@@ -50,6 +50,7 @@ class WalletUtilsTest extends FixtureAsyncFunSuite with CatsResourceIO[Path] wit
   }
 
   test("GenerateLightNewWalletFile") { tempDir =>
+    Security.addProvider(new BouncyCastleProvider)
     WalletUtils.generateLightNewWalletFile[IO](SampleKeys.PASSWORD, tempDir).flatMap(testGeneratedNewWalletFile)
   }
 
