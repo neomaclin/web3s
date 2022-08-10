@@ -12,6 +12,7 @@ import scala.reflect.Typeable
 package encoders:
 
   import izumi.reflect.Tag
+  import izumi.reflect.macrortti.LightTypeTagUnpacker
 
   private def encodeBytesType(bytesType: BytesType): String =
     val value = bytesType.value
@@ -86,6 +87,43 @@ package encoders:
       value.value.map(TypeEncoder.encode[T](_)).mkString
 
     override def encodePacked(value: A): String = encode(value)
+
+  given encodeDynamicArrayFor[T <: EthType[_] : Tag : Encodable]: Encodable[DynamicArray[T]] = new Encodable[DynamicArray[T]]: 
+    private def encodeArrayValuesOffsets[T <: EthType[_] : Tag : Encodable](value: DynamicArray[T], typeString: String): String =
+      if value.value.isEmpty then ""
+      else value.value.view
+        .init.foldLeft(List(value.value.length * MAX_BYTE_LENGTH)) { (list, item) =>
+        val bytesLength =
+          typeString match
+            case "EthUtf8String" => item.asInstanceOf[EthUtf8String].value.length
+            case "DynamicBytes" => item.asInstanceOf[DynamicBytes].value.length
+            case _ => 0
+        val numberOfWords = (bytesLength + MAX_BYTE_LENGTH - 1) / MAX_BYTE_LENGTH
+        val totalBytesLength = numberOfWords * MAX_BYTE_LENGTH
+        (totalBytesLength + MAX_BYTE_LENGTH + list.head) :: list
+      }.reverse.map(offset => Numeric.toHexStringNoPrefix(Numeric.toBytesPadded(BigInt(offset), MAX_BYTE_LENGTH))).mkString
+
+    private def encodeStructsArraysOffsets[T <: EthType[_] : Tag : Encodable](value: DynamicArray[T]): String =
+      if value.value.isEmpty then ""
+      else value.value.view
+        .init.map(TypeEncoder.encode[T](_))
+        .foldLeft(List(value.value.length * MAX_BYTE_LENGTH)) { (list, item) => (item.length / 2 + list.head) :: list }
+        .reverse
+        .map(offset => Numeric.toHexStringNoPrefix(Numeric.toBytesPadded(BigInt(offset), MAX_BYTE_LENGTH))).mkString
+
+    override def encode(value: DynamicArray[T]): String =
+      val encodedLength = TypeEncoder.encode[EthUInt](new EthUInt(BigInt(value.value.size)))
+      val chain = LightTypeTagUnpacker(Tag[T].tag).inheritance
+      val valuesOffsets = Tag[T].tag.toString match
+        case "EthUtf8String" | "DynamicBytes" => encodeArrayValuesOffsets(value, Tag[T].tag.toString)
+        case _ =>
+          if chain.values.exists(_.map(_.ref.name).exists(_.endsWith("DynamicStruct"))) then encodeStructsArraysOffsets(value)
+          else ""
+      val encodedValues = value.value.map(TypeEncoder.encode[T](_)).mkString
+      encodedLength ++ valuesOffsets ++ encodedValues
+
+    override def encodePacked(value: DynamicArray[T]): String = encode(value)
+  
 
   given encodeEthInt[T <: EthInt : Tag]: Encodable[T] with
     override def encode(value: T): String = encodeNumericType[EthInt](value)
