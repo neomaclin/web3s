@@ -122,7 +122,7 @@ package encoders:
       val encodedValues = value.value.map(TypeEncoder.encode[T](_)).mkString
       encodedLength ++ valuesOffsets ++ encodedValues
 
-    override def encodePacked(value: DynamicArray[T]): String = encode(value)
+    override def encodePacked(value: DynamicArray[T]): String = encode(value).substring(64)
   
 
   given encodeEthInt[T <: EthInt : Tag]: Encodable[T] with
@@ -158,3 +158,7 @@ package encoders:
       case x: Char => TypeEncoder.encodePacked(x.asEthType)
       case x: Double => throw new UnsupportedOperationException("Type cannot be encoded: Double")
       case x: Float => throw new UnsupportedOperationException("Type cannot be encoded: Float")
+
+  given Encodable[EmptyStruct.type] with
+    override def encode(value: EmptyStruct.type): String = ""
+    override def encodePacked(value: EmptyStruct.type): String = ""

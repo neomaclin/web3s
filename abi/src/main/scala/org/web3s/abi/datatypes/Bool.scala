@@ -9,8 +9,8 @@ import org.web3s.utils.Numeric
 
 
 object Bool:
+  inline val TYPE_NAME = "bool"
   val DEFAULT = new Bool(false)
-  given (Boolean => Bool) = new Bool(_)
 
 final class Bool(override val value: Boolean) extends EthType[Boolean]:
   override def equals(o: Any): Boolean = o match 

@@ -8,5 +8,5 @@ import izumi.reflect.Tag
 //    value.values.map(TypeEncoder.encode[T](_)).mkString
 //
 
-class StaticStruct[T <: EthType[_] : Tag](override val value: Seq[T]
-                                              ) extends StaticArray[T](value.size, value) with StructType
+//class StaticStruct[T <: EthType[_] : Tag](override val value: Seq[T]
+//                                              ) extends StaticArray[T](value.size, value) with StructType

@@ -10,11 +10,12 @@ object EthArray:
 
 abstract class EthArray[T <: EthType[_] : Tag](override val value: Seq[T]) extends EthType[Seq[T]] :
 
-  def this(expectedSize: Int, values: T*) = this(values.toSeq)
+  def this(expectedSize: Int, values: T*) = this(values)
 
   override def bytes32PaddedLength: Int = value.foldLeft(0)(_ + _.bytes32PaddedLength)
 
   def componentTypeAsString: String = Tag[T].tag.toString.toLowerCase match
     case "ethutf8string" => "string"
+    case "ethuint" => "uint"
+    case "ethint" => "int"
     case other => other
- // override def getTypeAsString: String = SolidityTypes.getTypeAString[T] + "[" + values.length + "]"

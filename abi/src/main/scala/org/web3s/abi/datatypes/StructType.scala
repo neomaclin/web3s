@@ -1,4 +1,4 @@
 
 package org.web3s.abi.datatypes
 
-trait StructType
+trait StructType[+T] extends EthType[T]

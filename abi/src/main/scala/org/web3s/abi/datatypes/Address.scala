@@ -10,7 +10,8 @@ import org.web3s.utils.Numeric
  * Address type, which by default is equivalent to uint160 which follows the Ethereum specification.
  */
 object Address:
-  val DEFAULT_LENGTH = 160
+  inline val TYPE_NAME = "address"
+  inline val DEFAULT_LENGTH = 160
   val DEFAULT = Address(BigInt(0))
 
 final class Address(_value: EthUInt) extends EthType[String] :
@@ -35,4 +36,3 @@ final class Address(_value: EthUInt) extends EthType[String] :
 
   override def hashCode: Int = if (value.nonEmpty) value.hashCode else 0
   
-end Address

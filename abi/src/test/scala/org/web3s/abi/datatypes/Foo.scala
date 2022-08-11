@@ -1,8 +1,8 @@
 package org.web3s.abi.datatypes
-
-import org.web3s.abi.codec.Encodable
-import org.web3s.abi.datatypes.*
 //
+//import org.web3s.abi.codec.Encodable
+//import org.web3s.abi.datatypes.*
+////
 //final case class Foo(id: String, name: String) extends DynamicStruct[Utf8String](new Utf8String(id),new Utf8String(name))
 //
 //object Foo:

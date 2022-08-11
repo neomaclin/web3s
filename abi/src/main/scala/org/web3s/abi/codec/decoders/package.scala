@@ -84,5 +84,11 @@ package decoders:
       val length = lengthStr.toInt
       val hexStringLength = length << 1
       DecoderMacro.initiateBytes[T](Numeric.hexStringToByteArray(data.substring(offset, offset + hexStringLength)))
-//    
+
+//  inline given decodeBytes[T <: Bytes : Tag]: Decodable[T] =
 //
+//    (data: String, offset: Int) =>
+//      val bytesR(lengthStr) = Tag[T].tag.toString
+//      val length = lengthStr.toInt
+//      val hexStringLength = length << 1
+//      DecoderMacro.initiateBytes[T](Numeric.hexStringToByteArray(data.substring(offset, offset + hexStringLength)))
