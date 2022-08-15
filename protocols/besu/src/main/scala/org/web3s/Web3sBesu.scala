@@ -16,10 +16,11 @@ import org.web3s.protocol.eea.util.Base64String
 import org.web3s.services.Web3sService
 
 class Web3sBesu[F[_]: MonadThrow](using services: Web3sService[F]) extends Besu[F]:
+
   import io.circe._
   import io.circe.syntax._
   import io.circe.generic.auto._
-
+  import org.web3s.protocol.core.methods.request.encoder.given
   def minerStart: F[MinerStartResponse] =
     services.fetch[Unit](Request(method = "miner_start")).map(MinerStartResponse.apply)
 
@@ -27,14 +28,14 @@ class Web3sBesu[F[_]: MonadThrow](using services: Web3sService[F]) extends Besu[
     services.fetch[Boolean](Request(method = "miner_stop")).map(BooleanResponse.apply)
 
 
-  def cliqueDiscard(address: String): F[BooleanResponse]=
-    services.fetch[Boolean](Request(method = "clique_discard",params = List(address.toJson))).map(BooleanResponse.apply)
+  def cliqueDiscard(addressStr: String): F[BooleanResponse]=
+    services.fetch[Boolean](Request(method = "clique_discard",params = List(addressStr.asJson))).map(BooleanResponse.apply)
 
   def cliqueGetSigners(defaultBlockParameter: DefaultBlockParameter): F[EthAccounts]=
-    services.fetch[Seq[String]](Request(method = "clique_getSigners",params = List(defaultBlockParameter.toJson))).map(EthAccounts.apply)
+    services.fetch[Seq[String]](Request(method = "clique_getSigners",params = List(defaultBlockParameter.asJson))).map(EthAccounts.apply)
 
   def cliqueGetSignersAtHash(blockHash: String): F[EthAccounts]=
-    services.fetch[Seq[String]](Request(method = "clique_getSignersAtHash",params = List(address.toJson)).map(EthAccounts.apply)
+    services.fetch[Seq[String]](Request(method = "clique_getSignersAtHash",params = List(blockHash.asJson))).map(EthAccounts.apply)
 
   def cliquePropose(address: String, signerAddition: Boolean): F[BooleanResponse]=
     services.fetch[Boolean](Request(method = "clique_propose")).map(BooleanResponse.apply)
