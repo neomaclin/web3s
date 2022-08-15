@@ -251,16 +251,19 @@ class TypeDecoderTest extends AnyFunSuite :
  //   assert(TypeDecoder.instantiateType("string", "Hello, world!"), new Nothing("Hello, world!"))
   }
 
-//  def testStaticArray() = {
-//    assert(TypeDecoder.decodeStaticArray("000000000000000000000000000000000000000000000000000000000000000a" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 0, new Nothing(2) {}, 2), new Nothing(classOf[Nothing], new Nothing(BigInt.TEN), new Nothing(BigInt(Long.MAX_VALUE))))
-//    assert(TypeDecoder.decodeStaticArray("0000000000000000000000000000000000000000000000000000000000000040" + "0000000000000000000000000000000000000000000000000000000000000080" + "000000000000000000000000000000000000000000000000000000000000000d" + "48656c6c6f2c20776f726c642100000000000000000000000000000000000000" + "000000000000000000000000000000000000000000000000000000000000000d" + "776f726c64212048656c6c6f2c00000000000000000000000000000000000000", 0, new Nothing(2) {}, 2), new Nothing(classOf[Nothing], new Nothing("Hello, world!"), new Nothing("world! Hello,")))
-//    val arr = TypeDecoder.instantiateType("uint256[2]", Array[Long](10, Long.MAX_VALUE))
-//    assertTrue(arr.isInstanceOf[Nothing])
-//    val staticArray2 = arr.asInstanceOf[Nothing]
-//    assert(staticArray2.getComponentType, classOf[Nothing])
-//    assert(staticArray2.getValue.get(0), new Nothing(BigInt.TEN))
-//    assert(staticArray2.getValue.get(1), new Nothing(BigInt(Long.MAX_VALUE)))
-//  }
+  test("StaticArray"){
+   // println(DecoderMacro.showSeqType[StaticArray1])
+//    //print(DecoderMacro.showType[UInt256])
+    //println(decodeStaticArray[StaticArray2])
+    assert(TypeDecoder.decode[StaticArray2,UInt256]("000000000000000000000000000000000000000000000000000000000000000a" + "0000000000000000000000000000000000000000000000007fffffffffffffff", 0,  2) == Seq(UInt256(BigInt(10)), UInt256(BigInt(Long.MaxValue))))
+//   // assert(TypeDecoder.decode[StaticArray("0000000000000000000000000000000000000000000000000000000000000040" + "0000000000000000000000000000000000000000000000000000000000000080" + "000000000000000000000000000000000000000000000000000000000000000d" + "48656c6c6f2c20776f726c642100000000000000000000000000000000000000" + "000000000000000000000000000000000000000000000000000000000000000d" + "776f726c64212048656c6c6f2c00000000000000000000000000000000000000", 0, new Nothing(2) {}, 2), new Nothing(classOf[Nothing], new Nothing("Hello, world!"), new Nothing("world! Hello,")))
+////    val arr = TypeDecoder.instantiateType("uint256[2]", Array[Long](10, Long.MAX_VALUE))
+////    assertTrue(arr.isInstanceOf[Nothing])
+////    val staticArray2 = arr.asInstanceOf[Nothing]
+////    assert(staticArray2.getComponentType, classOf[Nothing])
+////    assert(staticArray2.getValue.get(0), new Nothing(BigInt.TEN))
+////    assert(staticArray2.getValue.get(1), new Nothing(BigInt(Long.MAX_VALUE)))
+  }
 //
 //  @Test def testEmptyStaticArray() = assertThrows(classOf[UnsupportedOperationException], () => TypeDecoder.decodeStaticArray("0000000000000000000000000000000000000000000000000000000000000000", 0, new Nothing(0) {}, 0))
 //

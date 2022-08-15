@@ -28,13 +28,13 @@ class Web3sBesu[F[_]: MonadThrow](using services: Web3sService[F]) extends Besu[
 
 
   def cliqueDiscard(address: String): F[BooleanResponse]=
-    services.fetch[Boolean](Request(method = "clique_discard")).map(BooleanResponse.apply)
+    services.fetch[Boolean](Request(method = "clique_discard",params = List(address.toJson))).map(BooleanResponse.apply)
 
   def cliqueGetSigners(defaultBlockParameter: DefaultBlockParameter): F[EthAccounts]=
-    services.fetch[Seq[String]](Request(method = "clique_getSigners")).map(EthAccounts.apply)
+    services.fetch[Seq[String]](Request(method = "clique_getSigners",params = List(defaultBlockParameter.toJson))).map(EthAccounts.apply)
 
   def cliqueGetSignersAtHash(blockHash: String): F[EthAccounts]=
-    services.fetch[Seq[String]](Request(method = "clique_getSignersAtHash")).map(EthAccounts.apply)
+    services.fetch[Seq[String]](Request(method = "clique_getSignersAtHash",params = List(address.toJson)).map(EthAccounts.apply)
 
   def cliquePropose(address: String, signerAddition: Boolean): F[BooleanResponse]=
     services.fetch[Boolean](Request(method = "clique_propose")).map(BooleanResponse.apply)

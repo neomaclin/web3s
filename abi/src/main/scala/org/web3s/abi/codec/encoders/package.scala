@@ -88,22 +88,21 @@ package encoders:
 
     override def encodePacked(value: A): String = encode(value)
 
-  given encodeDynamicArrayFor[T <: EthType[_] : Tag : Encodable]: Encodable[DynamicArray[T]] = new Encodable[DynamicArray[T]]: 
-    private def encodeArrayValuesOffsets[T <: EthType[_] : Tag : Encodable](value: DynamicArray[T], typeString: String): String =
+  given encodeDynamicArrayFor[T <: EthType[_] : Tag : Encodable: Typeable]: Encodable[DynamicArray[T]] = new Encodable[DynamicArray[T]]:
+    private def encodeArrayValuesOffsets(value: DynamicArray[T], typeString: String): String =
       if value.value.isEmpty then ""
       else value.value.view
         .init.foldLeft(List(value.value.length * MAX_BYTE_LENGTH)) { (list, item) =>
-        val bytesLength =
-          typeString match
-            case "EthUtf8String" => item.asInstanceOf[EthUtf8String].value.length
-            case "DynamicBytes" => item.asInstanceOf[DynamicBytes].value.length
-            case _ => 0
+        val bytesLength = item match
+          case str: EthUtf8String => str.value.length
+          case bytes: DynamicBytes => bytes.value.length
+          case _ => 0
         val numberOfWords = (bytesLength + MAX_BYTE_LENGTH - 1) / MAX_BYTE_LENGTH
         val totalBytesLength = numberOfWords * MAX_BYTE_LENGTH
         (totalBytesLength + MAX_BYTE_LENGTH + list.head) :: list
       }.reverse.map(offset => Numeric.toHexStringNoPrefix(Numeric.toBytesPadded(BigInt(offset), MAX_BYTE_LENGTH))).mkString
 
-    private def encodeStructsArraysOffsets[T <: EthType[_] : Tag : Encodable](value: DynamicArray[T]): String =
+    private def encodeStructsArraysOffsets(value: DynamicArray[T]): String =
       if value.value.isEmpty then ""
       else value.value.view
         .init.map(TypeEncoder.encode[T](_))
@@ -112,7 +111,7 @@ package encoders:
         .map(offset => Numeric.toHexStringNoPrefix(Numeric.toBytesPadded(BigInt(offset), MAX_BYTE_LENGTH))).mkString
 
     override def encode(value: DynamicArray[T]): String =
-      val encodedLength = TypeEncoder.encode[EthUInt](new EthUInt(BigInt(value.value.size)))
+      val encodedLength = TypeEncoder.encode[EthUInt](EthUInt(BigInt(value.value.size)))
       val chain = LightTypeTagUnpacker(Tag[T].tag).inheritance
       val valuesOffsets = Tag[T].tag.toString match
         case "EthUtf8String" | "DynamicBytes" => encodeArrayValuesOffsets(value, Tag[T].tag.toString)

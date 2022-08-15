@@ -27,7 +27,7 @@ final case class Http4sWeb3sService[F[_] : Async: Concurrent](uri: Uri = uri"htt
   import org.http4s.circe._
   import CirceEntityDecoder._
   import CirceEntityEncoder._
-  
+  import org.web3s.protocol.core.methods.request.encoder.given
 
   given Encoder[Request] = deriveEncoder[Request]
 

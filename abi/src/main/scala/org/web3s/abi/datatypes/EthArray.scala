@@ -8,7 +8,7 @@ import org.web3s.abi.codec.TypeEncoder
 object EthArray:
   final val MAX_SIZE_OF_STATIC_ARRAY = 32
 
-abstract class EthArray[T <: EthType[_] : Tag](override val value: Seq[T]) extends EthType[Seq[T]] :
+abstract class EthArray[+T <: EthType[_] : Tag](override val value: Seq[T]) extends EthType[Seq[T]] :
 
   def this(expectedSize: Int, values: T*) = this(values)
 

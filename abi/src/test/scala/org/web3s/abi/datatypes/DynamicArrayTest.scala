@@ -8,19 +8,18 @@ import org.web3s.abi.codec.strings.given
 class DynamicArrayTest extends AnyFunSuite :
 
     test("EmptyDynamicArray") {
-        val array = DynamicArray[Address](Nil)
+        val array = DynamicArray[Address]()
 
         assert(Address.TYPE_NAME + "[]" == TypeAsStringConverter.convert(array))
     }
 
     test("DynamicArrayWithDynamicStruct") {
-        val list = List(EmptyStruct)
-        val array = DynamicArray(list)
+        val array = DynamicArray(EmptyStruct)
         assert("()[]" == TypeAsStringConverter.convert(array))
     }
 
     test("DynamicArrayWithAbiType") {
-        val array = DynamicArray[EthUInt](arrayOfuints(1))
+        val array = DynamicArray[EthUInt](arrayOfuints(1):_*)
 
         assert(EthUInt.TYPE_NAME + "[]" ==  TypeAsStringConverter.convert(array))
     }
