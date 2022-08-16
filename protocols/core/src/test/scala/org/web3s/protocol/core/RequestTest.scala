@@ -1,24 +1,16 @@
 package org.web3s.protocol.core
 
-import eu.timepit.refined.numeric.NonNegative
 import org.scalatest.funsuite.AnyFunSuite
 import org.web3s.utils.Numeric
 import org.web3s.Web3sEthereum
 import org.web3s.protocol.core.Web3sServiceRequestJsonTest
 import org.web3s.services.Web3sService
-import org.web3s.protocol.core.methods.request.Transaction
-import eu.timepit.refined._
-import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric._
-import eu.timepit.refined.generic._
+import org.web3s.protocol.core.methods.request.{EthFilter, FilterTopic, SingleTopic, Transaction}
+
+
 import scala.util.Try
 
 class RequestTest extends AnyFunSuite :
-
-  import io.circe._
-  import io.circe.syntax._
-  import io.circe.generic.auto._
-  import io.circe.parser._
 
   private val web3sServiceRequestJsonTest = new Web3sServiceRequestJsonTest
   val web3sEthereum: Ethereum[Try] = new Web3sEthereum(web3sServiceRequestJsonTest)
@@ -161,7 +153,7 @@ class RequestTest extends AnyFunSuite :
   }
 
   test("EthGetBlockTransactionCountByNumber") {
-    web3sEthereum.ethGetBlockTransactionCountByNumber(DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0xe8"))))
+    web3sEthereum.ethGetBlockTransactionCountByNumber(DefaultBlockParameter.valueOf(Numeric.toBigInt("0xe8")))
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getBlockTransactionCountByNumber","params":["0xe8"],"id":1}""")
   }
 
@@ -169,7 +161,7 @@ class RequestTest extends AnyFunSuite :
   test("EthGetCode") {
     web3sEthereum.ethGetCode(
       "0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b",
-      DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0x2"))))
+      DefaultBlockParameter.valueOf(Numeric.toBigInt("0x2")))
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getCode","params":["0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b","0x2"],"id":1}""")
   }
 
@@ -231,7 +223,7 @@ class RequestTest extends AnyFunSuite :
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getBlockByHash","params":["0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331",true],"id":1}""")
   }
   test("EthGetBlockByNumber") {
-    web3sEthereum.ethGetBlockByNumber(DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0x1b4"))), true)
+    web3sEthereum.ethGetBlockByNumber(DefaultBlockParameter.valueOf(Numeric.toBigInt("0x1b4")), true)
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x1b4",true],"id":1}""")
   }
   test("EthGetTransactionByHash") {
@@ -247,7 +239,7 @@ class RequestTest extends AnyFunSuite :
   }
   test("EthGetTransactionByBlockNumberAndIndex") {
     web3sEthereum.ethGetTransactionByBlockNumberAndIndex(
-      DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0x29c"))), BigInt(0))
+      DefaultBlockParameter.valueOf(Numeric.toBigInt("0x29c")), BigInt(0))
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getTransactionByBlockNumberAndIndex","params":["0x29c","0x0"],"id":1}""")
   }
 
@@ -266,7 +258,7 @@ class RequestTest extends AnyFunSuite :
   
   test("EthGetUncleByBlockNumberAndIndex") {
     web3sEthereum.ethGetUncleByBlockNumberAndIndex(
-      DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0x29c"))), BigInt(0))
+      DefaultBlockParameter.valueOf((Numeric.toBigInt("0x29c"))), BigInt(0))
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getUncleByBlockNumberAndIndex","params":["0x29c","0x0"],"id":1}""")
   }
 
@@ -292,10 +284,12 @@ class RequestTest extends AnyFunSuite :
   }
 
 
-//  test("EthNewFilter") {
-//    web3sEthereum.ethNewFilter(ethFilter)
-//    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getUncleByBlockNumberAndIndex","params":["0x29c","0x0"],"id":1}""")
-//  }
+  test("EthNewFilter") {
+    val ethFilter =  EthFilter().copy(topics = List[FilterTopic[_]](SingleTopic("0x12341234")))
+
+    web3sEthereum.ethNewFilter(ethFilter)
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_newFilter","params":[{"topics":["0x12341234"]}],"id":1}""")
+  }
 
   test("EthNewBlockFilter") {
     web3sEthereum.ethNewBlockFilter
@@ -313,29 +307,28 @@ class RequestTest extends AnyFunSuite :
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getFilterChanges","params":["0x16"],"id":1}""")
   }
 
-  test("testEthGetFilterLogs") {
-    web3sEthereum.ethGetFilterLogs(Numeric.toBigInt("0x16"))
-    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getFilterLogs","params":["0x16"],"id":1}""")
+
+  test("EthGetLogs") {
+    val ethFilter =  EthFilter().copy(topics = List[FilterTopic[_]](SingleTopic("0x000000000000000000000000a94f5374fce5edbc8e2a8697c15331677e6ebf0b")))
+
+    web3sEthereum.ethGetLogs(ethFilter)
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getLogs","params":[{"topics":["0x000000000000000000000000a94f5374fce5edbc8e2a8697c15331677e6ebf0b"]}],"id":1}""")
   }
 
-//  test("testEthGetLogs") {
-//    web3sEthereum.ethGetUncleByBlockNumberAndIndex(
-//      DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0x29c"))), BigInt(0))
-//    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getUncleByBlockNumberAndIndex","params":["0x29c","0x0"],"id":1}""")
-//  }
+  test("EthGetLogsWithNumericBlockRange") {
+    val ethFilter = EthFilter.from(DefaultBlockParameter.valueOf(Numeric.toBigInt("0xe8")), DefaultBlockParameter.valueOf("latest"), "")
 
-//  test("EthGetLogsWithNumericBlockRange") {
-//    web3sEthereum.ethGetUncleByBlockNumberAndIndex(
-//      DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0x29c"))), BigInt(0))
-//    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getUncleByBlockNumberAndIndex","params":["0x29c","0x0"],"id":1}""")
-//  }
+    web3sEthereum.ethGetLogs(ethFilter)
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getLogs","params":[{"topics":[],"fromBlock":"0xe8","toBlock":"latest","address":[""]}],"id":1}""".stripMargin)
+  }
 
 
-//  test("EthGetLogsWithBlockHash") {
-//    web3sEthereum.ethGetUncleByBlockNumberAndIndex(
-//      DefaultBlockParameter.valueOf(refineV[NonNegative].unsafeFrom(Numeric.toBigInt("0x29c"))), BigInt(0))
-//    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getUncleByBlockNumberAndIndex","params":["0x29c","0x0"],"id":1}""")
-//  }
+  test("EthGetLogsWithBlockHash") {
+    val ethFilter = EthFilter.from("0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331", "")
+
+    web3sEthereum.ethGetLogs(ethFilter)
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"eth_getLogs","params":[{"topics":[],"blockHash":"0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331","address":[""]}],"id":1}""")
+  }
 
   test("EthGetWork") {
     web3sEthereum.ethGetWork

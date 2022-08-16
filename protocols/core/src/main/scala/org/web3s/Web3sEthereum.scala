@@ -9,6 +9,7 @@ import org.web3s.utils.Numeric
 import org.web3s.utils.EthBigInt
 import org.web3s.utils.EthBigInt.*
 import org.web3s.protocol.core.methods.request.Transaction
+import org.web3s.protocol.core.methods.request.{EthFilter => EthFilterRequest}
 import org.web3s.protocol.core.methods.response.model.TransactionReceipt
 import org.web3s.protocol.core.methods.response.*
 import org.web3s.protocol.core.methods.response.decoders.given
@@ -248,8 +249,10 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
     services.fetch[String](request).map(EthCompileSerpent.apply)
 
 
-  override def ethNewFilter(ethFilter: EthFilter): F[EthFilter] =
-    services.fetch[EthBigInt](Request(method = "eth_newFilter")).map(EthFilter.apply)
+  override def ethNewFilter(ethFilter: EthFilterRequest): F[EthFilter] =
+    val params = List(ethFilter.asJson.dropNullValues)
+    val request = Request(method = "eth_newFilter",params)
+    services.fetch[EthBigInt](request).map(EthFilter.apply)
 
 
   override def ethNewBlockFilter: F[EthFilter] =
@@ -272,8 +275,10 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
     services.fetch[List[EthLog.LogResult]](Request(method = "eth_getFilterLogs",params = List(filterId.asJson))).map(EthLog.apply)
 
 
-  override def ethGetLogs(ethFilter: EthFilter): F[EthLog] =
-    services.fetch[List[EthLog.LogResult]](Request(method = "eth_getLogs")).map(EthLog.apply)
+  override def ethGetLogs(ethFilter: EthFilterRequest): F[EthLog] =
+    val params = List(ethFilter.asJson.dropNullValues)
+    val request = Request(method = "eth_getLogs", params)
+    services.fetch[List[EthLog.LogResult]](request).map(EthLog.apply)
 
 
   override def ethGetWork: F[EthGetWork] =

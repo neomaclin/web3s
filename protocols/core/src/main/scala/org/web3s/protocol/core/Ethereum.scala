@@ -3,6 +3,7 @@ package org.web3s.protocol.core
 import org.web3s.protocol.core.methods.response.*
 import org.web3s.protocol.core.methods.response.admin.*
 import org.web3s.protocol.core.methods.request.Transaction
+import org.web3s.protocol.core.methods.request.{EthFilter => EthFilterRequest}
 /** Core Ethereum JSON-RPC API. */
 trait Ethereum[F[_]] {
   
@@ -98,7 +99,7 @@ trait Ethereum[F[_]] {
 
   def ethCompileSerpent(sourceCode: String): F[EthCompileSerpent]
 
-  def ethNewFilter(ethFilter: EthFilter): F[EthFilter]
+  def ethNewFilter(ethFilter: EthFilterRequest): F[EthFilter]
 
   def ethNewBlockFilter: F[EthFilter]
 
@@ -110,7 +111,7 @@ trait Ethereum[F[_]] {
 
   def ethGetFilterLogs(filterId: BigInt): F[EthLog]
 
-  def ethGetLogs(ethFilter: EthFilter): F[EthLog]
+  def ethGetLogs(ethFilter: EthFilterRequest): F[EthLog]
 
   def ethGetWork: F[EthGetWork]
 

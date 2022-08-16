@@ -1,8 +1,5 @@
 package org.web3s.protocol.core
 
-import eu.timepit.refined._
-import eu.timepit.refined.api._
-import eu.timepit.refined.numeric.NonNegative
 import org.web3s.utils.Numeric
 
 sealed trait DefaultBlockParameter:
@@ -18,7 +15,7 @@ final case class DefaultBlockParameterNumber(private val blockNumber: BigInt) ex
   override def value: String = Numeric.encodeQuantity(blockNumber)
 
 object DefaultBlockParameter:
-  def valueOf(blockNumber: BigInt Refined NonNegative): DefaultBlockParameter = DefaultBlockParameterNumber(blockNumber.value)
-  def valueOf(blockNumber: Long Refined NonNegative): DefaultBlockParameter = DefaultBlockParameterNumber(BigInt(blockNumber.value))
+  def valueOf(blockNumber: BigInt): DefaultBlockParameter = DefaultBlockParameterNumber(blockNumber)
+  def valueOf(blockNumber: Long): DefaultBlockParameter = DefaultBlockParameterNumber(BigInt(blockNumber))
   def valueOf(blockName: String): DefaultBlockParameter = DefaultBlockParameterName.valueOf(blockName.toUpperCase)
 

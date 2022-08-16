@@ -6,4 +6,4 @@ case object NullTopic extends FilterTopic[Nothing]
 
 final case class SingleTopic(value: String) extends FilterTopic[String]
 
-final case class ListTopic[T](value: List[FilterTopic[T]]) extends FilterTopic[List[FilterTopic[T]]]
+final case class ListTopic(value: List[NullTopic.type | SingleTopic]) extends FilterTopic[List[NullTopic.type | SingleTopic]]

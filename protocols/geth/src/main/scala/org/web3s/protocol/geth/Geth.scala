@@ -13,7 +13,7 @@ trait Geth[F[_]]:
 
   def personalSign(message: String, accountId: String, password: String): F[PersonalSign]
 
-  def personalEcRecover(message: String, signiture: String): F[PersonalEcRecover]
+  def personalEcRecover(message: String, signature: String): F[PersonalEcRecover]
 
   def minerStart(threadCount: Int): F[MinerStartResponse]
 
