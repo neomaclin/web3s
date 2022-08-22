@@ -37,3 +37,4 @@ package encoder:
   }
 
   given Encoder[Transaction] = deriveEncoder[Transaction]
+

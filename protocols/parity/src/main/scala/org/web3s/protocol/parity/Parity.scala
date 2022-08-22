@@ -7,6 +7,8 @@ import org.web3s.protocol.core.DefaultBlockParameter
 import org.web3s.protocol.parity.methods.response.*
 import org.web3s.protocol.parity.methods.request.*
 
+import io.circe.Encoder
+
 trait Parity[F[_]]:
   def parityAllAccountsInfo: F[ParityAllAccountsInfo]
 
@@ -30,7 +32,7 @@ trait Parity[F[_]]:
 
   def parityKillAccount(accountId: String, password: String): F[BooleanResponse]
 
-  def parityListAccounts(quantity: BigInt, accountId: String, blockParameter: DefaultBlockParameter): F[ParityAddressesResponse]
+  def parityListAccounts(quantity: BigInt, accountId: Option[String], blockParameter: Option[DefaultBlockParameter]): F[ParityAddressesResponse]
 
   def parityListGethAccounts: F[ParityAddressesResponse]
 
@@ -44,7 +46,7 @@ trait Parity[F[_]]:
 
   def parityRemoveAddress(accountId: String): F[BooleanResponse]
 
-  def paritySetAccountMeta(accountId: String, metadata: Map[String, AnyRef]): F[BooleanResponse]
+  def paritySetAccountMeta[Value: Encoder](accountId: String, metadata: Map[String, Value]): F[BooleanResponse]
 
   def paritySetAccountName(address: String, name: String): F[BooleanResponse]
 

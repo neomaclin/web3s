@@ -13,7 +13,7 @@ import org.web3s.protocol.parity.methods.response.model.*
 import org.web3s.protocol.parity.methods.response.*
 import org.web3s.utils.EthBigInt
 
-class Web3sTrace[F[_] : MonadThrow](using services: Web3sService[F]) extends TraceF[F] :
+class Web3sTrace[F[_] : MonadThrow](services: Web3sService[F]) extends TraceF[F] :
 
   import io.circe._
   import io.circe.syntax._
