@@ -13,7 +13,6 @@ object Base64String:
     def raw: Array[Byte] = x
     def toRlp: RlpString = RlpString(x)
 
-  given Eq[Base64String]  = Eq.instance( _ sameElements _)
   private val regex = """(?:[A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=)""".r
   val DECODER: Base64.Decoder = Base64.getDecoder
   val ENCODER: Base64.Encoder = Base64.getEncoder
@@ -24,5 +23,6 @@ object Base64String:
     else DECODER.decode(value)
 
   def apply(value: Array[Byte]): Base64String = apply(ENCODER.encodeToString(value))
+  given Eq[Base64String] = Eq.instance( _ sameElements _)
 
-
+  given io.circe.Encoder[Base64String] = io.circe.Encoder.encodeString.contramap(_.asString)
