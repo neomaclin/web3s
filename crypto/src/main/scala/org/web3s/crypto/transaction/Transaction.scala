@@ -26,8 +26,6 @@ trait Transaction:
 
   def `type`: Transaction.Type
 
-end Transaction
-
 object Transaction:
   val CHAIN_ID_INC = 35
   val LOWER_REAL_V = 27
@@ -171,5 +169,3 @@ object Transaction:
 
   def deriveChainId(v: Long): Long =
     if (v == LOWER_REAL_V || v == (LOWER_REAL_V + 1)) 0L else (v - CHAIN_ID_INC) / 2
-
-end Transaction

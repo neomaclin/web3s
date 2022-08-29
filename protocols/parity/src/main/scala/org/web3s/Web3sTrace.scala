@@ -18,7 +18,10 @@ class Web3sTrace[F[_] : MonadThrow](services: Web3sService[F]) extends TraceF[F]
   import io.circe._
   import io.circe.syntax._
   import io.circe.generic.auto._
-  import org.web3s.protocol.parity.methods.response.model.given_Decoder_FullTraceInfo
+  import org.web3s.protocol.parity.methods.response.model.given
+  import org.web3s.protocol.core.methods.response.decoders.given
+  import org.web3s.protocol.core.methods.request.encoder.given
+
   def traceCall(transaction: Transaction, traceTypes: List[String], blockParameter: DefaultBlockParameter): F[ParityFullTraceResponse] =
     services.fetch[FullTraceInfo](Request(method = "trace_call")).map(ParityFullTraceResponse.apply)
 

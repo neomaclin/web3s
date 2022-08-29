@@ -2,12 +2,13 @@ package org.web3s.protocol.core.methods.response
 
 
 import org.web3s.protocol.core.Response
-
+import org.web3s.utils.Numeric
+import org.web3s.crypto.transaction.{ Transaction => TransactionUtil }
 
 opaque type EthTransaction = Response[Option[EthTransaction.Transaction]]
 
 object EthTransaction:
-  
+
   final case class AccessListObject(address: String, storageKeys: List[String])
 
   final case class Transaction(
@@ -15,7 +16,7 @@ object EthTransaction:
                                 nonce: String,
                                 blockHash: String,
                                 blockNumber: String,
-                                chainId: String,
+                                chainId: Option[String] = None,
                                 transactionIndex: String,
                                 from: String,
                                 to: String,
@@ -23,7 +24,7 @@ object EthTransaction:
                                 gas: String,
                                 gasPrice: String,
                                 input: String,
-                                creates: String,
+                                creates: Option[String],
                                 publicKey: String,
                                 raw: String,
                                 r: String,
@@ -33,7 +34,9 @@ object EthTransaction:
                                 maxFeePerGas: String,
                                 maxPriorityFeePerGas: String,
                                 accessList: List[AccessListObject]
-                              )
+                              ) {
+    def chainIdEncoded: Long = chainId.map(Numeric.decodeQuantity(_).longValue).getOrElse(TransactionUtil.deriveChainId(v))
+  }
 
   def apply(response: Response[Option[Transaction]]): EthTransaction = response
 

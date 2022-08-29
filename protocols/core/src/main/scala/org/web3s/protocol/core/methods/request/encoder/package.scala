@@ -3,11 +3,16 @@ package org.web3s.protocol.core.methods.request
 import io.circe.Encoder
 import io.circe.syntax._
 import io.circe.generic.semiauto._
-//import io.circe.generic._
+
+import org.web3s.utils.EthBigInt
 import org.web3s.utils.Numeric
 import org.web3s.protocol.core.*
 import org.web3s.protocol.core.methods.request.*
 package encoder:
+
+
+
+  given Encoder[EthBigInt] = Encoder.encodeBigInt.contramap(_.value)
 
   given Encoder[NullTopic.type] = Encoder.instance(_ => io.circe.Json.Null)
   given Encoder[SingleTopic] =  Encoder.encodeString.contramap(_.value)

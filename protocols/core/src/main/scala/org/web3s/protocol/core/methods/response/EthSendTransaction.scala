@@ -6,3 +6,7 @@ opaque type EthSendTransaction = Response[String]
 
 object EthSendTransaction:
   def apply(response: Response[String]): EthSendTransaction = response
+
+
+extension (x: EthSendTransaction)
+  def transactionHash: String = x.result

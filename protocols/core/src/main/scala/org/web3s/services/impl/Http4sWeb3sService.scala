@@ -28,18 +28,16 @@ final case class Http4sWeb3sService[F[_] : Async: Concurrent](uri: Uri = uri"htt
   import CirceEntityDecoder._
   import CirceEntityEncoder._
   import org.web3s.protocol.core.methods.request.encoder.given
-
+  import Response.given
   given Encoder[Request] = deriveEncoder[Request]
 
   def fetch[T:Decoder](request: Request): F[Response[T]] =
     import dsl._
-    given Decoder[Response[T]] = Response.decode[T]
     client.expect(Method.POST[Request](request, uri, headers))(jsonOf[F,Response[T]])
 
 
   def fetchBatch[T:Decoder](requests: List[Request]): F[List[Response[T]]] =
     import dsl._
-    given Decoder[Response[T]] = Response.decode[T]
     client.expect[List[Response[T]]](Method.POST[List[Request]](requests, uri, headers))
 
   def fetchStream[T:Decoder](request: Request): Stream[F,T] = ???

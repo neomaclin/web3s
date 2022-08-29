@@ -55,13 +55,13 @@ trait Ethereum[F[_]] {
 
   def ethGetTransactionCount(address: String, defaultBlockParameter: DefaultBlockParameter): F[EthGetTransactionCount]
 
-  def ethGetBlockTransactionCountByHash(blockHash: String): F[EthGetBlockTransactionCountByHash]
+  def ethGetBlockTransactionCountByHash(blockHash: String): F[EthGetTransactionCount]
 
-  def ethGetBlockTransactionCountByNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetBlockTransactionCountByNumber]
+  def ethGetBlockTransactionCountByNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetTransactionCount]
 
-  def ethGetUncleCountByBlockHash(blockHash: String): F[EthGetUncleCountByBlockHash]
+  def ethGetUncleCountByBlockHash(blockHash: String): F[EthGetUncleCount]
 
-  def ethGetUncleCountByBlockNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetUncleCountByBlockNumber]
+  def ethGetUncleCountByBlockNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetUncleCount]
 
   def ethGetCode(address: String, defaultBlockParameter: DefaultBlockParameter): F[EthGetCode]
 
@@ -93,11 +93,11 @@ trait Ethereum[F[_]] {
 
   def ethGetCompilers: F[EthGetCompilers]
 
-  def ethCompileLLL(sourceCode: String): F[EthCompileLLL]
+  def ethCompileLLL(sourceCode: String): F[EthCompiledSourceCode]
 
   def ethCompileSolidity(sourceCode: String): F[EthCompileSolidity]
 
-  def ethCompileSerpent(sourceCode: String): F[EthCompileSerpent]
+  def ethCompileSerpent(sourceCode: String): F[EthCompiledSourceCode]
 
   def ethNewFilter(ethFilter: EthFilterRequest): F[EthFilter]
 
@@ -119,13 +119,13 @@ trait Ethereum[F[_]] {
 
   def ethSubmitHashrate(hashrate: String, clientId: String): F[EthSubmitHashrate]
 
-  def dbPutString(databaseName: String, keyName: String, stringToStore: String): F[DbPutString]
+  def dbPutString(databaseName: String, keyName: String, stringToStore: String): F[DbPut]
 
-  def dbGetString(databaseName: String, keyName: String): F[DbGetString]
+  def dbGetString(databaseName: String, keyName: String): F[DbGet]
 
-  def dbPutHex(databaseName: String, keyName: String, dataToStore: String): F[DbPutHex]
+  def dbPutHex(databaseName: String, keyName: String, dataToStore: String): F[DbPut]
 
-  def dbGetHex(databaseName: String, keyName: String): F[DbGetHex]
+  def dbGetHex(databaseName: String, keyName: String): F[DbGet]
 
 //  def shhPost(shhPost: ShhPost): F[ShhPost]
 //

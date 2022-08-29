@@ -1,8 +1,8 @@
 
-package org.web3s.abi.datatypes
-
-import izumi.reflect.Tag
+//package org.web3s.abi.datatypes
 //
+//import izumi.reflect.Tag
+////
 //object StaticStruct:
 //  def encode[T <: EthType[_] : Tag : Encodable, S <: StaticStruct[T] ](value: S): String =
 //    value.values.map(TypeEncoder.encode[T](_)).mkString

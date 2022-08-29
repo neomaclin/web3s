@@ -10,7 +10,7 @@ import org.web3s.protocol.core.methods.request.{EthFilter, FilterTopic, SingleTo
 
 import scala.util.Try
 
-class RequestTest extends AnyFunSuite :
+class RequestTest extends AnyFunSuite:
 
   private val web3sServiceRequestJsonTest = new Web3sServiceRequestJsonTest
   val web3sEthereum: Ethereum[Try] = new Web3sEthereum(web3sServiceRequestJsonTest)

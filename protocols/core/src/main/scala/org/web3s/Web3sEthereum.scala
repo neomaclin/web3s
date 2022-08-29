@@ -7,7 +7,7 @@ import org.web3s.protocol.admin.methods.response.TxPoolContent
 import org.web3s.protocol.core.*
 import org.web3s.utils.Numeric
 import org.web3s.utils.EthBigInt
-import org.web3s.utils.EthBigInt.*
+import org.web3s.utils.EthBigInt.given
 import org.web3s.protocol.core.methods.request.Transaction
 import org.web3s.protocol.core.methods.request.{EthFilter => EthFilterRequest}
 import org.web3s.protocol.core.methods.response.model.TransactionReceipt
@@ -30,7 +30,7 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
 
   override def web3Sha3(data: String): F[Web3Sha3] =
     val request = Request(method = "web3_sha3", params = List(data.asJson))
-    services.fetch[String](request).map(Web3Sha3.apply)
+    services.fetch[String](request)
 
   override def netVersion: F[NetVersion] =
     val request = Request(method = "net_version")
@@ -46,7 +46,7 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
 
   override def adminNodeInfo: F[AdminNodeInfo] =
     val request = Request(method = "admin_nodeInfo")
-    services.fetch[AdminNodeInfo.NodeInfo](request).map(AdminNodeInfo.apply)
+    services.fetch[AdminNodeInfo.NodeInfo](request)
 
   override def adminPeers: F[AdminPeers] =
     val request = Request(method = "admin_peers")
@@ -78,7 +78,9 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
 
   override def ethSyncing: F[EthSyncing] =
     val request = Request(method = "eth_syncing")
-    services.fetch[EthSyncing.Result](request).map(EthSyncing.apply)
+
+    given Decoder[EthSyncing.Result | Boolean] = Decoder[EthSyncing.Result].widen or Decoder[Boolean].widen
+    services.fetch[EthSyncing.Result | Boolean](request).map(EthSyncing.apply)
 
   override def ethMining: F[EthMining] =
     val request = Request(method = "eth_mining")
@@ -122,24 +124,24 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
   override def ethGetTransactionCount(address: String, defaultBlockParameter: DefaultBlockParameter): F[EthGetTransactionCount] =
     val params = List(address.asJson, defaultBlockParameter.asJson)
     val request = Request(method = "eth_getTransactionCount",params)
-    services.fetch[String](request).map(EthGetTransactionCount.apply)
+    services.fetch[EthBigInt](request).map(EthGetTransactionCount.apply)
 
-  override def ethGetBlockTransactionCountByHash(blockHash: String): F[EthGetBlockTransactionCountByHash] =
+  override def ethGetBlockTransactionCountByHash(blockHash: String): F[EthGetTransactionCount] =
     val  request = Request(method = "eth_getBlockTransactionCountByHash",params = List(blockHash.asJson))
-    services.fetch[EthBigInt](request).map(EthGetBlockTransactionCountByHash.apply)
+    services.fetch[EthBigInt](request).map(EthGetTransactionCount.apply)
 
 
-  override def ethGetBlockTransactionCountByNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetBlockTransactionCountByNumber] =
+  override def ethGetBlockTransactionCountByNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetTransactionCount] =
     val  request = Request(method = "eth_getBlockTransactionCountByNumber",params = List(defaultBlockParameter.asJson))
-    services.fetch[EthBigInt](request).map(EthGetBlockTransactionCountByNumber.apply)
+    services.fetch[EthBigInt](request).map(EthGetTransactionCount.apply)
 
-  override def ethGetUncleCountByBlockHash(blockHash: String): F[EthGetUncleCountByBlockHash] =
+  override def ethGetUncleCountByBlockHash(blockHash: String): F[EthGetUncleCount] =
     val  request = Request(method = "eth_getUncleCountByBlockHash",params = List(blockHash.asJson))
-    services.fetch[EthBigInt](request).map(EthGetUncleCountByBlockHash.apply)
+    services.fetch[EthBigInt](request).map(EthGetUncleCount.apply)
 
-  override def ethGetUncleCountByBlockNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetUncleCountByBlockNumber] =
+  override def ethGetUncleCountByBlockNumber(defaultBlockParameter: DefaultBlockParameter): F[EthGetUncleCount] =
     val  request = Request(method = "eth_getUncleCountByBlockNumber",params = List(defaultBlockParameter.asJson))
-    services.fetch[EthBigInt](request).map(EthGetUncleCountByBlockNumber.apply)
+    services.fetch[EthBigInt](request).map(EthGetUncleCount.apply)
 
 
   override def ethGetCode(address: String, defaultBlockParameter: DefaultBlockParameter): F[EthGetCode] =
@@ -181,14 +183,14 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
     import EthBlock._
     val params = List(blockHash.asJson,returnFullTransactionObjects.asJson )
     val request = Request(method = "eth_getBlockByHash", params)
-    services.fetch[EthBlock.Block](request).map(EthBlock.apply)
+    services.fetch[Option[EthBlock.Block]](request).map(EthBlock.apply)
 
 
   override def ethGetBlockByNumber(defaultBlockParameter: DefaultBlockParameter, returnFullTransactionObjects: Boolean): F[EthBlock] =
     import EthBlock._
     val params = List(defaultBlockParameter.asJson, returnFullTransactionObjects.asJson)
     val request = Request(method = "eth_getBlockByNumber", params)
-    services.fetch[EthBlock.Block](request).map(EthBlock.apply)
+    services.fetch[Option[EthBlock.Block]](request).map(EthBlock.apply)
 
 
   override def ethGetTransactionByHash(transactionHash: String): F[EthTransaction] =
@@ -220,22 +222,22 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
   override def ethGetUncleByBlockHashAndIndex(blockHash: String, transactionIndex: BigInt): F[EthBlock] =
     val params = List(blockHash.asJson,transactionIndex.asJson)
     val request = Request(method = "eth_getUncleByBlockHashAndIndex", params)
-    services.fetch[EthBlock.Block](request).map(EthBlock.apply)
+    services.fetch[Option[EthBlock.Block]](request).map(EthBlock.apply)
 
 
   override def ethGetUncleByBlockNumberAndIndex(defaultBlockParameter: DefaultBlockParameter, transactionIndex: BigInt): F[EthBlock] =
     val params = List(defaultBlockParameter.asJson, transactionIndex.asJson)
     val request = Request(method = "eth_getUncleByBlockNumberAndIndex", params)
-    services.fetch[EthBlock.Block](request).map(EthBlock.apply)
+    services.fetch[Option[EthBlock.Block]](request).map(EthBlock.apply)
 
 
   override def ethGetCompilers: F[EthGetCompilers] =
     services.fetch[List[String]](Request(method = "eth_getCompilers")).map(EthGetCompilers.apply)
 
 
-  override def ethCompileLLL(sourceCode: String): F[EthCompileLLL] =
+  override def ethCompileLLL(sourceCode: String): F[EthCompiledSourceCode] =
     val request = Request(method = "eth_compileLLL", params = List(sourceCode.asJson))
-    services.fetch[String](request).map(EthCompileLLL.apply)
+    services.fetch[String](request).map(EthCompiledSourceCode.apply)
 
 
   override def ethCompileSolidity(sourceCode: String): F[EthCompileSolidity] =
@@ -244,9 +246,9 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
     services.fetch[Map[String, EthCompileSolidity.Code]](request).map(EthCompileSolidity.apply)
 
 
-  override def ethCompileSerpent(sourceCode: String): F[EthCompileSerpent] =
+  override def ethCompileSerpent(sourceCode: String): F[EthCompiledSourceCode] =
     val request = Request(method = "eth_compileSerpent", params = List(sourceCode.asJson))
-    services.fetch[String](request).map(EthCompileSerpent.apply)
+    services.fetch[String](request).map(EthCompiledSourceCode.apply)
 
 
   override def ethNewFilter(ethFilter: EthFilterRequest): F[EthFilter] =
@@ -297,28 +299,28 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
     services.fetch[Boolean](request).map(EthSubmitHashrate.apply)
 
 
-  override def dbPutString(databaseName: String, keyName: String, stringToStore: String): F[DbPutString] =
+  override def dbPutString(databaseName: String, keyName: String, stringToStore: String): F[DbPut] =
     val params = List(databaseName, keyName , stringToStore).map(_.asJson)
     val request = Request(method = "db_putString", params)
-    services.fetch[Boolean](request).map(DbPutString.apply)
+    services.fetch[Boolean](request).map(DbPut.apply)
 
 
-  override def dbGetString(databaseName: String, keyName: String): F[DbGetString] =
+  override def dbGetString(databaseName: String, keyName: String): F[DbGet] =
     val params = List(databaseName, keyName).map(_.asJson)
     val request = Request(method = "db_getString", params)
-    services.fetch[String](request).map(DbGetString.apply)
+    services.fetch[String](request).map(DbGet.apply)
 
 
-  override def dbPutHex(databaseName: String, keyName: String, dataToStore: String): F[DbPutHex] =
+  override def dbPutHex(databaseName: String, keyName: String, dataToStore: String): F[DbPut] =
     val params = List(databaseName, keyName, dataToStore).map(_.asJson)
     val request = Request(method = "db_putHex", params)
-    services.fetch[Boolean](request).map(DbPutHex.apply)
+    services.fetch[Boolean](request).map(DbPut.apply)
 
 
-  override def dbGetHex(databaseName: String, keyName: String): F[DbGetHex] =
+  override def dbGetHex(databaseName: String, keyName: String): F[DbGet] =
     val params = List(databaseName, keyName).map(_.asJson)
     val request = Request(method = "db_getHex", params)
-    services.fetch[String](request).map(DbGetHex.apply)
+    services.fetch[String](request).map(DbGet.apply)
 
 
   //  def shhPost(shhPost: ShhPost): F[ShhPost]

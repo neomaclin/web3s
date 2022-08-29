@@ -23,6 +23,8 @@ class Web3sBesu[F[_] : MonadThrow](services: Web3sService[F]) extends Besu[F] :
   import io.circe.syntax._
   import io.circe.generic.auto._
   import org.web3s.protocol.core.methods.request.encoder.given
+  import org.web3s.protocol.core.methods.response.decoders.given
+
   import org.web3s.protocol.eea.util.Base64String.given
   def minerStart: F[MinerStartResponse] =
     services.fetch[Unit](Request(method = "miner_start")).map(MinerStartResponse.apply)
@@ -90,7 +92,7 @@ class Web3sBesu[F[_] : MonadThrow](services: Web3sService[F]) extends Besu[F] :
   def privGetTransactionCount(address: String, privacyGroupId: Base64String): F[EthGetTransactionCount] =
     val params = List(address.asJson, privacyGroupId.asJson)
     val request = Request(method = "priv_getTransactionCount", params)
-    services.fetch[String](request).map(EthGetTransactionCount.apply)
+    services.fetch[EthBigInt](request).map(EthGetTransactionCount.apply)
 
   def privGetPrivateTransaction(transactionHash: String): F[PrivGetPrivateTransaction] =
     val request = Request(method = "priv_getPrivateTransaction", params = List(transactionHash.asJson))

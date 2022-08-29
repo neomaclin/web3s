@@ -3,13 +3,12 @@ package org.web3s.protocol.core.methods.response
 import org.web3s.protocol.core.Response
 import org.web3s.utils.Numeric
 
-opaque type EthBlock = Response[EthBlock.Block]
+opaque type EthBlock = Response[Option[EthBlock.Block]]
 
 object EthBlock:
   import EthTransaction._
 
-  type TransactionResult = Transaction
-
+  type TransactionResult = Transaction | String
   final case class Block(
                           number: String,
                           hash: String,
@@ -35,7 +34,7 @@ object EthBlock:
                           sealFields: List[String],
                           baseFeePerGas: String
                         )
-  def apply(responses: Response[Block]): EthBlock = responses
+  def apply(responses: Response[Option[Block]]): EthBlock = responses
 
 extension (x: EthBlock)
-  def block: EthBlock.Block = x.result
+  def block: Option[EthBlock.Block] = x.result
