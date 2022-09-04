@@ -78,7 +78,6 @@ class Web3sEthereum[F[_] : MonadThrow](services: Web3sService[F]) extends Ethere
 
   override def ethSyncing: F[EthSyncing] =
     val request = Request(method = "eth_syncing")
-
     given Decoder[EthSyncing.Result | Boolean] = Decoder[EthSyncing.Result].widen or Decoder[Boolean].widen
     services.fetch[EthSyncing.Result | Boolean](request).map(EthSyncing.apply)
 

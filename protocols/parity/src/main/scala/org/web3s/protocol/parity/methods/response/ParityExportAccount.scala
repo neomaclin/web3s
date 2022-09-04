@@ -6,8 +6,8 @@ import org.web3s.protocol.core.Response
 opaque type ParityExportAccount = Response[WalletFile]
 
 object ParityExportAccount:
-  extension (x: ParityExportAccount)
-    def wallet: WalletFile = x.result
 
   def apply(response: Response[WalletFile]): ParityExportAccount = response
 
+extension (x: ParityExportAccount)
+  def wallet: WalletFile = x.result

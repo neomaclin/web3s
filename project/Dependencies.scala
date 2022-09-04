@@ -11,17 +11,17 @@ object Dependencies {
     val circe = "0.14.1"
     val doobie = "1.0.0-RC1"
     val configSupport = "0.17.1"
-    val bytebuddy = "1.12.12"
+    val bytebuddy = "1.12.14"
     val scalaTest = "3.2.12"
     val scalaMock = "5.2.0"
     val mockito = "1.17.0"
     val scalaLogging = "3.9.5"
     val logback = "1.2.10"
     val refined = "0.10.1"
-    val http4s = "0.23.14"
+    val http4s = "0.23.15"
     val jwt = "9.0.6"
     val log4j = "2.18.0"
-    val fs2 = "3.2.11"
+    val fs2 = "3.2.12"
     val munit = "1.0.0-M1"
     val munitce3 = "1.0.7"
   }
@@ -48,7 +48,7 @@ object Dependencies {
   ).map(_ % versions.cats)
 
   val reflection = Seq(
-    "dev.zio" %% "izumi-reflect" % "2.1.3",
+    "dev.zio" %% "izumi-reflect" % "2.2.0",
   )
 
 
@@ -99,7 +99,7 @@ object Dependencies {
   
 
   val bouncycastle = Seq(
-    "org.bouncycastle" % "bcpkix-jdk18on" % "1.71"
+    "org.bouncycastle" % "bcpkix-jdk18on" % "1.71.1"
 
   )
 

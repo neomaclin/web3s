@@ -14,19 +14,19 @@ trait Parity[F[_]]:
 
   def parityChangePassword(accountId: String, oldPassword: String, newPassword: String): F[BooleanResponse]
 
-  def parityDeriveAddressHash(accountId: String, password: String, hashType: Derivation, toSave: Boolean): F[ParityDeriveAddress]
+  def parityDeriveAddressHash(accountId: String, password: String, hashType: Derivation, toSave: Boolean): F[ParityAddressResponse]
 
-  def parityDeriveAddressIndex(accountId: String, password: String, indicesType: List[Derivation], toSave: Boolean): F[ParityDeriveAddress]
+  def parityDeriveAddressIndex(accountId: String, password: String, indicesType: List[Derivation], toSave: Boolean): F[ParityAddressResponse]
 
   def parityExportAccount(accountId: String, password: String): F[ParityExportAccount]
 
   def parityGetDappAddresses(dAppId: String): F[ParityAddressesResponse]
 
-  def parityGetDappDefaultAddress(dAppId: String): F[ParityDefaultAddressResponse]
+  def parityGetDappDefaultAddress(dAppId: String): F[ParityAddressResponse]
 
   def parityGetNewDappsAddresses: F[ParityAddressesResponse]
 
-  def parityGetNewDappsDefaultAddress: F[ParityDefaultAddressResponse]
+  def parityGetNewDappsDefaultAddress: F[ParityAddressResponse]
 
   def parityImportGethAccounts(gethAddresses: List[String]): F[ParityAddressesResponse]
 

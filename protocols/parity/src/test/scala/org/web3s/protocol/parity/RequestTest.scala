@@ -4,7 +4,9 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.web3s.crypto.Wallet
 import org.web3s.{Web3sParity, Web3sTrace}
 import org.web3s.protocol.core.{DefaultBlockParameter, Web3sServiceRequestJsonTest}
-import org.web3s.protocol.parity.methods.request.Derivation
+import org.web3s.protocol.core.DefaultBlockParameterName
+import org.web3s.protocol.parity.methods.request.{Derivation, TraceFilter}
+import org.web3s.utils.EthBigInt
 
 import scala.util.Try
 
@@ -213,5 +215,63 @@ class RequestTest extends AnyFunSuite :
   test("ParitySignMessage") {
     parity.paritySignMessage("0xc171033d5cbff7175f29dfd3a63dda3d6f8f385e", "password1", "0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a")
     web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"parity_signMessage","params":["0xc171033d5cbff7175f29dfd3a63dda3d6f8f385e","password1","0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a"],"id":1}""")
+  }
+
+  test("TraceCall") {
+    import org.web3s.protocol.core.methods.request.Transaction
+    import org.web3s.utils.Numeric
+    val transaction =
+      Transaction.createFunctionCallTransaction(
+        "0xc171033d5cbff7175f29dfd3a63dda3d6f8f385e",
+        BigInt(1),
+        Numeric.toBigInt("0x9184e72a000"),
+        Numeric.toBigInt("0x76c0"),
+        "0xb60e8dd61c5d32be8058bb8eb970870f07233155",
+        Numeric.toBigInt("0x9184e72a"),
+        "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb"
+          + "970870f072445675058bb8eb970870f072445675")
+    trace.traceCall(transaction, List("trace", "vmTrace", "stateDiff"),DefaultBlockParameterName.LATEST)
+    web3sServiceRequestJsonTest.verifyResult("{\"jsonrpc\":\"2.0\",\"method\":\"trace_call\","
+      + "\"params\":["
+      + "{\"from\":\"0xc171033d5cbff7175f29dfd3a63dda3d6f8f385e\","
+      + "\"to\":\"0xb60e8dd61c5d32be8058bb8eb970870f07233155\","
+      + "\"gas\":\"0x76c0\","
+      + "\"gasPrice\":\"0x9184e72a000\","
+      + "\"value\":\"0x9184e72a\","
+      + "\"data\":\"0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675\","
+      + "\"nonce\":\"0x1\"},"
+      + "[\"trace\",\"vmTrace\",\"stateDiff\"],"
+      + "\"latest\"],"
+      + "\"id\":1}")
+  }
+
+  test("TraceRawTransaction") {
+    trace.traceRawTransaction("0xf869808504e3b292008305499d94781ab1a38837e351bfe1e318c6587766848abffa8084b46300ec26a0b1ffd8f843e08a9dbf0a42b3c7dd5288a48885cd6e3bcdb2609e943d0b0053d4a07bfdb3c12a7cec896bfc2cfc7c346a2cb411e1aca62ad085e8d7abbb6532e128", List("trace", "vmTrace", "stateDiff"))
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"trace_rawTransaction","params":["0xf869808504e3b292008305499d94781ab1a38837e351bfe1e318c6587766848abffa8084b46300ec26a0b1ffd8f843e08a9dbf0a42b3c7dd5288a48885cd6e3bcdb2609e943d0b0053d4a07bfdb3c12a7cec896bfc2cfc7c346a2cb411e1aca62ad085e8d7abbb6532e128",["trace","vmTrace","stateDiff"]],"id":1}""")
+  }
+
+  test("TraceReplayTransaction") {
+    trace.traceReplayTransaction("0x090a4bbdeb57f15fe252cccc924255855eda45a2d8f65b12ec81f03e2cc33249", List("trace", "vmTrace", "stateDiff"))
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"trace_replayTransaction","params":["0x090a4bbdeb57f15fe252cccc924255855eda45a2d8f65b12ec81f03e2cc33249",["trace","vmTrace","stateDiff"]],"id":1}""")
+  }
+
+  test("TraceBlock") {
+    trace.traceBlock(DefaultBlockParameterName.LATEST)
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"trace_block","params":["latest"],"id":1}""")
+  }
+
+  test("TraceFilter") {
+
+    trace.traceFilter(TraceFilter(DefaultBlockParameterName.EARLIEST,DefaultBlockParameterName.LATEST, List("0xa9bebd4853ce06c3dc1b711bbafa1514ed5b5130"),List("0xB4d9b203d8D16f41916a62DEab83389cF2b7eeCb")))
+    web3sServiceRequestJsonTest.verifyResult("{\"jsonrpc\":\"2.0\",\"method\":\"trace_filter\","
+      + "\"params\":[{\"fromBlock\":\"earliest\",\"toBlock\":\"latest\","
+      + "\"fromAddress\":[\"0xa9bebd4853ce06c3dc1b711bbafa1514ed5b5130\"],"
+      + "\"toAddress\":[\"0xB4d9b203d8D16f41916a62DEab83389cF2b7eeCb\"]}],"
+      + "\"id\":1}")
+  }
+
+  test("TraceGet") {
+    trace.traceGet("0x090a4bbdeb57f15fe252cccc924255855eda45a2d8f65b12ec81f03e2cc33249", List(BigInt(2),BigInt(0),BigInt(0)))
+    web3sServiceRequestJsonTest.verifyResult("""{"jsonrpc":"2.0","method":"trace_get","params":["0x090a4bbdeb57f15fe252cccc924255855eda45a2d8f65b12ec81f03e2cc33249",["0x2","0x0","0x0"]],"id":1}""")
   }
 

@@ -7,8 +7,8 @@ opaque type ParityFullTraceResponse = Response[FullTraceInfo]
 
 object ParityFullTraceResponse:
 
-  extension (x: ParityFullTraceResponse)
-    def fullTraceInfo: FullTraceInfo = x.result
-
   def apply(response: Response[FullTraceInfo]): ParityFullTraceResponse = response
+
+extension (x: ParityFullTraceResponse)
+  def fullTraceInfo: FullTraceInfo = x.result
 

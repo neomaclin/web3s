@@ -29,16 +29,16 @@ class Web3sParity[F[_] : MonadThrow](services: Web3sService[F]) extends Parity[F
     services.fetch[Boolean](request).map(BooleanResponse.apply)
 
 
-  def parityDeriveAddressHash(accountId: String, password: String, hashType: Derivation, toSave: Boolean): F[ParityDeriveAddress] =
+  def parityDeriveAddressHash(accountId: String, password: String, hashType: Derivation, toSave: Boolean): F[ParityAddressResponse] =
     val params = List(accountId.asJson, password.asJson, hashType.asJson.dropNullValues, toSave.asJson)
     val request = Request(method = "parity_deriveAddressHash", params)
-    services.fetch[String](request).map(ParityDeriveAddress.apply)
+    services.fetch[String](request).map(ParityAddressResponse.apply)
 
 
-  def parityDeriveAddressIndex(accountId: String, password: String, indicesType: List[Derivation], toSave: Boolean): F[ParityDeriveAddress] =
+  def parityDeriveAddressIndex(accountId: String, password: String, indicesType: List[Derivation], toSave: Boolean): F[ParityAddressResponse] =
     val params = List(accountId.asJson, password.asJson, indicesType.map(_.asJson.dropNullValues).asJson, toSave.asJson)
     val request = Request(method = "parity_deriveAddressIndex", params)
-    services.fetch[String](request).map(ParityDeriveAddress.apply)
+    services.fetch[String](request).map(ParityAddressResponse.apply)
 
 
   def parityExportAccount(accountId: String, password: String): F[ParityExportAccount] =
@@ -53,18 +53,18 @@ class Web3sParity[F[_] : MonadThrow](services: Web3sService[F]) extends Parity[F
     services.fetch[List[String]](request).map(ParityAddressesResponse.apply)
 
 
-  def parityGetDappDefaultAddress(dAppId: String): F[ParityDefaultAddressResponse] =
+  def parityGetDappDefaultAddress(dAppId: String): F[ParityAddressResponse] =
     val params = List(dAppId.asJson)
     val request = Request(method = "parity_getDappDefaultAddress", params)
-    services.fetch[String](request).map(ParityDefaultAddressResponse.apply)
+    services.fetch[String](request).map(ParityAddressResponse.apply)
 
 
   def parityGetNewDappsAddresses: F[ParityAddressesResponse] =
     services.fetch[List[String]](Request(method = "parity_getNewDappsAddresses")).map(ParityAddressesResponse.apply)
 
 
-  def parityGetNewDappsDefaultAddress: F[ParityDefaultAddressResponse] =
-    services.fetch[String](Request(method = "parity_getNewDappsDefaultAddress")).map(ParityDefaultAddressResponse.apply)
+  def parityGetNewDappsDefaultAddress: F[ParityAddressResponse] =
+    services.fetch[String](Request(method = "parity_getNewDappsDefaultAddress")).map(ParityAddressResponse.apply)
 
 
   def parityImportGethAccounts(gethAddresses: List[String]): F[ParityAddressesResponse] =

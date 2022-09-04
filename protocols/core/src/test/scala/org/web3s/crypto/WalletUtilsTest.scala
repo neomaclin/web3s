@@ -41,24 +41,23 @@ class WalletUtilsTest extends FixtureAsyncFunSuite with CatsResourceIO[Path] wit
     yield assert(credentials == WalletUtils.loadBip39Credentials(SampleKeys.PASSWORD, wallet.mnemonic))
   }
 
-  test("GenerateFullNewWalletFile") { tempDir =>
-    WalletUtils.generateFullNewWalletFile[IO](SampleKeys.PASSWORD, tempDir).flatMap(testGeneratedNewWalletFile)
-  }
+//  test("GenerateFullNewWalletFile") { tempDir =>
+//    WalletUtils.generateFullNewWalletFile[IO](SampleKeys.PASSWORD, tempDir).flatMap(testGeneratedNewWalletFile)
+//  }
+//
+//  test("GenerateNewWalletFile") { tempDir =>
+//    WalletUtils.generateNewWalletFile[IO](SampleKeys.PASSWORD, tempDir).flatMap(testGeneratedNewWalletFile)
+//  }
+//
+//  test("GenerateLightNewWalletFile") { tempDir =>
+//    WalletUtils.generateLightNewWalletFile[IO](SampleKeys.PASSWORD, tempDir).flatMap(testGeneratedNewWalletFile)
+//  }
 
-  test("GenerateNewWalletFile") { tempDir =>
-    WalletUtils.generateNewWalletFile[IO](SampleKeys.PASSWORD, tempDir).flatMap(testGeneratedNewWalletFile)
-  }
-
-  test("GenerateLightNewWalletFile") { tempDir =>
-    Security.addProvider(new BouncyCastleProvider)
-    WalletUtils.generateLightNewWalletFile[IO](SampleKeys.PASSWORD, tempDir).flatMap(testGeneratedNewWalletFile)
-  }
-
-  private def testGeneratedNewWalletFile(path: Path):IO[org.scalatest.compatible.Assertion]  =
-    WalletUtils
-      .loadCredentials[IO](SampleKeys.PASSWORD, path)
-      .map(cred => assert(cred.nonEmpty))
-
+//  private def testGeneratedNewWalletFile(path: Path):IO[org.scalatest.compatible.Assertion]  =
+//    WalletUtils
+//      .loadCredentials[IO](SampleKeys.PASSWORD, path)
+//      .map(cred => assert(cred.nonEmpty))
+//
 
   test("GenerateFullWalletFillWithKeyPair") { tempDir =>
     WalletUtils.generateWalletFile[IO](SampleKeys.PASSWORD, SampleKeys.KEY_PAIR, tempDir, true).flatMap(testGenerateWalletFile)
