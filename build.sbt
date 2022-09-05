@@ -12,7 +12,6 @@ lazy val codegen = project.dependsOn(utils,rlp,abi)
 lazy val core =  (project in file("protocols/core")).dependsOn(crypto % "test->test;compile->compile" ,abi)
 lazy val eea = (project in file("protocols/eea")).dependsOn(core % "test->test;compile->compile").dependsOn(crypto,abi,core)
 lazy val besu = (project in file("protocols/besu")).dependsOn(core % "test->test;compile->compile").dependsOn(crypto,abi,core,eea)
-
 lazy val geth = (project in file("protocols/geth")).dependsOn(core % "test->test;compile->compile").dependsOn(crypto,abi,core)
 lazy val parity = (project in file("protocols/parity")).dependsOn(core % "test->test;compile->compile").dependsOn(crypto,abi,core)
 lazy val providers = (project in file("protocols/providers")).dependsOn(core % "test->test;compile->compile").dependsOn(crypto,abi,core)
