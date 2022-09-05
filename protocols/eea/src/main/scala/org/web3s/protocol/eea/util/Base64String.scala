@@ -1,28 +1,29 @@
 package org.web3s.protocol.eea.util
 
-import cats.Eq
+import org.web3s.protocol.eea.util.Base64String.wrap
 import org.web3s.rlp.RlpString
 
 import java.util.Base64
 
-type Base64String = Array[Byte]
+opaque type Base64String = Array[Byte]
 
 object Base64String:
-  extension (x: Base64String)
-    def asString: String = Base64String.ENCODER.encodeToString(x)
-    def raw: Array[Byte] = x
-    def toRlp: RlpString = RlpString(x)
 
   private val regex = """(?:[A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=)""".r
   val DECODER: Base64.Decoder = Base64.getDecoder
   val ENCODER: Base64.Encoder = Base64.getEncoder
   private def isValid(x: String): Boolean = regex.matches(x)
-  def apply(value: String): Base64String =
+  def wrap(value: String): Base64String =
     if !isValid(value) || value.length != 44 then
       throw new IllegalArgumentException(value + " is not a 32 byte base 64 value")
     else DECODER.decode(value)
 
-  def apply(value: Array[Byte]): Base64String = apply(ENCODER.encodeToString(value))
-  given Eq[Base64String] = Eq.instance( _ sameElements _)
+  def wrapList(value: List[String]): List[Base64String] = value.map(wrap)
+  def wrapList(value: String, values: String*): List[Base64String] = (value :: values.toList).map(wrap)
+  def apply(value: Array[Byte]): Base64String = wrap(ENCODER.encodeToString(value))
 
-  given io.circe.Encoder[Base64String] = io.circe.Encoder.encodeString.contramap(_.asString)
+extension (x: Base64String)
+  def asString: String = Base64String.ENCODER.encodeToString(x)
+  def raw: Array[Byte] = x
+  def equals(other: Base64String): Boolean = x.asString == other.asString
+  def toRlp: RlpString = RlpString(x)

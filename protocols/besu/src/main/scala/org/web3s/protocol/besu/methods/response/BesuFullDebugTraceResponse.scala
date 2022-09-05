@@ -4,9 +4,10 @@ import org.web3s.protocol.core.Response
 
 opaque type BesuFullDebugTraceResponse = Response[BesuFullDebugTraceResponse.FullDebugTraceInfo]
 
+extension (x: BesuFullDebugTraceResponse)
+  def fullDebugTraceInfo: BesuFullDebugTraceResponse.FullDebugTraceInfo = x.result
+
 object BesuFullDebugTraceResponse:
-  extension (x: BesuFullDebugTraceResponse)
-    def fullDebugTraceInfo: BesuFullDebugTraceResponse.FullDebugTraceInfo = x.result
 
   final case class StructLogs(pc: Int,
                               op: String,
@@ -18,7 +19,7 @@ object BesuFullDebugTraceResponse:
                               storage: Map[Long, String])
 
   final case class FullDebugTraceInfo(gas: Int,
-                                      failed: Boolean,
+                                      failed: Option[Boolean],
                                       returnValue: String,
                                       structLogs: List[StructLogs])
 

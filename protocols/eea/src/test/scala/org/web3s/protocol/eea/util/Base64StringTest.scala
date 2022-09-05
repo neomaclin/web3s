@@ -1,15 +1,13 @@
 package org.web3s.protocol.eea.util
 
-import cats.Eq
+
 import org.scalatest.funsuite.AnyFunSuite
-import cats.syntax.eq.catsSyntaxEq
-import cats.instances.*
+import cats.implicits.*
 
 class Base64StringTest extends AnyFunSuite :
 
   import Base64String.*
-
-  given Eq[Array[Byte]] = Eq.instance(_ sameElements _)
+  import codecs.given
 
   private val BASE64_1 = "A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo="
   private val BASE64_2 = "Ko2bVqD+nNlNYL5EE7y3IdOnviftjiizpjRt+HTuFBs="
@@ -27,11 +25,11 @@ class Base64StringTest extends AnyFunSuite :
     -75, 41, 78, 48, -39, -66, 74, 25, -127, -1, -77, 58, 11, -116
   )
   private val BASE64_LIST = List(BASE64_1, BASE64_1)
-  private val BASE64_WRAPPED = Base64String("A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo=")
+  private val BASE64_WRAPPED = Base64String.wrap("A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo=")
   private val BASE64_WRAPPED_LIST: List[Base64String] = List(BASE64_WRAPPED, BASE64_WRAPPED)
 
   test("WrapList") {
-    assert(BASE64_WRAPPED_LIST eqv BASE64_LIST.map(Base64String.apply))
+    assert(BASE64_WRAPPED_LIST eqv Base64String.wrapList(BASE64_LIST))
   }
 
   test("UnwrapList") {
@@ -39,17 +37,17 @@ class Base64StringTest extends AnyFunSuite :
   }
 
   test("ValidBase64String") {
-    val base64String1 = Base64String(BASE64_1)
-    val base64String2 = Base64String(BASE64_2)
-    val base64String3 = Base64String(BASE64_3)
+    val base64String1 = Base64String.wrap(BASE64_1)
+    val base64String2 = Base64String.wrap(BASE64_2)
+    val base64String3 = Base64String.wrap(BASE64_3)
 
-    assert(BASE64_1 eqv base64String1.asString)
-    assert(BASE64_2 eqv base64String2.asString)
-    assert(BASE64_3 eqv base64String3.asString)
+    assert(BASE64_1 === base64String1.asString)
+    assert(BASE64_2 === base64String2.asString)
+    assert(BASE64_3 === base64String3.asString)
 
-    assert(BASE64_BYTES_1 eqv base64String1.raw)
-    assert(BASE64_BYTES_2 eqv base64String2.raw)
-    assert(BASE64_BYTES_3 eqv base64String3.raw)
+    assert(BASE64_BYTES_1 === base64String1.raw)
+    assert(BASE64_BYTES_2 === base64String2.raw)
+    assert(BASE64_BYTES_3 === base64String3.raw)
   }
 
   test("ValidBase64ByteArray") {
@@ -61,31 +59,31 @@ class Base64StringTest extends AnyFunSuite :
     assert(BASE64_2 eqv base64String2.asString)
     assert(BASE64_3 eqv base64String3.asString)
 
-    assert(BASE64_BYTES_1 eqv base64String1.raw)
-    assert(BASE64_BYTES_2 eqv base64String2.raw)
-    assert(BASE64_BYTES_3 eqv base64String3.raw)
+    assert(BASE64_BYTES_1 === base64String1.raw)
+    assert(BASE64_BYTES_2 === base64String2.raw)
+    assert(BASE64_BYTES_3 === base64String3.raw)
   }
 
   test("EmptyStringThrows") {
     assertThrows[RuntimeException] {
-      Base64String("")
+      Base64String.wrap("")
     }
   }
   test("TooShortStringThrows") {
     assertThrows[RuntimeException] {
-      Base64String(BASE64_1.substring(0, 43))
+      Base64String.wrap(BASE64_1.substring(0, 43))
     }
   }
 
   test("TooLongStringThrows") {
     assertThrows[RuntimeException] {
-      Base64String(BASE64_1 + "m")
+      Base64String.wrap(BASE64_1 + "m")
     }
   }
 
   test("NonValidBase64StringThrows") {
     assertThrows[RuntimeException] {
-      Base64String("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr")
+      Base64String.wrap("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr")
     }
   }
 

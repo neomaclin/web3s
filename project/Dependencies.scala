@@ -5,7 +5,7 @@ object Dependencies {
     val scala2 = "2.13.8"
     val scala3 = "3.1.2"
     val cats = "2.7.0"
-    val kitten = "3.0.0-M3"
+    val kitten = "3.0.0-M4"
 
     val tapir = "0.19.3"
     val circe = "0.14.1"

@@ -1,7 +1,6 @@
 package org.web3s.protocol.besu
 
-import org.web3s.protocol.eea.util.Base64String
-import org.web3s.protocol.eea.util.Base64String.*
+import org.web3s.protocol.eea.util.*
 import org.scalatest.funsuite.AnyFunSuite
 import org.web3s.Web3sBesu
 import org.web3s.protocol.core.Web3sServiceRequestJsonTest
@@ -12,9 +11,9 @@ import scala.util.Try
 
 class RequestTest extends AnyFunSuite :
 
-  private val MOCK_ENCLAVE_KEY = Base64String("A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo=")
-  private val MOCK_ENCLAVE_KEY_2 = Base64String("Ko2bVqD+nNlNYL5EE7y3IdOnviftjiizpjRt+HTuFBs=")
-  private val MOCK_PRIVACY_GROUP_ID = Base64String("DyAOiF/ynpc+JXa2YAGB0bCitSlOMNm+ShmB/7M6C4w=")
+  private val MOCK_ENCLAVE_KEY = Base64String.wrap("A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo=")
+  private val MOCK_ENCLAVE_KEY_2 = Base64String.wrap("Ko2bVqD+nNlNYL5EE7y3IdOnviftjiizpjRt+HTuFBs=")
+  private val MOCK_PRIVACY_GROUP_ID = Base64String.wrap("DyAOiF/ynpc+JXa2YAGB0bCitSlOMNm+ShmB/7M6C4w=")
   private val BASE_64_STRINGS: List[Base64String] = List(MOCK_ENCLAVE_KEY, MOCK_ENCLAVE_KEY_2)
 
   private val web3sServiceRequestJsonTest = new Web3sServiceRequestJsonTest

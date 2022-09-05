@@ -10,5 +10,5 @@ object PrivGetTransactionReceipt:
   def apply(response: Response[PrivateTransactionReceipt]): PrivGetTransactionReceipt = response
 
 extension (x: PrivGetTransactionReceipt)
-  def transactionReceipt: PrivateTransactionReceipt = x.result
+  def privateTransactionReceipt: PrivateTransactionReceipt = x.result
 

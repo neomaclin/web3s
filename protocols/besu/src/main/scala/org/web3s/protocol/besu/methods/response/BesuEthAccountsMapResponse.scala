@@ -8,5 +8,5 @@ object BesuEthAccountsMapResponse:
   def apply(response: Response[Map[String, Boolean]]): BesuEthAccountsMapResponse = response
 
 extension (x: BesuEthAccountsMapResponse)
-  def accounts: Map[String, Boolean] = x.result
+  def accountMaps: Map[String, Boolean] = x.result
 

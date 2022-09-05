@@ -7,8 +7,8 @@ opaque type PrivCreatePrivacyGroup = Response[Base64String]
 
 object PrivCreatePrivacyGroup:
 
-  extension (x: PrivCreatePrivacyGroup)
-    def privacyGroupId: Base64String = x.result
-
   def apply(response: Response[Base64String]): PrivCreatePrivacyGroup = response
 
+
+extension (x: PrivCreatePrivacyGroup)
+  def privacyGroupId: Base64String = x.result

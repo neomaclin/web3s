@@ -9,5 +9,5 @@ object PrivGetPrivacyPrecompileAddress:
   def apply(response: Response[String]): PrivGetPrivacyPrecompileAddress = response
 
 extension (x: PrivGetPrivacyPrecompileAddress)
-  def address: String = x.result
+  def precompileAddress: String = x.result
 

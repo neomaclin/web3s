@@ -6,8 +6,8 @@ opaque type PrivateEnclaveKey = Response[String]
 
 object PrivateEnclaveKey:
 
-  extension (x: PrivateEnclaveKey)
-    def key: String = x.result
-
   def apply(response: Response[String]): PrivateEnclaveKey = response
+
+extension (x: PrivateEnclaveKey)
+  def key: String = x.result
 

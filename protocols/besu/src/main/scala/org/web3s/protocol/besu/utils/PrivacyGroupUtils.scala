@@ -1,7 +1,6 @@
 package org.web3s.protocol.besu.utils
 
-import org.web3s.protocol.eea.util.Base64String
-import org.web3s.protocol.eea.util.Base64String.*
+import org.web3s.protocol.eea.util.*
 import org.web3s.rlp.*
 import org.web3s.crypto.Hash
 

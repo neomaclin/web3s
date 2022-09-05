@@ -11,9 +11,11 @@ import org.web3s.protocol.besu.methods.request.CreatePrivacyGroupRequest
 import org.web3s.protocol.core.methods.response.*
 import org.web3s.protocol.besu.methods.response.*
 import org.web3s.protocol.besu.methods.response.model.*
+import org.web3s.protocol.besu.methods.response.decoders.*
 import org.web3s.protocol.besu.methods.response.privacy.{PrivFindPrivacyGroup, PrivGetPrivateTransaction, *}
 import org.web3s.protocol.core.methods.request
 import org.web3s.protocol.eea.util.Base64String
+
 
 import org.web3s.services.Web3sService
 
@@ -24,8 +26,9 @@ class Web3sBesu[F[_] : MonadThrow](services: Web3sService[F]) extends Besu[F] :
   import io.circe.generic.auto._
   import org.web3s.protocol.core.methods.request.encoder.given
   import org.web3s.protocol.core.methods.response.decoders.given
+  import org.web3s.protocol.eea.util.codecs.given
+  import org.web3s.protocol.besu.methods.response.decoders.given
 
-  import org.web3s.protocol.eea.util.Base64String.given
   def minerStart: F[MinerStartResponse] =
     services.fetch[Unit](Request(method = "miner_start")).map(MinerStartResponse.apply)
 
@@ -96,7 +99,7 @@ class Web3sBesu[F[_] : MonadThrow](services: Web3sService[F]) extends Besu[F] :
 
   def privGetPrivateTransaction(transactionHash: String): F[PrivGetPrivateTransaction] =
     val request = Request(method = "priv_getPrivateTransaction", params = List(transactionHash.asJson))
-    services.fetch[PrivGetPrivateTransaction.PrivateTransaction](request).map(PrivGetPrivateTransaction.apply)
+    services.fetch[Option[PrivateTransaction]](request).map(PrivGetPrivateTransaction.apply)
 
 
   def privDistributeRawTransaction(signedTransactionData: String): F[PrivateEnclaveKey] =
@@ -132,13 +135,13 @@ class Web3sBesu[F[_] : MonadThrow](services: Web3sService[F]) extends Besu[F] :
   def privOnChainFindPrivacyGroup(addresses: List[Base64String]): F[PrivFindPrivacyGroup] =
     val params = List(addresses.asJson)
     val request = Request(method = "privx_findOnChainPrivacyGroup",params)
-    services.fetch[List[PrivFindPrivacyGroup.PrivacyGroup]](request).map(PrivFindPrivacyGroup.apply)
+    services.fetch[List[PrivacyGroup]](request).map(PrivFindPrivacyGroup.apply)
 
 
   def privFindPrivacyGroup(addresses: List[Base64String]): F[PrivFindPrivacyGroup] =
     val params = List(addresses.asJson)
     val request = Request(method = "priv_findPrivacyGroup", params)
-    services.fetch[List[PrivFindPrivacyGroup.PrivacyGroup]](request).map(PrivFindPrivacyGroup.apply)
+    services.fetch[List[PrivacyGroup]](request).map(PrivFindPrivacyGroup.apply)
 
 
   def privDeletePrivacyGroup(privacyGroupId: Base64String): F[BooleanResponse] =
