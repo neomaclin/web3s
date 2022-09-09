@@ -8,12 +8,9 @@ import org.web3s.abi.codec.TypeEncoder
 object EthArray:
   final val MAX_SIZE_OF_STATIC_ARRAY = 32
 
-abstract class EthArray[+T <: EthType[_] : Tag](override val value: Seq[T]) extends EthType[Seq[T]] :
-
-  def this(expectedSize: Int, values: T*) = this(values)
-
+abstract class EthArray[T <: EthType[_] : Tag] extends EthType[Array[T]] :
+  def value: Array[T]
   override def bytes32PaddedLength: Int = value.foldLeft(0)(_ + _.bytes32PaddedLength)
-
   def componentTypeAsString: String = Tag[T].tag.toString.toLowerCase match
     case "ethutf8string" => "string"
     case "ethuint" => "uint"

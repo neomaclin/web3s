@@ -79,8 +79,9 @@ object AbiTypesGenerator extends Generator with IOApp :
            |
            |import org.web3s.abi.datatypes.{StaticArray, EthType}
            |import izumi.reflect.Tag
+           |import scala.reflect.ClassTag
            |
-           |final case class StaticArray$size[T <: EthType[_] : Tag](override val value: Seq[T]) extends StaticArray($size, value)
+           |final class StaticArray$size[T <: EthType[_] : Tag: ClassTag](values: T*) extends StaticArray[T]($size, values)
            |
            |""".stripMargin, s"""StaticArray$size.scala""")
     end staticArrayTemplate

@@ -10,9 +10,7 @@ object DecoderMacro {
   private def initiateUIntImpl[T <: EthUInt : Type](value: Expr[BigInt])(using quotes: Quotes): Expr[T] =
     import quotes.reflect.*
     val sym = TypeRepr.of[T].typeSymbol
-
     Apply(Select(New(TypeTree.of[T]), sym.primaryConstructor), List(value.asTerm)).asExprOf[T]
-
 
   inline def initiateInt[T <: EthInt](value: BigInt): T = ${initiateIntImpl[T]('value)}
 
@@ -29,7 +27,7 @@ object DecoderMacro {
     val sym = TypeRepr.of[T].classSymbol.get
     Apply(Select(New(TypeTree.of[T]), sym.primaryConstructor), List(value.asTerm)).asExprOf[T]
 
-//  inline def initiateStaticArrays[T <: EthType[_], A[N <: EthType[_]] <: StaticArray[N] ](value: Seq[T], tag: Tag[T]): A[T]  = ${initiateStaticArraysImpl[T,A]('value,'tag)}
+//  inline def initiateStaticArrays[T <: EthType[_], A[_] <: StaticArray[T] ](value: Seq[T], tag: Tag[T], clasTag:ClassTag[T]): A[T]  = ${initiateStaticArraysImpl[T,A]('value,'tag)}
 //  private def initiateStaticArraysImpl[T <: EthType[_]: Type, A[N <: EthType[_]] <: StaticArray[N] : Type ](value: Expr[Seq[T]], tag: Expr[Tag[T]])(using quotes: Quotes): Expr[A[T]] =
 //    import quotes.reflect.*
 //    val sym = TypeRepr.of[A].typeSymbol

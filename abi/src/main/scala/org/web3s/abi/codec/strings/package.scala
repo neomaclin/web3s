@@ -28,14 +28,14 @@ package strings:
   given TypeAsStringConverter[Fixed] with
     override def convert(t: Fixed): String = t.`type`
 
-  given TypeAsStringConverter[UFixed] with
-    override def convert(t: UFixed): String = t.`type`
-
-  given encodeStaticArrayFor[T <: EthType[_] : Tag, A <: StaticArray[T]]: TypeAsStringConverter[A] with
-    override def convert(t: A): String =
-      if t.value.nonEmpty then s"${Tag[T].tag.toString}[{${t.value.size}}]"
-      else t.componentTypeAsString + "[0]"
-
+//  given TypeAsStringConverter[UFixed] with
+//    override def convert(t: UFixed): String = t.`type`
+//
+//  given encodeStaticArrayFor[T <: EthType[_] : Tag, A <: StaticArray[T]]: TypeAsStringConverter[A] with
+//    override def convert(t: A): String =
+//      if t.value.nonEmpty then s"${Tag[T].tag.toString}[{${t.value.size}}]"
+//      else t.componentTypeAsString + "[0]"
+//
   given encodeDynamicArrayFor[T <: EthType[_] : Tag: TypeAsStringConverter, A <: DynamicArray[T]]: TypeAsStringConverter[A] with
     override def convert(t: A): String =
       val valueType =

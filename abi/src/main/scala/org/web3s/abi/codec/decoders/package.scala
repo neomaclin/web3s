@@ -22,6 +22,7 @@ package decoders:
   import org.web3s.abi.datatypes.EthNumericType
 
   import java.nio.charset.StandardCharsets
+  import scala.reflect.ClassTag
 
   def typeLengthOf[T <: EthNumericType : Tag]: Int =
     Tag[T].tag.toString match
@@ -41,19 +42,19 @@ package decoders:
     val resultByteArray = new Array[Byte](typeLengthAsBytes + 1)
     Tag[T].tag.toString match
       case uintR(size) => ()
-      case intR(size) => resultByteArray(0) = inputByteArray(0) // take MSB as sign bit
+      case intR(size) => resultByteArray(0) = inputByteArray(0) // take MSB as sign
     val valueOffset = EthType.MAX_BYTE_LENGTH - typeLengthAsBytes
     Array.copy(inputByteArray, valueOffset, resultByteArray, 1, typeLengthAsBytes)
     BigInt(resultByteArray)
 
-  def decodeUintAsInt(rawInput: String, offset: Int): Int = {
+  def decodeUIntAsInt(rawInput: String, offset: Int): Int = {
     val input = rawInput.substring(offset, offset + MAX_BYTE_LENGTH_FOR_HEX_STRING)
-    TypeDecoder.decode[UInt64](input, offset).value.intValue
+    TypeDecoder.decode[UInt64](input, 0).value.intValue
   }
 
   inline given Decodable[DynamicBytes] with
     override def decode(rawInput: String, offset: Int): DynamicBytes =
-      val encodedLength = decodeUintAsInt(rawInput, offset)
+      val encodedLength = decodeUIntAsInt(rawInput, offset)
       val hexStringEncodedLength = encodedLength << 1
       val valueOffset = offset + MAX_BYTE_LENGTH_FOR_HEX_STRING
 
@@ -106,21 +107,31 @@ package decoders:
     }
     value.reverse
 
-  inline given decodeStaticArray[A[V <: EthType[_]] <: StaticArray[V],T <: EthType[_] : Tag: Decodable]: DecodableSeq[A,T] = new DecodableSeq[A,T] {
-    override def decode(data: String, offset: Int, length: Int): Seq[T] =
-       build[T](data,offset,length)
+//  inline given decodeStaticArray[T <: EthType[_] : Tag: ClassTag: Decodable, A[_] <: StaticArray[T]: ClassTag]: DecodableArray[A,T] = new DecodableArray[A,T] {
+//    override def decode(data: String, offset: Int, length: Int): A[T] =
+//       build[T](data,offset,length)
+//  }
+
+  inline given decodeDynamicArray[T <: EthType[_] : Tag : ClassTag : Decodable]: DecodableArray[T,DynamicArray] = new DecodableArray[T, DynamicArray] {
+    override def decode(data: String, offset: Int, length: Int): DynamicArray[T] =
+      val encodedLength = decodeUIntAsInt(data, offset)
+      val valueOffset = offset + MAX_BYTE_LENGTH_FOR_HEX_STRING
+      val values = build[T](data,valueOffset,encodedLength)
+      DynamicArray[T](values:_*)
+
   }
 
   def getSingleElementLength[T <: EthType[_] : Tag](input: String, offset: Int): Int =
+    val name = Tag[T].tag.toString
     if input.length == offset then 0
-    else if LightTypeTagUnpacker(Tag[T].tag).inheritance.values
-      .exists(_.map(_.ref.name).exists(name => name.endsWith("DynamicBytes") || name.endsWith("Utf8String"))) then (decodeUintAsInt(input, offset) / EthType.MAX_BYTE_LENGTH) + 2
+    else if name.endsWith("DynamicBytes") || name.endsWith("Utf8String") then (decodeUIntAsInt(input, offset) / EthType.MAX_BYTE_LENGTH) + 2
     else 1
   def getDataOffset[T <: EthType[_] : Tag](input: String, offset: Int): Int =
-    if LightTypeTagUnpacker(Tag[T].tag).inheritance.values
-      .exists(_.map(_.ref.name).exists(name => name.endsWith("DynamicBytes") || name.endsWith("Utf8String") || name.endsWith("DynamicArray"))) then
-      decodeUintAsInt(input, offset) << 1
+    val name = Tag[T].tag.toString
+    if name.endsWith("DynamicBytes") || name.endsWith("Utf8String") || name.endsWith("DynamicStruct") then
+      decodeUIntAsInt(input, offset) << 1
     else offset
+
   def isDynamic[T: Tag]: Boolean =
-    LightTypeTagUnpacker(Tag[T].tag).inheritance.values
-      .exists(_.map(_.ref.name).exists(name => name.endsWith("DynamicBytes") || name.endsWith("Utf8String") || name.endsWith("DynamicStruct")))
+    val name = Tag[T].tag.toString
+    name.endsWith("DynamicBytes") || name.endsWith("Utf8String") || name.endsWith("DynamicStruct")

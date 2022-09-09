@@ -436,7 +436,7 @@ class TypeEncoderTest extends AnyFunSuite :
   }
 
   test("FixedArray") {
-    val array = StaticArray2(Seq(UFixed(BigInt(0x2), BigInt(0x2)), UFixed(BigInt(0x8), BigInt(0x8))))
+    val array = StaticArray2(UFixed(BigInt(0x2), BigInt(0x2)), UFixed(BigInt(0x8), BigInt(0x8)))
     assert(TypeEncoder.encode(array) == "0000000000000000000000000000000220000000000000000000000000000000" + "0000000000000000000000000000000880000000000000000000000000000000")
   }
   test("DynamicArray") {

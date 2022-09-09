@@ -2,7 +2,7 @@ package org.web3s.crypto
 
 import io.circe.{Json, JsonObject}
 import io.circe.Json.{JArray, JBoolean, JNull, JNumber, JObject, JString}
-import izumi.reflect.macrortti.LightTypeTagRef.SymName.SymTypeName
+//import izumi.reflect.macrortti.LightTypeTagRef.SymName.SymTypeName
 import org.web3s.abi.EthTypes
 import org.web3s.abi.datatypes.EthType.MAX_BYTE_LENGTH
 import org.web3s.crypto.Hash.{sha3, sha3String}
