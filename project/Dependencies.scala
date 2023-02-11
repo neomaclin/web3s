@@ -3,25 +3,25 @@ import sbt.{ExclusionRule, _}
 object Dependencies {
   object versions {
     val scala2 = "2.13.8"
-    val scala3 = "3.1.2"
+    val scala3 = "3.2.1"
     val cats = "2.7.0"
-    val kitten = "3.0.0-M4"
+    val kitten = "3.0.0"
 
     val tapir = "0.19.3"
     val circe = "0.14.1"
     val doobie = "1.0.0-RC1"
     val configSupport = "0.17.1"
-    val bytebuddy = "1.12.14"
-    val scalaTest = "3.2.12"
+    val bytebuddy = "1.12.19"
+    val scalaTest = "3.2.14"
     val scalaMock = "5.2.0"
     val mockito = "1.17.0"
     val scalaLogging = "3.9.5"
     val logback = "1.2.10"
     val refined = "0.10.1"
-    val http4s = "0.23.15"
+    val http4s = "0.23.16"
     val jwt = "9.0.6"
-    val log4j = "2.18.0"
-    val fs2 = "3.2.12"
+    val log4j = "2.19.0"
+    val fs2 = "3.4.0"
     val munit = "1.0.0-M1"
     val munitce3 = "1.0.7"
   }
@@ -48,7 +48,7 @@ object Dependencies {
   ).map(_ % versions.cats)
 
   val reflection = Seq(
-    "dev.zio" %% "izumi-reflect" % "2.2.0",
+    "dev.zio" %% "izumi-reflect" % "2.2.1",
   )
 
 
@@ -99,7 +99,7 @@ object Dependencies {
   
 
   val bouncycastle = Seq(
-    "org.bouncycastle" % "bcpkix-jdk18on" % "1.71.1"
+    "org.bouncycastle" % "bcpkix-jdk18on" % "1.72"
 
   )
 
